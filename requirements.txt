@@ -1,2 +1,3 @@
+ftputil
 peewee
 pytest
