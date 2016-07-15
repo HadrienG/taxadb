@@ -20,4 +20,4 @@ setup(name='taxa_db',
       license='GPL3',
       packages=find_packages(exclude=['tests']),
 
-      install_requires=['ftputil', 'peewee', 'pytest'])
+      install_requires=['ftputil', 'peewee', 'nose'])
