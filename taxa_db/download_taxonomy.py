@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import gzip
+import tarfile
 import ftputil
 import hashlib
 
@@ -47,6 +48,10 @@ def get_taxdump(TAXDUMP):
         ncbi.download_if_newer(TAXDUMP, TAXDUMP)
         ncbi.download_if_newer(TAXDUMP + '.md5', TAXDUMP + '.md5')
         md5_check(TAXDUMP)
+    print('Unpacking %s' % (TAXDUMP))
+    with tarfile.open(TAXDUMP, "r:gz") as tar:
+        tar.extractall()
+        tar.close()
 
 
 def main():

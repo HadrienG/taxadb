@@ -4,7 +4,7 @@
 from peewee import *
 
 
-def main():
+def create_db():
     db = SqliteDatabase('test.sqlite')
 
     class Lineage(Model):
