@@ -11,3 +11,6 @@ ENV/
 
 #testing
 .cache
+
+# Distribution / packaging
+*.egg-info/
