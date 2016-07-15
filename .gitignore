@@ -1,5 +1,6 @@
 # taxa_db specific stuff
 *accession2taxid*
+taxdump*
 
 # db
 *.sqlite

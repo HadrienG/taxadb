@@ -17,17 +17,21 @@ ACC_DL_LIST = [NUCL_EST, NUCL_GB, NUCL_GSS, NUCL_WGS, PROT]
 TAXDUMP = 'taxdump.tar.gz'
 
 
-def md5_check(file):
+def md5_check(file, block_size=256*128):
     print('Checking md5')
     md5 = open(file + '.md5').readline().split()[0]
-    file_md5 = hashlib.md5(open(file, 'rb').read()).hexdigest()
-    assert(file_md5 == md5)
+    file_md5 = hashlib.md5()
+    with open(file, 'rb') as f:
+        for chunk in iter(lambda: f.read(block_size), b''):
+            file_md5.update(chunk)
+    assert(file_md5.hexdigest() == md5)
     print('Done!!')
 
 
 def get_acc2taxid(ACC_DL_LIST):
     for file in ACC_DL_LIST:
         print('Started Downloading %s' % (file))
+        # TODO: have a try except around the connection
         ncbi = ftputil.FTPHost('ftp.ncbi.nlm.nih.gov', 'anonymous', 'password')
         ncbi.chdir('pub/taxonomy/accession2taxid/')
         ncbi.download_if_newer(file, file)
@@ -37,19 +41,17 @@ def get_acc2taxid(ACC_DL_LIST):
 
 def get_taxdump(TAXDUMP):
     print('Started Downloading %s' % (TAXDUMP))
+    # TODO: have a try except around the connection
     ncbi = ftputil.FTPHost('ftp.ncbi.nlm.nih.gov', 'anonymous', 'password')
     ncbi.chdir('pub/taxonomy/')
     ncbi.download_if_newer(TAXDUMP, TAXDUMP)
     ncbi.download_if_newer(TAXDUMP + '.md5', TAXDUMP + '.md5')
-    md5_check(file)
+    md5_check(TAXDUMP)
 
 
 def main():
     get_acc2taxid(ACC_DL_LIST)
-    # TODO: the read() method is likely to fail on large file as it needs a
-    # continuous block of memory. Nedd to find an alternative.
-    # maybe http://stackoverflow.com/questions/1131220/get-md5-hash-of-big-files-in-python
-    # print(hashlib.md5(open(NUCL_WGS, 'rb').read()).hexdigest())
+    get_taxdump(TAXDUMP)
 
 if __name__ == '__main__':
     main()
