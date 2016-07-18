@@ -24,7 +24,6 @@ class Sequence(Model):
 def create_db():
     db = SqliteDatabase('test.sqlite')
     db.connect()
-    db.create_table(Lineage)
     db.create_table(Taxa)
     db.create_table(Sequence)
 
