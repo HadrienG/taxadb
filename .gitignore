@@ -13,8 +13,7 @@ __pycache__/
 *.pyc
 
 # virtualenv
-venv/
-ENV/
+taxa_env/
 
 #testing
 .cache
