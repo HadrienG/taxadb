@@ -14,6 +14,15 @@ class BaseModel(pw.Model):
 
 
 class Taxa(BaseModel):
+    """table Taxa. Each row is a taxon.
+
+    Fields:
+    primary -- the primary key
+    ncbi_taxid -- the TaxID of the taxon (from nodes.dmp)
+    parent_taxid -- the TaxID of the parent taxon (from nodes.dmp)
+    tax_name -- the name of the taxon
+    lineage_level -- the level of lineage of the taxon (from nodes.dmp)
+    """
     primary = pw.PrimaryKeyField()
     ncbi_taxid = pw.IntegerField(null=False)
     parent_taxid = pw.ForeignKeyField(rel_model=pw.Model)
@@ -22,6 +31,16 @@ class Taxa(BaseModel):
 
 
 class Sequence(BaseModel):
+    """table Sequence. Each row is a sequence. Each sequence has a taxon_id.
+
+    Fields:
+    primary -- the primary key
+    taxon_id -- reference to a taxon in the table Taxa.
+    accession -- the accession number of the sequence.
+    version -- the version of the sequence.
+    gi -- (deprecated) the GI number of the sequence.
+    db_type -- the database where the sequence is from.
+    """
     primary = pw.PrimaryKeyField()
     taxon_id = pw.ForeignKeyField(Taxa, to_field='primary')
     accession = pw.CharField(null=False)
@@ -31,12 +50,18 @@ class Sequence(BaseModel):
 
 
 def create_db(db):
+    """Create the database."""
     db.connect()
     db.create_table(Taxa)
     db.create_table(Sequence)
 
 
 def parse_node(node_file):
+    """Parse the node.dmp file (from taxdump.tgz) and insert taxons in the
+    Taxa table.
+
+    Arguments:
+    node_file -- the node.dmp file"""
     node_data = list()
     with open(node_file, 'r') as f:
         for line in f:
