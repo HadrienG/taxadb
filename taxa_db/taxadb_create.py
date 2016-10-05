@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import gzip
 import peewee as pw
 
 
@@ -34,18 +35,18 @@ class Sequence(BaseModel):
 
     Fields:
     primary -- the primary key
-    taxon_id -- reference to a taxon in the table Taxa.
+    taxid -- reference to a taxon in the table Taxa.
     accession -- the accession number of the sequence.
     version -- the version of the sequence.
     gi -- (deprecated) the GI number of the sequence.
     db_type -- the database where the sequence is from.
     """
     primary = pw.PrimaryKeyField()
-    taxon_id = pw.ForeignKeyField(Taxa, to_field='primary')
+    taxid = pw.ForeignKeyField(Taxa, to_field='ncbi_taxid')
     accession = pw.CharField(null=False)
     version = pw.IntegerField(null=False)
     gi = pw.CharField()
-    db_type = pw.CharField(null=False)  # or ForeignKeyField for a table?
+    db_type = pw.CharField(null=False)
 
 
 def create_db(db):
@@ -75,6 +76,7 @@ def parse_taxdump(nodes_file, names_file):
                 'lineage_level': line_list[2].strip('\t')
                 }
             nodes_data.append(data_dict)
+    print('parsed nodes')
 
     # parse names.dmp
     names_data = list()
@@ -87,6 +89,7 @@ def parse_taxdump(nodes_file, names_file):
                     'tax_name': line_list[1].strip('\t')
                     }
                 names_data.append(data_dict)
+    print('parsed names')
 
     # merge the two dictionaries
     taxa_info_list = list()
@@ -94,16 +97,47 @@ def parse_taxdump(nodes_file, names_file):
     for nodes, names in zip(nodes_data, names_data):
         taxa_info = {**nodes, **names}  # PEP 448, requires python 3.5
         taxa_info_list.append(taxa_info)
+    print('merge successful')
 
     # insert in database
     with db.atomic():
         for i in range(0, len(taxa_info_list), 500):
             Taxa.insert_many(taxa_info_list[i:i+500]).execute()
+    print('Taxa: completed')
+
+
+def parse_nucl_gss(nucl_gss):
+    """Parse the nucl_gss_accession2taxid file.
+
+    Arguments:
+    nucl_gss -- input file (gzipped)
+    """
+    acc_data = list()
+    with gzip.open(nucl_gss, 'rb') as f:
+        f.readline()  # discard the header
+        for line in f:
+            line_list = line.decode().rstrip('\n').split('\t')
+            data_dict = {
+                'accession': line_list[0],
+                'version': line_list[1].split('.')[1],
+                'taxid': line_list[2],
+                'gi': line_list[3],
+                'db_type': 'gss'
+            }
+            acc_data.append(data_dict)
+    print(len(acc_data))
+
+    # insert in database
+    with db.atomic():
+        for i in range(0, len(acc_data), 500):
+            Sequence.insert_many(acc_data[i:i+500]).execute()
+            print('%s records added' % (i))
 
 
 def main():
     create_db(db)
-    parse_taxdump("nodes.dmp", "names.dmp")
+    parse_taxdump('nodes.dmp', 'names.dmp')
+    parse_nucl_gss('nucl_gss.accession2taxid.gz')
 
 
 if __name__ == '__main__':
