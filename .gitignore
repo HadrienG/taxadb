@@ -8,16 +8,19 @@ readme.txt
 # db
 *.sqlite
 
-# Byte-compiled / optimized / DLL files
+# byte-compiled / optimized / DLL files
 __pycache__/
 *.pyc
 
 # virtualenv
 taxa_env/
 
-#testing
+# testing
 .cache
 data/
 
-# Distribution / packaging
+# distribution / packaging
 *.egg-info/
+
+# mac stuff
+.DS_Store
