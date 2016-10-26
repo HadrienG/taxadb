@@ -45,8 +45,8 @@ class Sequence(BaseModel):
     taxid = pw.ForeignKeyField(Taxa, to_field='ncbi_taxid')
     accession = pw.CharField(null=False)
     version = pw.IntegerField(null=False)
-    gi = pw.CharField()
-    db_type = pw.CharField(null=False)
+    # gi = pw.CharField()
+    # db_type = pw.CharField(null=False)
 
 
 def create_db(db):
@@ -106,38 +106,36 @@ def parse_taxdump(nodes_file, names_file):
     print('Taxa: completed')
 
 
-def parse_nucl_gss(nucl_gss):
-    """Parse the nucl_gss_accession2taxid file.
+def parse_accession2taxid(acc2taxid):
+    """Parse the accession2taxid files.
 
     Arguments:
-    nucl_gss -- input file (gzipped)
+    acc2taxid -- input file (gzipped)
     """
-    acc_data = list()
-    with gzip.open(nucl_gss, 'rb') as f:
-        f.readline()  # discard the header
-        for line in f:
-            line_list = line.decode().rstrip('\n').split('\t')
-            data_dict = {
-                'accession': line_list[0],
-                'version': line_list[1].split('.')[1],
-                'taxid': line_list[2],
-                'gi': line_list[3],
-                'db_type': 'gss'
-            }
-            acc_data.append(data_dict)
-    print(len(acc_data))
-
-    # insert in database
     with db.atomic():
-        for i in range(0, len(acc_data), 500):
-            Sequence.insert_many(acc_data[i:i+500]).execute()
-            print('%s records added' % (i))
+        with gzip.open(acc2taxid, 'rb') as f:
+            f.readline()  # discard the header
+            for line in f:
+                line_list = line.decode().rstrip('\n').split('\t')
+                data_dict = {
+                    'accession': line_list[0],
+                    'version': line_list[1].split('.')[1],
+                    'taxid': line_list[2]
+                    # 'gi': line_list[3],
+                    # 'db_type': 'gss'
+                }
+                Sequence.create(**data_dict)
+    print('%s added to database' % (acc2taxid))
 
 
 def main():
     create_db(db)
     parse_taxdump('nodes.dmp', 'names.dmp')
-    parse_nucl_gss('nucl_gss.accession2taxid.gz')
+    parse_accession2taxid('nucl_est.accession2taxid.gz')
+    parse_accession2taxid('nucl_gb.accession2taxid.gz')
+    parse_accession2taxid('nucl_gss.accession2taxid.gz')
+    parse_accession2taxid('nucl_wgs.accession2taxid.gz')
+    parse_accession2taxid('prot.accession2taxid.gz')
 
 
 if __name__ == '__main__':
