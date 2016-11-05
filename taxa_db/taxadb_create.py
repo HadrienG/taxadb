@@ -117,6 +117,7 @@ def parse_accession2taxid(acc2taxid):
             f.readline()  # discard the header
             for line in f:
                 line_list = line.decode().rstrip('\n').split('\t')
+                print(line_list)
                 data_dict = {
                     'accession': line_list[0],
                     'version': line_list[1].split('.')[1],
@@ -131,10 +132,10 @@ def parse_accession2taxid(acc2taxid):
 def main():
     create_db(db)
     parse_taxdump('nodes.dmp', 'names.dmp')
-    parse_accession2taxid('nucl_est.accession2taxid.gz')
-    parse_accession2taxid('nucl_gb.accession2taxid.gz')
-    parse_accession2taxid('nucl_gss.accession2taxid.gz')
-    parse_accession2taxid('nucl_wgs.accession2taxid.gz')
+    # parse_accession2taxid('nucl_est.accession2taxid.gz')
+    # parse_accession2taxid('nucl_gb.accession2taxid.gz')
+    # parse_accession2taxid('nucl_gss.accession2taxid.gz')
+    # parse_accession2taxid('nucl_wgs.accession2taxid.gz')
     parse_accession2taxid('prot.accession2taxid.gz')
 
 
