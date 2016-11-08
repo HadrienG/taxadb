@@ -119,10 +119,7 @@ def parse_accession2taxid(acc2taxid):
                 line_list = line.decode().rstrip('\n').split('\t')
                 data_dict = {
                     'accession': line_list[0],
-                    # 'version': line_list[1].split('.')[1],
                     'taxid': line_list[2]
-                    # 'gi': line_list[3],
-                    # 'db_type': 'gss'
                 }
                 Sequence.create(**data_dict)
     print('%s added to database' % (acc2taxid))
