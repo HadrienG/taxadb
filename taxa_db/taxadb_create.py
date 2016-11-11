@@ -44,7 +44,7 @@ class Sequence(BaseModel):
     primary = pw.PrimaryKeyField()
     taxid = pw.ForeignKeyField(Taxa, to_field='ncbi_taxid')
     accession = pw.CharField(null=False)
-    version = pw.IntegerField(null=False)
+    # version = pw.IntegerField(null=False)
     # gi = pw.CharField()
     # db_type = pw.CharField(null=False)
 
@@ -120,10 +120,7 @@ def parse_accession2taxid(acc2taxid):
                 print(line_list)
                 data_dict = {
                     'accession': line_list[0],
-                    'version': line_list[1].split('.')[1],
                     'taxid': line_list[2]
-                    # 'gi': line_list[3],
-                    # 'db_type': 'gss'
                 }
                 Sequence.create(**data_dict)
     print('%s added to database' % (acc2taxid))
