@@ -21,9 +21,9 @@ setup(
     license='GPL3',
     packages=find_packages(exclude=['tests']),
 
-    install_requires=['ftputil', 'peewee', 'nose'],
+    install_requires=['ftputil', 'peewee==2.8.1', 'nose'],
 
     entry_points={
-        'console_scripts': ['taxadb = taxadb.app:main']
+        'console_scripts': ['taxadb = taxadb.app:main'],
     }
-      )
+)

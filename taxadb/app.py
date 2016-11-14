@@ -205,29 +205,50 @@ def create_db(args):
 
 
 def main():
-    parser = argparse.ArgumentParser(prog='taxadb')
-    subparsers = parser.add_subparsers(help='sub-command help')
+    parser = argparse.ArgumentParser(
+        prog='taxadb',
+        usage='taxadb <command> [options]',
+        description='download and create the database used by the taxadb \
+        library'
+    )
+    subparsers = parser.add_subparsers(
+        title='available commands',
+        metavar=''
+    )
 
-    parser_download = subparsers.add_parser('download', help='download files')
+    parser_download = subparsers.add_parser(
+        'download',
+        prog='taxadb download',
+        description='download the files required to create the database',
+        help='download the files required to create the database'
+    )
     parser_download.add_argument(
         '--outdir',
         '-o',
-        metavar='dir',
-        help='Output Directory'
+        metavar='<dir>',
+        help='Output Directory',
+        required=True
     )
     parser_download.set_defaults(func=download)
 
-    parser_create = subparsers.add_parser('create', help='create database')
+    parser_create = subparsers.add_parser(
+        'create',
+        prog='taxadb create',
+        description='build the database',
+        help='build the database'
+    )
     parser_create.add_argument(
         '--input',
         '-i',
-        metavar='dir',
-        help='Input directory (where you downloaded the files)'
+        metavar='<dir>',
+        help='Input directory (where you first downloaded the files)',
+        required=True
     )
     parser_create.add_argument(
         '--dbname',
         '-d',
         default='taxadb',
+        metavar='taxadb',
         help='name of the database (default: %(default)s))'
     )
     parser_create.add_argument(
@@ -235,6 +256,7 @@ def main():
         '-t',
         choices=['sqlite'],
         default='sqlite',
+        metavar='sqlite',
         help='type of the database (default: %(default)s))'
     )
     parser_create.set_defaults(func=create_db)
@@ -244,9 +266,5 @@ def main():
     try:
         args.func(args)
     except Exception as e:
-        print(e)  # for debugging purposes
+        # print(e)  # for debugging purposes
         parser.print_help()
-
-
-if __name__ == '__main__':
-    main()
