@@ -1,3 +1,4 @@
 ftputil
 peewee==2.8.1
+PyMySQL
 nose

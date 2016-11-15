@@ -11,7 +11,7 @@ import hashlib
 import argparse
 
 
-db = pw.SqliteDatabase(None)
+db = pw.Proxy()
 
 
 class BaseModel(pw.Model):
@@ -191,7 +191,18 @@ def create_db(args):
     args.dbtype -- type of database to be used. Currently only sqlite is
         supported
     """
-    db.init('%s.sqlite' % (args.dbname))
+    if args.dbtype == 'sqlite':
+        database = pw.SqliteDatabase('%s.sqlite' % (args.dbname))
+    elif args.dbtype == 'mysql':
+        if args.username is None or args.password is None:
+            print('--dbtype mysql requires --username and --password.\n')
+        database = pw.MySQLDatabase(
+            args.dbname,
+            user=args.username,
+            password=args.password
+            )
+    db.initialize(database)
+
     db.connect()
     db.create_table(Taxa)
     db.create_table(Sequence)
@@ -254,10 +265,20 @@ def main():
     parser_create.add_argument(
         '--dbtype',
         '-t',
-        choices=['sqlite'],
+        choices=['sqlite', 'mysql'],
         default='sqlite',
-        metavar='sqlite',
+        metavar='[sqlite|mysql]',
         help='type of the database (default: %(default)s))'
+    )
+    parser_create.add_argument(
+        '--username',
+        '-u',
+        help='Username to login as (required for MySQLdatabase)'
+    )
+    parser_create.add_argument(
+        '--password',
+        '-p',
+        help='Password to use (required for MySQLdatabase)'
     )
     parser_create.set_defaults(func=create_db)
 
@@ -266,5 +287,5 @@ def main():
     try:
         args.func(args)
     except Exception as e:
-        # print(e)  # for debugging purposes
         parser.print_help()
+        print('\n%s' % e)  # for debugging purposes

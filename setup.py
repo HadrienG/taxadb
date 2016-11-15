@@ -18,10 +18,10 @@ setup(
     author='Hadrien Gourlé, Juliette Hayer',
     author_email='hadrien.gourle@slu.se, juliette.hayer@slu.se',
 
-    license='GPL3',
+    license='MIT',
     packages=find_packages(exclude=['tests']),
 
-    install_requires=['ftputil', 'peewee==2.8.1', 'nose'],
+    install_requires=['ftputil', 'peewee==2.8.1', 'PyMySQL', 'nose'],
 
     entry_points={
         'console_scripts': ['taxadb = taxadb.app:main'],
