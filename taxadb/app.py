@@ -31,7 +31,7 @@ class Taxa(BaseModel):
     """
     primary = pw.PrimaryKeyField()
     ncbi_taxid = pw.IntegerField(null=False)
-    parent_taxid = pw.ForeignKeyField(rel_model=pw.Model)
+    parent_taxid = pw.IntegerField(null=False)
     tax_name = pw.CharField()
     lineage_level = pw.CharField()
 
@@ -45,7 +45,7 @@ class Sequence(BaseModel):
     accession -- the accession number of the sequence.
     """
     primary = pw.PrimaryKeyField()
-    taxid = pw.ForeignKeyField(Taxa, to_field='ncbi_taxid')
+    taxid = pw.ForeignKeyField(Taxa, related_name='sequences')
     accession = pw.CharField(null=False)
 
 
