@@ -4,7 +4,7 @@
 [![PyPI](https://img.shields.io/badge/python-3.5-blue.svg)]()
 <!-- [![PyPI](https://img.shields.io/badge/license-GPLv3-blue.svg)]() -->
 
-Taxadb is a application to locally query the ncbi taxonomy. Taxadb is written in python, and access its database using the [peewee](http://peewee.readthedocs.io) library. Both Sqlite and MySQL are supported.
+Taxadb is a application to locally query the ncbi taxonomy. Taxadb is written in python, and access its database using the [peewee](http://peewee.readthedocs.io) library.
 
 Taxadb is very much a work in progress, the following are still not implemented:  
 - [x] taxadb download: download all the required files from the ncbi ftp  
@@ -45,6 +45,8 @@ You can then safely remove the downloaded files
     rm -r taxadb
 
 #### MySQL
+
+*Due to a problem with Foreign Keys, MySQL support has been put on hold for the time being*
 
 Creating databases is a very vendor specific task. Peewee, as most ORMs, can create tables but not databases.
 In order to use taxadb with MySQL, you'll have to create the database yourself.
