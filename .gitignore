@@ -7,6 +7,8 @@ readme.txt
 
 # db
 *.sqlite
+*.sqlite.gz
+*.sqlite-journal
 
 # byte-compiled / optimized / DLL files
 __pycache__/

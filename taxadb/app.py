@@ -71,6 +71,9 @@ def create_db(args):
     args.dbname -- name of the database to be created
     args.dbtype -- type of database to be used. Currently only sqlite is
         supported
+    args.division -- division to create the db for. Full will build all the
+        tables, prot will only build the prot table, nucl will build gb, wgs,
+        gss and est
     """
     if args.dbtype == 'sqlite':
         database = pw.SqliteDatabase('%s.sqlite' % (args.dbname))
@@ -82,15 +85,33 @@ def create_db(args):
             user=args.username,
             password=args.password
             )
+    div = args.division  # am lazy at typing
     db.initialize(database)
+
+    nucl_est = 'nucl_est.accession2taxid.gz'
+    nucl_gb = 'nucl_gb.accession2taxid.gz'
+    nucl_gss = 'nucl_gss.accession2taxid.gz'
+    nucl_wgs = 'nucl_wgs.accession2taxid.gz'
+    prot = 'prot.accession2taxid.gz'
+    acc_dl_dict = {}
 
     db.connect()
     db.create_table(Taxa)
-    db.create_table(Est)
-    db.create_table(Gb)
-    db.create_table(Gss)
-    db.create_table(Wgs)
-    db.create_table(Prot)
+    if div in ['full', 'nucl', 'est']:
+        db.create_table(Est)
+        acc_dl_dict[Est] = nucl_est
+    if div in ['full', 'nucl', 'gb']:
+        db.create_table(Gb)
+        acc_dl_dict[Gb] = nucl_gb
+    if div in ['full', 'nucl', 'gss']:
+        db.create_table(Gss)
+        acc_dl_dict[Gss] = nucl_gss
+    if div in ['full', 'nucl', 'wgs']:
+        db.create_table(Wgs)
+        acc_dl_dict[Wgs] = nucl_wgs
+    if div in ['full', 'prot']:
+        db.create_table(Prot)
+        acc_dl_dict[Prot] = prot
     taxa_info_list = parse.taxdump(
         args.input + '/nodes.dmp',
         args.input + '/names.dmp'
@@ -100,18 +121,6 @@ def create_db(args):
         for i in range(0, len(taxa_info_list), 500):
             Taxa.insert_many(taxa_info_list[i:i+500]).execute()
     print('Taxa: completed')
-
-    nucl_est = 'nucl_est.accession2taxid.gz'
-    nucl_gb = 'nucl_gb.accession2taxid.gz'
-    nucl_gss = 'nucl_gss.accession2taxid.gz'
-    nucl_wgs = 'nucl_wgs.accession2taxid.gz'
-    prot = 'prot.accession2taxid.gz'
-    acc_dl_dict = {
-        Est: nucl_est,
-        Gb: nucl_gb,
-        Gss: nucl_gss,
-        Wgs: nucl_wgs,
-        Prot: prot}
 
     with db.atomic():
         for table, acc_file in acc_dl_dict.items():
@@ -169,7 +178,7 @@ def main():
     )
     parser_create.add_argument(
         '--dbname',
-        '-d',
+        '-n',
         default='taxadb',
         metavar='taxadb',
         help='name of the database (default: %(default)s))'
@@ -181,6 +190,14 @@ def main():
         default='sqlite',
         metavar='[sqlite|mysql]',
         help='type of the database (default: %(default)s))'
+    )
+    parser_create.add_argument(
+        '--division',
+        '-d',
+        choices=['full', 'nucl', 'prot', 'gb', 'wgs', 'gss', 'est'],
+        default='full',
+        metavar='[full|nucl|prot|gb|wgs|gss|est]',
+        help='division to build (default: %(default)s))'
     )
     parser_create.add_argument(
         '--username',
