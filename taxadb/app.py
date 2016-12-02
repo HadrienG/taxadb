@@ -11,6 +11,7 @@ import argparse
 
 from taxadb import util
 from taxadb import parse
+from taxadb import accession
 
 from taxadb.schema import *
 
@@ -85,7 +86,11 @@ def create_db(args):
 
     db.connect()
     db.create_table(Taxa)
-    db.create_table(Sequence)
+    db.create_table(Est)
+    db.create_table(Gb)
+    db.create_table(Gss)
+    db.create_table(Wgs)
+    db.create_table(Prot)
     taxa_info_list = parse.taxdump(
         args.input + '/nodes.dmp',
         args.input + '/names.dmp'
@@ -101,16 +106,25 @@ def create_db(args):
     nucl_gss = 'nucl_gss.accession2taxid.gz'
     nucl_wgs = 'nucl_wgs.accession2taxid.gz'
     prot = 'prot.accession2taxid.gz'
-    acc_dl_list = [nucl_est, nucl_gb, nucl_gss, nucl_wgs, prot]
+    acc_dl_dict = {
+        Est: nucl_est,
+        Gb: nucl_gb,
+        Gss: nucl_gss,
+        Wgs: nucl_wgs,
+        Prot: prot}
 
     with db.atomic():
-        for acc_file in acc_dl_list:
+        for table, acc_file in acc_dl_dict.items():
             for data_dict in parse.accession2taxid(
                     args.input + '/' + acc_file):
-                Sequence.create(**data_dict)
-            print('Sequence: %s added to database' % (acc_file))
+                table.create(**data_dict)
+            print('%s: %s added to database' % (table, acc_file))
     print('Sequence: completed')
     db.close()
+
+
+def query():
+    pass
 
 
 def main():
@@ -187,3 +201,6 @@ def main():
     except Exception as e:
         parser.print_help()
         print('\n%s' % e)  # for debugging purposes
+
+    # acc = accession.taxid('NP_001333667', 'taxadb.sqlite', Prot)
+    # print(acc.accession, acc.taxid)
