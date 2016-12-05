@@ -4,7 +4,7 @@
 import hashlib
 
 
-def _md5_check(file, block_size=256*128):
+def md5_check(file, block_size=256*128):
     """Check the md5 of large files
 
     Arguments:
