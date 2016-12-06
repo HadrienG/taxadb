@@ -11,7 +11,9 @@ import argparse
 
 from taxadb import util
 from taxadb import parse
+
 from taxadb import accession
+from taxadb import taxid
 
 from taxadb.schema import *
 
@@ -133,13 +135,13 @@ def create_db(args):
 
 
 def query(args):
-    acc = accession.lineage_id(
-        ['KS448341', 'KS448343', 'KS448342', 'T02642'],
-        'test_gss.sqlite',
-        Gss
+    acc = taxid.lineage_name(
+        7463,
+        'test_gss.sqlite'
         )
-    for i in acc:
-        print(i)
+    print(acc)
+    # for i in acc:
+    #     print(i)
 
 
 def main():
