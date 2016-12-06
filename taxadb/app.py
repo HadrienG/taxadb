@@ -132,8 +132,11 @@ def create_db(args):
     db.close()
 
 
-def query():
-    pass
+def query(args):
+    acc = accession.taxid(['KS448341', 'KS448343', 'KS448342', 'T02642'], 'test_gss.sqlite', Gss)
+    print('executing: %s' % acc)
+    for i in acc:
+        print(i.accession, i.taxid.ncbi_taxid)
 
 
 def main():
@@ -211,6 +214,14 @@ def main():
     )
     parser_create.set_defaults(func=create_db)
 
+    parser_query = subparsers.add_parser(
+        'query',
+        prog='taxadb query',
+        description='query the database',
+        help='query the database'
+    )
+    parser_query.set_defaults(func=query)
+
     args = parser.parse_args()
 
     try:
@@ -218,6 +229,3 @@ def main():
     except Exception as e:
         parser.print_help()
         print('\n%s' % e)  # for debugging purposes
-
-    # acc = accession.taxid('NP_001333667', 'taxadb.sqlite', Prot)
-    # print(acc.accession, acc.taxid)

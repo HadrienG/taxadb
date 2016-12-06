@@ -33,9 +33,9 @@ The databases used by Taxadb are lengthy to build, therefore we provide pre-buil
 | full | 21G | 4.4G | [link](http://139.162.178.46/files/taxadb/taxadb_full.sqlite.gz)
 | nucl | 14G | 2.9G | [link](http://139.162.178.46/files/taxadb/taxadb_nucl.sqlite.gz)
 | prot | 7.1G | 1.6G | [link](http://139.162.178.46/files/taxadb/taxadb_prot.sqlite.gz)
-| gb | ? | ? | In construction
-| wgs | ? | ? | In construction
-| gss | ? | ? | In construction
+| gb | 2.5G | 576M | [link](http://139.162.178.46/files/taxadb/taxadb_gb.sqlite.gz)
+| wgs | 8.5G | 1.9G | [link](http://139.162.178.46/files/taxadb/taxadb_wgs.sqlite.gz)
+| gss | 880M | 172M | [link](http://139.162.178.46/files/taxadb/taxadb_gss.sqlite.gz)
 | est | 1.6G | 320M | [link](http://139.162.178.46/files/taxadb/taxadb_est.sqlite.gz)
 
 Build date: December 2016
