@@ -44,7 +44,38 @@ Build date: December 2016
 
 ### Querying the Database
 
-Coming soon!
+Firstly, make sure you have [downloaded](#available-databases) or [built](#creating-the-database) the database
+
+Below you can find basic examples. For more complete examples, please refer to the complete documentation (Available soon!)
+
+```python
+    >>> from taxadb import taxid
+
+    >>> name = taxid.sci_name(33208, 'mydb.sqlite')
+    >>> print(name)
+    Metazoa
+
+    >>> lineage = taxid.lineage_name(33208, 'mydb.sqlite')
+    >>> print(lineage)
+    ['Metazoa', 'Opisthokonta', 'Eukaryota', 'cellular organisms']
+```
+
+To get the taxonomic information for accession numbers, you need to know from which ncbi division it originated. Example with accession numbers from the gb division:
+
+```python
+    >>> from taxadb.schema import *
+    >>> from taxadb import accession
+
+    >>> my_accessions = ['X17276', 'Z12029']
+    >>> taxids = accession.taxid(my_accessions, 'mydb.sqlite', Gb)
+    >>> taxids
+    <generator object taxid at 0x1051b0830>
+
+    >>> for tax in taxids:
+        print(tax)
+    ('X17276', 9646)
+    ('Z12029', 9915)
+```
 
 ### Creating the Database
 
