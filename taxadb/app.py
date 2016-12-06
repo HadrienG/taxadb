@@ -133,10 +133,13 @@ def create_db(args):
 
 
 def query(args):
-    acc = accession.taxid(['KS448341', 'KS448343', 'KS448342', 'T02642'], 'test_gss.sqlite', Gss)
-    print('executing: %s' % acc)
+    acc = accession.lineage_id(
+        ['KS448341', 'KS448343', 'KS448342', 'T02642'],
+        'test_gss.sqlite',
+        Gss
+        )
     for i in acc:
-        print(i.accession, i.taxid.ncbi_taxid)
+        print(i)
 
 
 def main():
