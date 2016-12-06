@@ -10,6 +10,9 @@ readme.txt
 *.sqlite.gz
 *.sqlite-journal
 
+# include the test database
+!test_db.sqlite
+
 # byte-compiled / optimized / DLL files
 __pycache__/
 *.pyc

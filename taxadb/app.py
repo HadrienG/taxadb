@@ -135,13 +135,7 @@ def create_db(args):
 
 
 def query(args):
-    acc = taxid.lineage_name(
-        7463,
-        'test_gss.sqlite'
-        )
-    print(acc)
-    # for i in acc:
-    #     print(i)
+    print('This has not been implemented yet. Sorry :-(')
 
 
 def main():
