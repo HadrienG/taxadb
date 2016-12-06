@@ -14,13 +14,9 @@ Taxadb is very much a work in progress, the following are still not implemented:
 
 ## Installation
 
-Taxadb requires python 3.5 to work. To install, type the following in your terminal:
+Taxadb requires python 3.5 to work. To install, simply type the following in your terminal:
 
-    pip install git+https://github.com/HadrienG/taxadb.git
-
-or if you have different python versions installed (i.e using Homebrew)
-
-    pip3 install git+https://github.com/HadrienG/taxadb.git
+    pip install taxadb
 
 ### Available databases
 

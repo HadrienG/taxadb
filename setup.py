@@ -3,18 +3,15 @@
 
 from setuptools import setup, find_packages
 
-with open('README.md') as f:
-    readme = f.read()
-
 setup(
     name='taxadb',
-    version='a2',
+    version='0.4a',
 
 
-    description='taxadb',
-    long_descirption=readme,
+    description='locally query the ncbi taxonomy',
 
-    url='https://github.com/HadrienG/taxa_db',
+    url='https://github.com/HadrienG/taxadb',
+    download_url='https://github.com/HadrienG/taxadb/tarball/0.3a',
     author='Hadrien Gourlé, Juliette Hayer',
     author_email='hadrien.gourle@slu.se, juliette.hayer@slu.se',
 
