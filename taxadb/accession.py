@@ -5,8 +5,14 @@ from taxadb.schema import *
 
 
 def taxid(acc_number_list, db_name, table):
-    """given a list of acession numbers, returns their associated
-    taxids"""
+    """given a list of acession numbers, yield
+    the accession number and their associated taxids as tuples
+
+    Arguments:
+    acc_number_list -- a list of accession numbers
+    db_name -- the path to the database to query
+    table -- the table containing the accession numbers
+    """
     database = pw.SqliteDatabase(db_name)
     db.initialize(database)
     db.connect()
@@ -19,8 +25,14 @@ def taxid(acc_number_list, db_name, table):
 
 
 def sci_name(acc_number_list, db_name, table):
-    """given a list of acession numbers, returns their associated
-    scientific names"""
+    """given a list of acession numbers, yield
+    the accession number and their associated scientific name as tuples
+
+    Arguments:
+    acc_number_list -- a list of accession numbers
+    db_name -- the path to the database to query
+    table -- the table containing the accession numbers
+    """
     database = pw.SqliteDatabase(db_name)
     db.initialize(database)
     db.connect()
@@ -33,8 +45,14 @@ def sci_name(acc_number_list, db_name, table):
 
 
 def lineage_id(acc_number_list, db_name, table):
-    """given a list of acession numbers, returns their associated
-    lineage taxids as a list"""
+    """given a list of acession numbers, yield the accession number and their
+    associated lineage (in the form of taxids) as tuples
+
+    Arguments:
+    acc_number_list -- a list of accession numbers
+    db_name -- the path to the database to query
+    table -- the table containing the accession numbers
+    """
     database = pw.SqliteDatabase(db_name)
     db.initialize(database)
     db.connect()
@@ -57,8 +75,14 @@ def lineage_id(acc_number_list, db_name, table):
 
 
 def lineage_name(acc_number_list, db_name, table):
-    """given a list of acession numbers, returns their associated
-    lineage taxids as a list"""
+    """given a list of acession numbers, yield the accession number and their
+    associated lineage as tuples
+
+    Arguments:
+    acc_number_list -- a list of accession numbers
+    db_name -- the path to the database to query
+    table -- the table containing the accession numbers
+    """
     database = pw.SqliteDatabase(db_name)
     db.initialize(database)
     db.connect()

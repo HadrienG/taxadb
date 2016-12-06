@@ -5,6 +5,12 @@ from taxadb.schema import *
 
 
 def sci_name(taxid, db_name):
+    """given a taxid, return its associated scientific name
+
+    Arguments:
+    taxid -- a taxid (int)
+    db_name -- the path to the database to query
+    """
     database = pw.SqliteDatabase(db_name)
     db.initialize(database)
     db.connect()
@@ -14,6 +20,13 @@ def sci_name(taxid, db_name):
 
 
 def lineage_id(taxid, db_name):
+    """given a taxid, return its associated lineage (in the form of a list
+    of taxids, each parents of each others)
+
+    Arguments:
+    taxid -- a taxid (int)
+    db_name -- the path to the database to query
+    """
     database = pw.SqliteDatabase(db_name)
     db.initialize(database)
     db.connect()
@@ -33,6 +46,12 @@ def lineage_id(taxid, db_name):
 
 
 def lineage_name(taxid, db_name):
+    """given a taxid, return its associated lineage
+
+    Arguments:
+    taxid -- a taxid (int)
+    db_name -- the path to the database to query
+    """
     database = pw.SqliteDatabase(db_name)
     db.initialize(database)
     db.connect()
