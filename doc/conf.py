@@ -53,8 +53,8 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'taxadb'
-copyright = '2016, Hadrien Gourlé, Juliette Hayer'
-author = 'Hadrien Gourlé, Juliette Hayer'
+copyright = '2016, Hadrien Gourle, Juliette Hayer'
+author = 'Hadrien Gourle, Juliette Hayer'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -134,7 +134,7 @@ latex_elements = {
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
     (master_doc, 'taxadb.tex', 'taxadb Documentation',
-     'Hadrien Gourlé, Juliette hayer', 'manual'),
+     'Hadrien Gourle, Juliette hayer', 'manual'),
 ]
 
 
