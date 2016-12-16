@@ -103,7 +103,19 @@ def create_db(args):
     acc_dl_dict = {}
 
     db.connect()
-    db.create_table(Taxa)
+
+    # If taxa table already exists, do not recreate and fill it
+    if not Taxa.table_exists():
+        db.create_table(Taxa)
+        taxa_info_list = parse.taxdump(
+            args.input + '/nodes.dmp',
+            args.input + '/names.dmp'
+        )
+        with db.atomic():
+            for i in range(0, len(taxa_info_list), args.chunk):
+                Taxa.insert_many(taxa_info_list[i:i+args.chunk]).execute()
+        print('Taxa: completed')
+
     if div in ['full', 'nucl', 'est']:
         db.create_table(Est)
         acc_dl_dict[Est] = nucl_est
@@ -119,29 +131,19 @@ def create_db(args):
     if div in ['full', 'prot']:
         db.create_table(Prot)
         acc_dl_dict[Prot] = prot
-    taxa_info_list = parse.taxdump(
-        args.input + '/nodes.dmp',
-        args.input + '/names.dmp'
-    )
-    # insert in database
-    with db.atomic():
-        for i in range(0, len(taxa_info_list), args.chunk):
-            Taxa.insert_many(taxa_info_list[i:i+args.chunk]).execute()
-    print('Taxa: completed')
 
     with db.atomic():
         for table, acc_file in acc_dl_dict.items():
             # for data_dict in parse.accession2taxid(
             #                         args.input + '/' + acc_file):
             #     table.create(**data_dict)
-            for table, acc_file in acc_dl_dict.items():
-                for data_dict in parse.accession2taxidyield(
-                                        args.input + '/' + acc_file, args.chunk):
+            print('%s: parsing %s' % (table._meta.db_table, acc_file))
+            for data_dict in parse.accession2taxidyield(args.input + '/' + acc_file, args.chunk):
                     table.insert_many(data_dict[0:args.chunk]).execute()
-            print('%s: %s added to database' % (table, acc_file))
-            print('Creating index for field accession ... ', end="")
+            print('%s: %s added to database' % (table._meta.db_table, acc_file))
+            print('%s: creating index for field accession ... ' % table._meta.db_table, end="")
             db.create_index(table, ['accession'], unique=True)
-            print('created.')
+            print('ok.')
     print('Sequence: completed')
     db.close()
 
@@ -188,7 +190,7 @@ def main():
         '-c',
         metavar='<#chunk>',
         type=int,
-        help='Number of sequences to insert in bulk',
+        help='Number of sequences to insert in bulk (default: %(default)s)',
         default=500
     )
     parser_create.add_argument(
