@@ -130,6 +130,9 @@ def create_db(args):
                     args.input + '/' + acc_file):
                 table.create(**data_dict)
             print('%s: %s added to database' % (table, acc_file))
+            print('Creating index for field accession ... ', end="")
+            db.create_index(table, ['accession'], unique=True)
+            print('created.')
     print('Sequence: completed')
     db.close()
 
