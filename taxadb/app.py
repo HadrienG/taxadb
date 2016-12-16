@@ -4,16 +4,12 @@
 import peewee as pw
 
 import os
-import gzip
 import tarfile
 import ftputil
 import argparse
 
 from taxadb import util
 from taxadb import parse
-
-from taxadb import accession
-from taxadb import taxid
 
 from taxadb.schema import *
 
@@ -87,6 +83,15 @@ def create_db(args):
             user=args.username,
             password=args.password
             )
+    elif args.dbtype == 'postgres':
+        if args.username is None or args.password is None:
+            print('--dbtype postgres requires --username and --password.\n')
+        database = pw.PostgresqlDatabase(
+            args.dbname,
+            user=args.username,
+            password=args.password
+            )
+
     div = args.division  # am lazy at typing
     db.initialize(database)
 
@@ -120,15 +125,19 @@ def create_db(args):
     )
     # insert in database
     with db.atomic():
-        for i in range(0, len(taxa_info_list), 500):
-            Taxa.insert_many(taxa_info_list[i:i+500]).execute()
+        for i in range(0, len(taxa_info_list), args.chunk):
+            Taxa.insert_many(taxa_info_list[i:i+args.chunk]).execute()
     print('Taxa: completed')
 
     with db.atomic():
         for table, acc_file in acc_dl_dict.items():
-            for data_dict in parse.accession2taxid(
-                    args.input + '/' + acc_file):
-                table.create(**data_dict)
+            # for data_dict in parse.accession2taxid(
+            #                         args.input + '/' + acc_file):
+            #     table.create(**data_dict)
+            for table, acc_file in acc_dl_dict.items():
+                for data_dict in parse.accession2taxidyield(
+                                        args.input + '/' + acc_file, args.chunk):
+                    table.insert_many(data_dict[0:args.chunk]).execute()
             print('%s: %s added to database' % (table, acc_file))
             print('Creating index for field accession ... ', end="")
             db.create_index(table, ['accession'], unique=True)
@@ -175,6 +184,14 @@ def main():
         help='build the database'
     )
     parser_create.add_argument(
+        '--chunk',
+        '-c',
+        metavar='<#chunk>',
+        type=int,
+        help='Number of sequences to insert in bulk',
+        default=500
+    )
+    parser_create.add_argument(
         '--input',
         '-i',
         metavar='<dir>',
@@ -191,9 +208,9 @@ def main():
     parser_create.add_argument(
         '--dbtype',
         '-t',
-        choices=['sqlite', 'mysql'],
+        choices=['sqlite', 'mysql', 'postgres'],
         default='sqlite',
-        metavar='[sqlite|mysql]',
+        metavar='[sqlite|mysql|postgres]',
         help='type of the database (default: %(default)s))'
     )
     parser_create.add_argument(
@@ -207,12 +224,12 @@ def main():
     parser_create.add_argument(
         '--username',
         '-u',
-        help='Username to login as (required for MySQLdatabase)'
+        help='Username to login as (required for MySQLdatabase and PostgreSQLdatabase)'
     )
     parser_create.add_argument(
         '--password',
         '-p',
-        help='Password to use (required for MySQLdatabase)'
+        help='Password to use (required for MySQLdatabase and PostgreSQLdatabase)'
     )
     parser_create.set_defaults(func=create_db)
 
