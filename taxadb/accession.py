@@ -5,7 +5,7 @@ from taxadb.schema import *
 import sys
 
 
-def taxid(acc_number_list, db_name, table):
+def taxid(acc_number_list, db_name, table, **kwargs):
     """given a list of accession numbers, yield
     the accession number and their associated taxids as tuples
 
@@ -15,6 +15,7 @@ def taxid(acc_number_list, db_name, table):
     table -- the table containing the accession numbers
     """
     database = pw.SqliteDatabase(db_name)
+    # database = pw.PostgresqlDatabase(db_name, kwargs)
     db.initialize(database)
     db.connect()
     _check_table_exists(table)
@@ -28,7 +29,7 @@ def taxid(acc_number_list, db_name, table):
     db.close()
 
 
-def sci_name(acc_number_list, db_name, table):
+def sci_name(acc_number_list, db_name, table, **kwargs):
     """given a list of acession numbers, yield
     the accession number and their associated scientific name as tuples
 
@@ -51,7 +52,7 @@ def sci_name(acc_number_list, db_name, table):
     db.close()
 
 
-def lineage_id(acc_number_list, db_name, table):
+def lineage_id(acc_number_list, db_name, table, **kwargs):
     """given a list of acession numbers, yield the accession number and their
     associated lineage (in the form of taxids) as tuples
 
@@ -85,7 +86,7 @@ def lineage_id(acc_number_list, db_name, table):
     db.close()
 
 
-def lineage_name(acc_number_list, db_name, table):
+def lineage_name(acc_number_list, db_name, table, **kwargs):
     """given a list of acession numbers, yield the accession number and their
     associated lineage as tuples
 
