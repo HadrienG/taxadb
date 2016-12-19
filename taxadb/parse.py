@@ -48,25 +48,25 @@ def taxdump(nodes_file, names_file):
     return taxa_info_list
 
 
-def accession2taxid(acc2taxid):
-    """Parse the accession2taxid files. and insert
-    squences in the Sequence table.
+#def accession2taxid(acc2taxid):
+#    """Parse the accession2taxid files. and insert
+#    squences in the Sequence table.
+#
+#    Arguments:
+#    acc2taxid -- input file (gzipped)
+#    """
+#    with gzip.open(acc2taxid, 'rb') as f:
+#        f.readline()  # discard the header
+#        for line in f:
+#            line_list = line.decode().rstrip('\n').split('\t')
+#            data_dict = {
+#                'accession': line_list[0],
+#                'taxid': line_list[2]
+#            }
+#            yield(data_dict)
 
-    Arguments:
-    acc2taxid -- input file (gzipped)
-    """
-    with gzip.open(acc2taxid, 'rb') as f:
-        f.readline()  # discard the header
-        for line in f:
-            line_list = line.decode().rstrip('\n').split('\t')
-            data_dict = {
-                'accession': line_list[0],
-                'taxid': line_list[2]
-            }
-            yield(data_dict)
 
-
-def accession2taxidyield(acc2taxid, chunk):
+def accession2taxid(acc2taxid, chunk):
     """Parses the accession2taxid files and insert sequences in Sequences table(s).
 
     Arguments:
