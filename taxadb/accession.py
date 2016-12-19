@@ -19,12 +19,12 @@ def taxid(acc_number_list, db_name, table):
     db.connect()
     _check_table_exists(table)
     with db.atomic():
-            query = table.select().where(table.accession << acc_number_list)
-            for i in query:
-                try:
-                    yield (i.accession, i.taxid.ncbi_taxid)
-                except Taxa.DoesNotExist:
-                    _unmapped_taxid(i.accession)
+        query = table.select().where(table.accession << acc_number_list)
+        for i in query:
+            try:
+                yield (i.accession, i.taxid.ncbi_taxid)
+            except Taxa.DoesNotExist:
+                _unmapped_taxid(i.accession)
     db.close()
 
 
@@ -125,7 +125,7 @@ def _check_table_exists(table):
     Throws `SystemExit` if table does not exist
     """
     if not table.table_exists():
-        print("Table %s does not exists" % (str(table._meta.db_table)), file=sys.stderr)
+        print("Table %s does not exist" % (str(table._meta.db_table)), file=sys.stderr)
         sys.exit(1)
     return True
 
@@ -144,3 +144,4 @@ def _unmapped_taxid(acc, exit=False):
     if exit:
         sys.exit(1)
     return True
+

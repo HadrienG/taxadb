@@ -131,11 +131,8 @@ def create_db(args):
 
     with db.atomic():
         for table, acc_file in acc_dl_dict.items():
-            # for data_dict in parse.accession2taxid(
-            #                         args.input + '/' + acc_file):
-            #     table.create(**data_dict)
             for table, acc_file in acc_dl_dict.items():
-                for data_dict in parse.accession2taxidyield(
+                for data_dict in parse.accession2taxid(
                                         args.input + '/' + acc_file, args.chunk):
                     table.insert_many(data_dict[0:args.chunk]).execute()
             print('%s: %s added to database' % (table, acc_file))
