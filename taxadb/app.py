@@ -220,12 +220,14 @@ def main():
     parser_create.add_argument(
         '--username',
         '-u',
-        help='Username to login as (required for MySQLdatabase and PostgreSQLdatabase)'
+        help='Username to login as (required for MySQLdatabase and \
+            PostgreSQLdatabase)'
     )
     parser_create.add_argument(
         '--password',
         '-p',
-        help='Password to use (required for MySQLdatabase and PostgreSQLdatabase)'
+        help='Password to use (required for MySQLdatabase and \
+            PostgreSQLdatabase)'
     )
     parser_create.set_defaults(func=create_db)
 

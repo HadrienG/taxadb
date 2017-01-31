@@ -4,6 +4,7 @@
 import gzip
 from taxadb.schema import Taxa
 
+
 def taxdump(nodes_file, names_file):
     """Parse the nodes.dmp and names.dmp files (from taxdump.tgz) and insert
     taxons in the Taxa table.
@@ -48,7 +49,7 @@ def taxdump(nodes_file, names_file):
     return taxa_info_list
 
 
-#def accession2taxid(acc2taxid):
+# def accession2taxid(acc2taxid):
 #    """Parse the accession2taxid files. and insert
 #    squences in the Sequence table.
 #
