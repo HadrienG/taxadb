@@ -131,10 +131,9 @@ def create_db(args):
 
     with db.atomic():
         for table, acc_file in acc_dl_dict.items():
-            for table, acc_file in acc_dl_dict.items():
-                for data_dict in parse.accession2taxid(
-                                        args.input + '/' + acc_file, args.chunk):
-                    table.insert_many(data_dict[0:args.chunk]).execute()
+            for data_dict in parse.accession2taxid(
+                    args.input + '/' + acc_file, args.chunk):
+                table.insert_many(data_dict[0:args.chunk]).execute()
             print('%s: %s added to database' % (table, acc_file))
             print('Creating index for field accession ... ', end="")
             db.create_index(table, ['accession'], unique=True)
