@@ -18,7 +18,7 @@ setup(
     license='MIT',
     packages=find_packages(exclude=['tests']),
 
-    install_requires=['ftputil', 'peewee==2.8.1', 'PyMySQL', 'nose'],
+    install_requires=['ftputil', 'peewee==2.8.1', 'PyMySQL', 'nose', 'psycopg2'],
 
     entry_points={
         'console_scripts': ['taxadb = taxadb.app:main'],
