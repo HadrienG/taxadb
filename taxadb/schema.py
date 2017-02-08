@@ -123,16 +123,16 @@ class DatabaseFactory(object):
         """
         if self.dbtype == 'sqlite':
             return pw.SqliteDatabase(self.dbname)
-        elif self.dbtype == 'mysql':
-            if 'user' not in self.args and 'password' not in self.args:
-                print('--dbtype mysql requires --username and --password.\n', file=sys.stderr)
-                sys.exit(1)
-            return pw.MySQLDatabase(self.dbname, **self.args)
-        elif self.dbtype == 'postgres':
-            if 'user' not in self.args and 'password' not in self.args:
-                print('--dbtype postgres requires --username and --password.\n', file=sys.stderr)
-                sys.exit(1)
-            return pw.PostgresqlDatabase(self.dbname, **self.args)
         else:
-            print("Unsupported dbtype option %s" % self.dbtype)
-            sys.exit(1)
+            if 'username' not in self.args or 'password' not in self.args:
+                print('[ERROR] --dbtype %s requires --username and --password.\n' % str(self.dbtype), file=sys.stderr)
+                sys.exit(1)
+            if self.args['username'] is None or self.args['password'] is None:
+                print('[ERROR] --dbtype %s requires --username and --password.\n' % str(self.dbtype), file=sys.stderr)
+                sys.exit(1)
+            if self.dbtype == 'mysql':
+                return pw.MySQLDatabase(self.dbname, user=self.args['username'], password=self.args['password'],
+                                        host=self.args['hostname'])
+            elif self.dbtype == 'postgres':
+                return pw.PostgresqlDatabase(self.dbname, user=self.args['username'], password=self.args['password'],
+                                             host=self.args['hostname'])
