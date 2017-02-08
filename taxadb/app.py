@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import peewee as pw
-
 import os
 import tarfile
 import ftputil
@@ -73,25 +71,7 @@ def create_db(args):
         tables, prot will only build the prot table, nucl will build gb, wgs,
         gss and est
     """
-    if args.dbtype == 'sqlite':
-        database = pw.SqliteDatabase('%s.sqlite' % (args.dbname))
-    elif args.dbtype == 'mysql':
-        if args.username is None or args.password is None:
-            print('--dbtype mysql requires --username and --password.\n')
-        database = pw.MySQLDatabase(
-            args.dbname,
-            user=args.username,
-            password=args.password
-            )
-    elif args.dbtype == 'postgres':
-        if args.username is None or args.password is None:
-            print('--dbtype postgres requires --username and --password.\n')
-        database = pw.PostgresqlDatabase(
-            args.dbname,
-            user=args.username,
-            password=args.password
-            )
-
+    database = DatabaseFactory(**args.__dict__).get_database()
     div = args.division  # am lazy at typing
     db.initialize(database)
 
@@ -134,9 +114,11 @@ def create_db(args):
 
     with db.atomic():
         for table, acc_file in acc_dl_dict.items():
+            inserted_rows = 0
             for data_dict in parse.accession2taxid(args.input + '/' + acc_file, args.chunk):
                     table.insert_many(data_dict[0:args.chunk]).execute()
-            print('%s: %s added to database' % (table._meta.db_table, acc_file))
+                    inserted_rows += len(data_dict)
+            print('%s: %s added to database (%d rows inserted)' % (table._meta.db_table, acc_file, inserted_rows))
             print('%s: creating index for field accession ... ' % table._meta.db_table, end="")
             db.create_index(table, ['accession'], unique=True)
             print('ok.')
@@ -220,14 +202,28 @@ def main():
         help='division to build (default: %(default)s))'
     )
     parser_create.add_argument(
-        '--username',
-        '-u',
-        help='Username to login as (required for MySQLdatabase and PostgreSQLdatabase)'
+        '--hostname',
+        '-H',
+        default='localhost',
+        action="store",
+        help='Database connection host (Optional, for MySQLdatabase and PostgreSQLdatabase) (default: %(default)s)'
     )
     parser_create.add_argument(
         '--password',
         '-p',
+        default=None,
         help='Password to use (required for MySQLdatabase and PostgreSQLdatabase)'
+    )
+    parser_create.add_argument(
+        '--port',
+        '-P',
+        help='Database connection port (default: 5432 (postgres), 3306 (MySQL))'
+    )
+    parser_create.add_argument(
+        '--username',
+        '-u',
+        default=None,
+        help='Username to login as (required for MySQLdatabase and PostgreSQLdatabase)'
     )
     parser_create.set_defaults(func=create_db)
 
@@ -245,4 +241,4 @@ def main():
         args.func(args)
     except Exception as e:
         parser.print_help()
-        print('\n%s' % e)  # for debugging purposes
+        print('\nERROR: %s' % str(e))  # for debugging purposes
