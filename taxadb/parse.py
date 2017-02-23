@@ -4,6 +4,7 @@
 import gzip
 from taxadb.schema import Taxa
 
+
 def taxdump(nodes_file, names_file):
     """Parse the nodes.dmp and names.dmp files (from taxdump.tgz) and insert
     taxons in the Taxa table.
