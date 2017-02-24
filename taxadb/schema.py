@@ -27,8 +27,8 @@ class Taxa(BaseModel):
     lineage_level = pw.CharField()
 
 
-class Est(BaseModel):
-    """table Est. Each row is a sequence from nucl_est. Each sequence has a taxid.
+class Accession(BaseModel):
+    """table Accession. Each row is a sequence from nucl_*.accession2taxid.gz. Each sequence has a taxid.
 
     Fields:
     primary -- the primary key
@@ -36,59 +36,7 @@ class Est(BaseModel):
     accession -- the accession number of the sequence.
     """
     primary = pw.PrimaryKeyField()
-    taxid = pw.ForeignKeyField(Taxa, related_name='est')
-    accession = pw.CharField(null=False, index=True)
-
-
-class Gb(BaseModel):
-    """table Gb. Each row is a sequence from nucl_gb. Each sequence has a taxid.
-
-    Fields:
-    primary -- the primary key
-    taxid -- reference to a taxon in the table Taxa.
-    accession -- the accession number of the sequence.
-    """
-    primary = pw.PrimaryKeyField()
-    taxid = pw.ForeignKeyField(Taxa, related_name='gb')
-    accession = pw.CharField(null=False, index=True)
-
-
-class Gss(BaseModel):
-    """table Gss. Each row is a sequence from nucl_gss. Each sequence has a taxid.
-
-    Fields:
-    primary -- the primary key
-    taxid -- reference to a taxon in the table Taxa.
-    accession -- the accession number of the sequence.
-    """
-    primary = pw.PrimaryKeyField()
-    taxid = pw.ForeignKeyField(Taxa, related_name='gss')
-    accession = pw.CharField(null=False, index=True)
-
-
-class Wgs(BaseModel):
-    """table Wgs. Each row is a sequence from nucl_wgs. Each sequence has a taxid.
-
-    Fields:
-    primary -- the primary key
-    taxid -- reference to a taxon in the table Taxa.
-    accession -- the accession number of the sequence.
-    """
-    primary = pw.PrimaryKeyField()
-    taxid = pw.ForeignKeyField(Taxa, related_name='wgs')
-    accession = pw.CharField(null=False, index=True)
-
-
-class Prot(BaseModel):
-    """table prot. Each row is a sequence from prot. Each sequence has a taxid.
-
-    Fields:
-    primary -- the primary key
-    taxid -- reference to a taxon in the table Taxa.
-    accession -- the accession number of the sequence.
-    """
-    primary = pw.PrimaryKeyField()
-    taxid = pw.ForeignKeyField(Taxa, related_name='prot')
+    taxid = pw.ForeignKeyField(Taxa, related_name='accession')
     accession = pw.CharField(null=False, index=True)
 
 
@@ -130,9 +78,15 @@ class DatabaseFactory(object):
             if self.args['username'] is None or self.args['password'] is None:
                 print('[ERROR] --dbtype %s requires --username and --password.\n' % str(self.dbtype), file=sys.stderr)
                 sys.exit(1)
+            if 'hostname' not in self.args:
+                self.args['hostname'] = 'localhost'
             if self.dbtype == 'mysql':
+                if 'port' not in self.args:
+                    self.args['port'] = 3306
                 return pw.MySQLDatabase(self.dbname, user=self.args['username'], password=self.args['password'],
-                                        host=self.args['hostname'])
+                                        host=self.args['hostname'], port=self.args['port'])
             elif self.dbtype == 'postgres':
+                if 'port' not in self.args:
+                    self.args['port'] = 5432
                 return pw.PostgresqlDatabase(self.dbname, user=self.args['username'], password=self.args['password'],
-                                             host=self.args['hostname'])
+                                             host=self.args['hostname'], port=self.args['port'])
