@@ -7,7 +7,7 @@ import ftputil
 import argparse
 
 from taxadb import util
-from taxadb import parse
+from taxadb.parser import TaxaDumpParser, Accession2TaxidParser
 
 from taxadb.schema import *
 
@@ -80,48 +80,63 @@ def create_db(args):
     nucl_gss = 'nucl_gss.accession2taxid.gz'
     nucl_wgs = 'nucl_wgs.accession2taxid.gz'
     prot = 'prot.accession2taxid.gz'
-    acc_dl_dict = {}
+    acc_dl_list = []
 
     db.connect()
-
+    if args.verbose is True:
+        print("Connected to database ...")
     # If taxa table already exists, do not recreate and fill it
     if not Taxa.table_exists():
+        if args.verbose is True:
+            print("Creating table %s" % str(Taxa._meta.db_table))
         db.create_table(Taxa)
-        taxa_info_list = parse.taxdump(
+        if args.verbose is True:
+            print("Parsing files")
+        parser = TaxaDumpParser(nodes_files=os.path.join(args.input, 'nodes.dmp'),
+                                names_file=os.path.join(args.input, 'names.dmp'))
+        taxa_info_list = parser.taxdump(
             args.input + '/nodes.dmp',
             args.input + '/names.dmp'
         )
+        if args.verbose is True:
+            print("Inserting taxa data")
         with db.atomic():
             for i in range(0, len(taxa_info_list), args.chunk):
                 Taxa.insert_many(taxa_info_list[i:i+args.chunk]).execute()
         print('Taxa: completed')
+    if args.verbose is True:
+        print("Checking table accession ...")
+    # At first load, table accession does not exist yet, we create it
+    if not Accession.table_exists():
+        if args.verbose is True:
+            print("Creating table %s" % Accession._meta.db_table)
+        db.create_table(Accession)
 
     if div in ['full', 'nucl', 'est']:
-        db.create_table(Est)
-        acc_dl_dict[Est] = nucl_est
+        acc_dl_list.append(nucl_est)
     if div in ['full', 'nucl', 'gb']:
-        db.create_table(Gb)
-        acc_dl_dict[Gb] = nucl_gb
+        acc_dl_list.append(nucl_gb)
     if div in ['full', 'nucl', 'gss']:
-        db.create_table(Gss)
-        acc_dl_dict[Gss] = nucl_gss
+        acc_dl_list.append(nucl_gss)
     if div in ['full', 'nucl', 'wgs']:
-        db.create_table(Wgs)
-        acc_dl_dict[Wgs] = nucl_wgs
+        acc_dl_list.append(nucl_wgs)
     if div in ['full', 'prot']:
-        db.create_table(Prot)
-        acc_dl_dict[Prot] = prot
-
+        acc_dl_list.append(prot)
+    parser = Accession2TaxidParser()
+    if args.verbose is True:
+        print("Files to treat: %s" % str(", ".join(acc_dl_list)))
     with db.atomic():
-        for table, acc_file in acc_dl_dict.items():
+        for acc_file in acc_dl_list:
             inserted_rows = 0
-            for data_dict in parse.accession2taxid(args.input + '/' + acc_file, args.chunk):
-                    table.insert_many(data_dict[0:args.chunk]).execute()
-                    inserted_rows += len(data_dict)
-            print('%s: %s added to database (%d rows inserted)' % (table._meta.db_table, acc_file, inserted_rows))
-            print('%s: creating index for field accession ... ' % table._meta.db_table, end="")
-            db.create_index(table, ['accession'], unique=True)
-            print('ok.')
+            if args.verbose is True:
+                print("Parsing %s" % str(acc_file))
+            for data_dict in parser.accession2taxid(acc2taxid=os.path.join(args.input, acc_file), chunk=args.chunk):
+                Accession.insert_many(data_dict[0:args.chunk]).execute()
+                inserted_rows += len(data_dict)
+                print('%s: %s added to database (%d rows inserted)' % (Accession._meta.db_table, acc_file, inserted_rows))
+        print('%s: creating index for field accession ... ' % Accession._meta.db_table, end="")
+        db.create_index(Accession, ['accession'], unique=True)
+        print('ok.')
     print('Sequence: completed')
     db.close()
 
@@ -137,6 +152,8 @@ def main():
         description='download and create the database used by the taxadb \
         library'
     )
+    parser.add_argument('-v', '--verbose', action="store_true", default=False, dest="verbose",
+                        help="Prints verbose messages")
     subparsers = parser.add_subparsers(
         title='available commands',
         metavar=''
@@ -236,9 +253,9 @@ def main():
     parser_query.set_defaults(func=query)
 
     args = parser.parse_args()
-
-    try:
-        args.func(args)
-    except Exception as e:
-        parser.print_help()
-        print('\nERROR: %s' % str(e))  # for debugging purposes
+    args.func(args)
+    # try:
+    #     args.func(args)
+    # except Exception as e:
+    #     parser.print_help()
+    #     print('\nERROR: %s' % str(e))  # for debugging purposes
