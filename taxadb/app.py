@@ -94,10 +94,8 @@ def create_db(args):
             print("Parsing files")
         parser = TaxaDumpParser(nodes_files=os.path.join(args.input, 'nodes.dmp'),
                                 names_file=os.path.join(args.input, 'names.dmp'))
-        taxa_info_list = parser.taxdump(
-            args.input + '/nodes.dmp',
-            args.input + '/names.dmp'
-        )
+        taxa_info_list = parser.taxdump()
+
         if args.verbose is True:
             print("Inserting taxa data")
         with db.atomic():
