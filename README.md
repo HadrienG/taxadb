@@ -45,25 +45,29 @@ Firstly, make sure you have [downloaded](#available-databases) or [built](#creat
 Below you can find basic examples. For more complete examples, please refer to the complete documentation (Available soon!)
 
 ```python
-    >>> from taxadb import taxid
+    >>> from taxadb.taxid import Taxid
 
-    >>> name = taxid.sci_name(33208, 'mydb.sqlite')
+    >>> taxid = Taxid(dbtype='sqlite', dbname='mydb.sqlite')
+    >>> name = taxid.sci_name(33208)
     >>> print(name)
     Metazoa
 
-    >>> lineage = taxid.lineage_name(33208, 'mydb.sqlite')
+    >>> lineage = taxid.lineage_name(33208)
     >>> print(lineage)
     ['Metazoa', 'Opisthokonta', 'Eukaryota', 'cellular organisms']
+    >>> lineage = taxid.lineage_name(33208, reverse=True)
+    >>> print(lineage)
+    ['cellular organism', 'Eukaryota', 'Opisthokonta', 'Metazoa']
 ```
 
 To get the taxonomic information for accession numbers, you need to know from which ncbi division it originated. Example with accession numbers from the gb division:
 
 ```python
-    >>> from taxadb.schema import *
-    >>> from taxadb import accession
+    >>> from taxadb.accession import Accession
 
     >>> my_accessions = ['X17276', 'Z12029']
-    >>> taxids = accession.taxid(my_accessions, 'mydb.sqlite', Gb)
+    >>> accession = Accession(dbtype='sqlite', dbname='mydb.sqlite')
+    >>> taxids = accession.taxid(my_accessions)
     >>> taxids
     <generator object taxid at 0x1051b0830>
 
@@ -86,22 +90,28 @@ You can then safely remove the downloaded files
 
     rm -r taxadb
 
-#### MySQL
-
-*Due to a problem with Foreign Keys, MySQL support has been put on hold for the time being*
+#### MySQL / PostgreSQL
 
 Creating databases is a very vendor specific task. Peewee, as most ORMs, can create tables but not databases.
-In order to use taxadb with MySQL, you'll have to create the database yourself.
+In order to use taxadb with MySQL or PostgreSQL, you'll have to create the database yourself.
 
 Connect to your mysql server
 
     mysql -u $user -p
     mysql> create database taxadb;
 
+Connect to your postgresql server
+
+    psql -u $user -d postgres
+    psql> create database taxadb;
+
 then run taxadb
 
     taxadb download -o taxadb
     taxadb create -i taxadb -d taxadb -t mysql -u $user -p $password
+    or
+    taxadb download -o taxadb
+    taxadb create -i taxadb -d taxadb -t postgres -u $user -p $password
 
 ## License
 
