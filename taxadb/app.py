@@ -211,8 +211,8 @@ def main():
     parser_create.add_argument(
         '--password',
         '-p',
-        default=None,
-        help='Password to use (required for MySQLdatabase and PostgreSQLdatabase)'
+        help='Password to use (required for MySQLdatabase and \
+            PostgreSQLdatabase)'
     )
     parser_create.add_argument(
         '--port',

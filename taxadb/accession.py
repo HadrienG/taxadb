@@ -127,16 +127,20 @@ def _check_table_exists(table):
     Throws `SystemExit` if table does not exist
     """
     if not table.table_exists():
-        print("Table %s does not exist" % (str(table._meta.db_table)), file=sys.stderr)
+        print("Table %s does not exist" % (
+            str(table._meta.db_table)), file=sys.stderr)
         sys.exit(1)
     return True
 
 
+
 def _unmapped_taxid(acc, do_exit=False):
-    """Prints an error message on stderr an accession number is not mapped with a taxid
+    """Prints an error message on stderr an accession number is not mapped
+    with a taxid
 
     Source ftp://ftp.ncbi.nlm.nih.gov/pub/taxonomy/accession2taxid/README
-    >> If for some reason the source organism cannot be mapped to the taxonomy database,
+    >> If for some reason the source organism cannot be mapped to the taxonomy
+    database,
     the column will contain 0.<<
 
     Arguments:
@@ -147,4 +151,3 @@ def _unmapped_taxid(acc, do_exit=False):
     if do_exit:
         sys.exit(1)
     return True
-
