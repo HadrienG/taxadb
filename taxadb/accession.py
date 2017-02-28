@@ -5,7 +5,7 @@ from taxadb.schema import *
 import sys
 
 
-def taxid(acc_number_list, db_name, table):
+def taxid(acc_number_list, db_name, table, **kwargs):
     """given a list of accession numbers, yield
     the accession number and their associated taxids as tuples
 
@@ -13,8 +13,9 @@ def taxid(acc_number_list, db_name, table):
     acc_number_list -- a list of accession numbers
     db_name -- the path to the database to query
     table -- the table containing the accession numbers
+    kwargs -- Extra options for non sqlite database type (e.g.: --username/--password)
     """
-    database = pw.SqliteDatabase(db_name)
+    database = DatabaseFactory(dbname=db_name, **kwargs).get_database()
     db.initialize(database)
     db.connect()
     _check_table_exists(table)
@@ -28,7 +29,7 @@ def taxid(acc_number_list, db_name, table):
     db.close()
 
 
-def sci_name(acc_number_list, db_name, table):
+def sci_name(acc_number_list, db_name, table, **kwargs):
     """given a list of acession numbers, yield
     the accession number and their associated scientific name as tuples
 
@@ -36,8 +37,9 @@ def sci_name(acc_number_list, db_name, table):
     acc_number_list -- a list of accession numbers
     db_name -- the path to the database to query
     table -- the table containing the accession numbers
+    kwargs -- Extra options for non sqlite database type (e.g.: --username/--password)
     """
-    database = pw.SqliteDatabase(db_name)
+    database = DatabaseFactory(dbname=db_name, **kwargs).get_database()
     db.initialize(database)
     db.connect()
     _check_table_exists(table)
@@ -51,7 +53,7 @@ def sci_name(acc_number_list, db_name, table):
     db.close()
 
 
-def lineage_id(acc_number_list, db_name, table):
+def lineage_id(acc_number_list, db_name, table, **kwargs):
     """given a list of acession numbers, yield the accession number and their
     associated lineage (in the form of taxids) as tuples
 
@@ -59,8 +61,9 @@ def lineage_id(acc_number_list, db_name, table):
     acc_number_list -- a list of accession numbers
     db_name -- the path to the database to query
     table -- the table containing the accession numbers
+    kwargs -- Extra options for non sqlite database type (e.g.: --username/--password)
     """
-    database = pw.SqliteDatabase(db_name)
+    database = DatabaseFactory(dbname=db_name, **kwargs).get_database()
     db.initialize(database)
     db.connect()
     _check_table_exists(table)
@@ -75,7 +78,6 @@ def lineage_id(acc_number_list, db_name, table):
                 while current_lineage != 'root':
                     lineage_list.append(current_lineage_id)
                     new_query = Taxa.get(Taxa.ncbi_taxid == parent)
-
                     current_lineage = new_query.tax_name
                     current_lineage_id = new_query.ncbi_taxid
                     parent = new_query.parent_taxid
@@ -85,7 +87,7 @@ def lineage_id(acc_number_list, db_name, table):
     db.close()
 
 
-def lineage_name(acc_number_list, db_name, table):
+def lineage_name(acc_number_list, db_name, table, **kwargs):
     """given a list of acession numbers, yield the accession number and their
     associated lineage as tuples
 
@@ -93,8 +95,9 @@ def lineage_name(acc_number_list, db_name, table):
     acc_number_list -- a list of accession numbers
     db_name -- the path to the database to query
     table -- the table containing the accession numbers
+    kwargs -- Extra options for non sqlite database type (e.g.: --username/--password)
     """
-    database = pw.SqliteDatabase(db_name)
+    database = DatabaseFactory(dbname=db_name, **kwargs).get_database()
     db.initialize(database)
     db.connect()
     _check_table_exists(table)
@@ -106,7 +109,6 @@ def lineage_name(acc_number_list, db_name, table):
                 current_lineage = i.taxid.tax_name
                 parent = i.taxid.parent_taxid
                 while current_lineage != 'root':
-                    print(current_lineage)
                     lineage_list.append(current_lineage)
                     new_query = Taxa.get(Taxa.ncbi_taxid == parent)
                     current_lineage = new_query.tax_name
@@ -131,7 +133,8 @@ def _check_table_exists(table):
     return True
 
 
-def _unmapped_taxid(acc, exit=False):
+
+def _unmapped_taxid(acc, do_exit=False):
     """Prints an error message on stderr an accession number is not mapped
     with a taxid
 
@@ -142,9 +145,9 @@ def _unmapped_taxid(acc, exit=False):
 
     Arguments:
     acc -- Accession number not mapped with taxid
-    exit -- Exit with code 1, default False
+    do_exit -- Exit with code 1, default False
     """
     print("No taxid mapped for accession %s" % str(acc), file=sys.stderr)
-    if exit:
+    if do_exit:
         sys.exit(1)
     return True

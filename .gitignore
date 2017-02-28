@@ -24,6 +24,7 @@ venv/
 # testing
 .cache
 data/
+.idea
 
 # distribution / packaging
 *.egg-info/

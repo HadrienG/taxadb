@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import peewee as pw
-
+import sys
 
 db = pw.Proxy()
 
@@ -90,3 +90,49 @@ class Prot(BaseModel):
     primary = pw.PrimaryKeyField()
     taxid = pw.ForeignKeyField(Taxa, related_name='prot')
     accession = pw.CharField(null=False, index=True)
+
+
+class DatabaseFactory(object):
+    """Databas factory to support multiple database type"""
+
+    def __init__(self, dbname=None, dbtype=None, **kwargs):
+        """
+
+        :param dbname: Database name
+        :type dbname: str
+        :param dbtype: Database type
+        :type dbtype: str
+        :param kwargs: Keyword arguments
+        :type kwargs: dict
+        """
+        if not dbname:
+            print("A database name is required", file=sys.stderr)
+            sys.exit(1)
+        if not dbtype:
+            print("A dbtype is required [sqlite|mysql|postgres]", file=sys.stderr)
+            sys.exit(1)
+        self.dbtype = dbtype
+        self.dbname = dbname
+        self.args = kwargs
+
+    def get_database(self):
+        """
+        Returns the correct database driver
+
+        :return:
+        """
+        if self.dbtype == 'sqlite':
+            return pw.SqliteDatabase(self.dbname)
+        else:
+            if 'username' not in self.args or 'password' not in self.args:
+                print('[ERROR] --dbtype %s requires --username and --password.\n' % str(self.dbtype), file=sys.stderr)
+                sys.exit(1)
+            if self.args['username'] is None or self.args['password'] is None:
+                print('[ERROR] --dbtype %s requires --username and --password.\n' % str(self.dbtype), file=sys.stderr)
+                sys.exit(1)
+            if self.dbtype == 'mysql':
+                return pw.MySQLDatabase(self.dbname, user=self.args['username'], password=self.args['password'],
+                                        host=self.args['hostname'])
+            elif self.dbtype == 'postgres':
+                return pw.PostgresqlDatabase(self.dbname, user=self.args['username'], password=self.args['password'],
+                                             host=self.args['hostname'])
