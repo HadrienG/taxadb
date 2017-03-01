@@ -5,20 +5,20 @@ from setuptools import setup, find_packages
 
 setup(
     name='taxadb',
-    version='0.4a',
+    version='0.5a',
 
 
     description='locally query the ncbi taxonomy',
 
     url='https://github.com/HadrienG/taxadb',
     download_url='https://github.com/HadrienG/taxadb/tarball/0.3a',
-    author='Hadrien Gourlé, Juliette Hayer',
-    author_email='hadrien.gourle@slu.se, juliette.hayer@slu.se',
+    author='Hadrien Gourlé, Juliette Hayer, Emmanuel Quevillon',
+    author_email='hadrien.gourle@slu.se, juliette.hayer@slu.se, tuco@pasteur.fr',
 
     license='MIT',
     packages=find_packages(exclude=['tests']),
 
-    install_requires=['ftputil', 'peewee==2.8.1', 'PyMySQL', 'nose', 'psycopg2'],
+    install_requires=['ftputil', 'peewee==2.8.1', 'PyMySQL', 'nose', 'psycopg2', 'nose-testconfig'],
 
     entry_points={
         'console_scripts': ['taxadb = taxadb.app:main'],
