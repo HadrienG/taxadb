@@ -158,7 +158,7 @@ $ nosetests --tc-file taxadb.ini
 
 You can easily override configuration file settings using command line options `--tc` such as:
 ```
-$ nosetest --tc-file taxadb.ini --tc:sql.dbname:another_dbname
+$ nosetest --tc-file taxadb.ini --tc=sql.dbname:another_dbname
 ```
 
 More info at [nose-testconfig](https://pypi.python.org/pypi/nose-testconfig)
