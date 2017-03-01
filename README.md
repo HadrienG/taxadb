@@ -202,14 +202,14 @@ $ gunzip -c /path/to/taxadb/taxadb/test/test_mypg_db.sql.gz | mysql -D <test_db>
 Either edit `taxadb.ini` to fit database configuration or use `--tc` command line option and set appropriate values like
 `username, password, port, hostname, dbtype(postgres or mysql), dbname`.
 
-  * PostgreSQL
+1) PostgreSQL
 ```
 $ nosetests --tc-file taxadb.ini
 OR
 $ nosetests -tc-file taxadb.ini --tc=sql.dbtype:postgres --tc=sql.username:postgres --tc=sql.dbname:test_db2
 ```
 
-  * MySQL
+2) MySQL
 ```
 $ nosetests --tc-file taxadb.ini
 OR
