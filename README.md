@@ -168,6 +168,7 @@ More info at [nose-testconfig](https://pypi.python.org/pypi/nose-testconfig)
 1. **First create a test database to insert test data**
 
   * PostgreSQL
+
 ```
 $ createdb <test_db>
 ```
@@ -176,7 +177,9 @@ or
 $ psql -U postgres
 psql> CREATE DATABASE <test_db>;
 ```
+
   * MySQL
+
 ```
 $ mysql -u root
 mysql> CREATE DATABASE <test_db>;
