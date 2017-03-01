@@ -165,9 +165,9 @@ More info at [nose-testconfig](https://pypi.python.org/pypi/nose-testconfig)
 
 #### Running tests against PostgreSQL or MySQL
 
-1. **First create a test database to insert test data**
+* **First create a test database to insert test data**
 
-  * PostgreSQL
+1) PostgreSQL
 
 ```
 $ createdb <test_db>
@@ -178,38 +178,38 @@ $ psql -U postgres
 psql> CREATE DATABASE <test_db>;
 ```
 
-  * MySQL
+2) MySQL
 
 ```
 $ mysql -u root
 mysql> CREATE DATABASE <test_db>;
 ```
 
-2. **Load test data**
+* **Load test data**
 
-* PostgreSQL
+1) PostgreSQL
 ```
 $ gunzip -c /path/to/taxadb/taxadb/test/test_mypg_db.sql.gz | psql -d <test_db> -U <user>
 ```
 
-* MySQL
+2) MySQL
 ```
 $ gunzip -c /path/to/taxadb/taxadb/test/test_mypg_db.sql.gz | mysql -D <test_db> -u <user> -p
 ```
 
-3. **Then run tests**
+* **Then run tests**
 
-Either edit `taxadb.ini` to fit database configuration or use `--tc` commandline option and set appropriate values like
+Either edit `taxadb.ini` to fit database configuration or use `--tc` command line option and set appropriate values like
 `username, password, port, hostname, dbtype(postgres or mysql), dbname`.
 
-* PostgreSQL
+  * PostgreSQL
 ```
 $ nosetests --tc-file taxadb.ini
 OR
 $ nosetests -tc-file taxadb.ini --tc=sql.dbtype:postgres --tc=sql.username:postgres --tc=sql.dbname:test_db2
 ```
 
-* MySQL
+  * MySQL
 ```
 $ nosetests --tc-file taxadb.ini
 OR
