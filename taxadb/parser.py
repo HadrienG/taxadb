@@ -4,7 +4,8 @@
 import gzip
 import os
 import sys
-from taxadb.schema import Taxa
+from taxadb.schema import Taxa, Accession
+from taxadb.util import fatal
 
 
 class TaxaParser(object):
@@ -29,25 +30,12 @@ class TaxaParser(object):
         :raise `SystemExit`: if input is not a file
         """
         if element is None:
-            self.fatal("Please provide an input file to check")
+            fatal("Please provide an input file to check")
         if not os.path.exists(element):
-            self.fatal("File %s does not exist" % str(element))
+            fatal("File %s does not exist" % str(element))
         if not os.path.isfile(element):
-            self.fatal("%s is not a file" % str(element))
+            fatal("%s is not a file" % str(element))
         return True
-
-    @classmethod
-    def fatal(cls, msg):
-        """
-
-        :param msg: Error message to print
-        :return:
-        """
-        if msg is not None:
-            print("[FATAL] %s" % str(msg), file=sys.stderr)
-        else:
-            print("[FATAL] An error occured", file=sys.stderr)
-        sys.exit(1)
 
 
 class TaxaDumpParser(TaxaParser):
@@ -79,11 +67,15 @@ class TaxaDumpParser(TaxaParser):
         self.check_file(nodes_file)
         # parse nodes.dmp
         nodes_data = list()
+        ncbi_ids = {str(x['ncbi_taxid']): True for x in Taxa.select(Taxa.ncbi_taxid).dicts()}
         with open(nodes_file, 'r') as f:
             for line in f:
                 line_list = line.split('|')
+                ncbi_id = line_list[0].strip('\t')
+                if ncbi_id in ncbi_ids:
+                    continue
                 data_dict = {
-                    'ncbi_taxid': line_list[0].strip('\t'),
+                    'ncbi_taxid': ncbi_id,
                     'parent_taxid': line_list[1].strip('\t'),
                     'tax_name': '',
                     'lineage_level': line_list[2].strip('\t')
@@ -97,10 +89,13 @@ class TaxaDumpParser(TaxaParser):
             for line in f:
                 if 'scientific name' in line:
                     line_list = line.split('|')
+                    ncbi_id = line_list[0].strip('\t')
+                    if ncbi_id in ncbi_ids:
+                        continue
                     data_dict = {
                         'ncbi_taxid': line_list[0].strip('\t'),
                         'tax_name': line_list[1].strip('\t')
-                        }
+                    }
                     names_data.append(data_dict)
         print('parsed names')
 
@@ -122,7 +117,7 @@ class TaxaDumpParser(TaxaParser):
         :raise `SystemExit`: If argument is None or not a file (`check_file`)
         """
         if nodes_file is None:
-            self.fatal("Please provide an accession file to set")
+            fatal("Please provide an accession file to set")
         self.check_file(nodes_file)
         self.nodes_file = nodes_file
         return True
@@ -137,7 +132,7 @@ class TaxaDumpParser(TaxaParser):
         :raise `SystemExit`: If argument is None or not a file (`check_file`)
         """
         if names_file is None:
-            self.fatal("Please provide an accession file to set")
+            fatal("Please provide an accession file to set")
         self.check_file(names_file)
         self.names_file = names_file
         return True
@@ -145,13 +140,16 @@ class TaxaDumpParser(TaxaParser):
     
 class Accession2TaxidParser(TaxaParser):
     """
-
+    Main parser class for nucl_xxx_accession2taxid files
     """
 
     def __init__(self, acc_file=None, chunk=500):
         """
 
-        :param chunk:
+        :param acc_file: File to parse
+        :type acc_file: str
+        :param chunk: Default insert chunk size
+        :type chunk: int
         """
         super().__init__()
         self.acc_file = acc_file
@@ -167,7 +165,8 @@ class Accession2TaxidParser(TaxaParser):
         # Some accessions (e.g.: AAA22826) have a taxid = 0
         entries = []
         counter = 0
-        taxids = {}
+        taxids = {str(x['ncbi_taxid']): True for x in Taxa.select(Taxa.ncbi_taxid).dicts()}
+        accessions = {str(x['accession']): True for x in Accession.select(Accession.accession).dicts()}
         if acc2taxid is None:
             acc2taxid = self.acc_file
         self.check_file(acc2taxid)
@@ -177,20 +176,18 @@ class Accession2TaxidParser(TaxaParser):
             f.readline()  # discard the header
             for line in f:
                 line_list = line.decode().rstrip('\n').split('\t')
-                if not line_list[2] in taxids:
-                    try:
-                        Taxa.get(Taxa.ncbi_taxid == int(line_list[2]))
-                        taxids[line_list[2]] = True
-                    except Taxa.DoesNotExist:
-                        taxids[line_list[2]] = False
-                        continue
-                if taxids[line_list[2]]:
-                    data_dict = {
-                        'accession': line_list[0],
-                        'taxid': line_list[2]
-                    }
-                    entries.append(data_dict)
-                    counter += 1
+                # Check the taxid already exists and get its id
+                if line_list[2] not in taxids:
+                    continue
+                # In case of an update or parsing an already inserted list of accessions
+                if line_list[0] in accessions:
+                    continue
+                data_dict = {
+                    'accession': line_list[0],
+                    'taxid': line_list[2]
+                }
+                entries.append(data_dict)
+                counter += 1
                 if counter == chunk:
                     yield(entries)
                     entries = []
@@ -208,7 +205,7 @@ class Accession2TaxidParser(TaxaParser):
         :raise `SystemExit`: If argument is None or not a file (`check_file`)
         """
         if acc_file is None:
-            self.fatal("Please provide an accession file to set")
+            fatal("Please provide an accession file to set")
         self.check_file(acc_file)
         self.acc_file = acc_file
         return True

@@ -3,3 +3,4 @@ peewee==2.8.1
 psycopg2
 PyMySQL
 nose
+nose-testconfig

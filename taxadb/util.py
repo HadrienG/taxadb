@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import hashlib
-
+import sys
 
 def md5_check(file, block_size=256*128):
     """Check the md5 of large files
@@ -19,3 +19,17 @@ def md5_check(file, block_size=256*128):
             file_md5.update(chunk)
     assert(file_md5.hexdigest() == md5)
     print('Done!!')
+
+
+def fatal(msg):
+    """Prints a FATAL message and exit with status code 1
+
+    :param msg: Error message to print
+    :return:
+    """
+    if msg is not None:
+        print("[FATAL] %s" % str(msg), file=sys.stderr)
+    else:
+        print("[FATAL] An error occured", file=sys.stderr)
+    sys.exit(1)
+
