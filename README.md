@@ -81,14 +81,14 @@ Get the taxonomic information for accession number(s).
 
 ### Creating the Database
 
-1. **Download data**
+1) **Download data**
 
 The following commands will download the necessary files from the ncbi ftp into the directory `taxadb`.
 ```
 $ taxadb download -o taxadb
 ```
 
-2. **Insert data**
+2) **Insert data**
 
 * SQLite
 
