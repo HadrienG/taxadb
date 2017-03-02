@@ -1,0 +1,16 @@
+image: centos
+
+pages:
+  stage: deploy
+  script:
+    - yum install python34
+    - yum install python-pip
+    - pip install sphinx recommonmark
+    - make html
+    - mkdir -p public
+    - mv _build/html public
+  artifacts:
+    paths:
+      - public
+  only:
+    - doc
