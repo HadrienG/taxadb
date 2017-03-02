@@ -7,9 +7,8 @@ pages:
     - yum install -y python34 python34-devel
     - yum install -y python-pip
     - pip install sphinx recommonmark
-    - make html
-    - mkdir -p public
-    - mv _build/html public
+    - mkdir public && cd doc && make html
+    - mv _build/html/* ../public
   artifacts:
     paths:
       - public
