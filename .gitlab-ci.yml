@@ -1,0 +1,17 @@
+image: centos
+
+pages:
+  stage: deploy
+  script:
+    - yum install -y epel-release make
+    - yum install -y python34 python34-devel
+    - yum install -y python-pip
+    - pip install sphinx recommonmark
+    - mkdir public && cd doc && make html
+    - mv _build/html/* ../public
+  artifacts:
+    paths:
+      - public
+  only:
+    - pages
+    - master

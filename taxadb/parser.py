@@ -11,8 +11,11 @@ from taxadb.util import fatal
 class TaxaParser(object):
     """Base parser class for taxonomic files"""
 
-    def __init__(self):
-        pass
+    def __init__(self, verbose=False):
+        """
+        Base class
+        """
+        self._verbose = verbose
 
     def check_file(self, element):
         """Make some check on a file
@@ -38,6 +41,12 @@ class TaxaParser(object):
             fatal("%s is not a file" % str(element))
         return True
 
+    def verbose(self, msg):
+        """Prints some message if verbose mode on"""
+        if self._verbose is True and msg and msg != '':
+            print("[VERBOSE] %s" % str(msg))
+        return True
+
 
 class TaxaDumpParser(TaxaParser):
     """Main parser class for ncbi taxdump files
@@ -49,10 +58,12 @@ class TaxaDumpParser(TaxaParser):
         names_file (:obj:`str`): Path to names.dmp file
 
     """
+    def __init__(self, nodes_files=None, names_file=None, **kwargs):
+        """
 
-    def __init__(self, nodes_file=None, names_file=None):
-        super().__init__()
-        self.nodes_file = nodes_file
+        """
+        super().__init__(**kwargs)
+        self.nodes_file = nodes_files
         self.names_file = names_file
 
     def taxdump(self, nodes_file=None, names_file=None):
@@ -76,7 +87,9 @@ class TaxaDumpParser(TaxaParser):
         self.check_file(nodes_file)
         # parse nodes.dmp
         nodes_data = list()
+        self.verbose("Loading taxa data ...")
         ncbi_ids = {str(x['ncbi_taxid']): True for x in Taxa.select(Taxa.ncbi_taxid).dicts()}
+        self.verbose("Parsing %s" % str(nodes_file))
         with open(nodes_file, 'r') as f:
             for line in f:
                 line_list = line.split('|')
@@ -94,6 +107,7 @@ class TaxaDumpParser(TaxaParser):
 
         # parse names.dmp
         names_data = list()
+        self.verbose("Parsing %s" % str(names_file))
         with open(names_file, 'r') as f:
             for line in f:
                 if 'scientific name' in line:
@@ -170,8 +184,8 @@ class Accession2TaxidParser(TaxaParser):
 
     """
 
-    def __init__(self, acc_file=None, chunk=500):
-        super().__init__()
+    def __init__(self, acc_file=None, chunk=500, **kwargs):
+        super().__init__(**kwargs)
         self.acc_file = acc_file
         self.chunk = chunk
 
@@ -200,12 +214,15 @@ class Accession2TaxidParser(TaxaParser):
         entries = []
         counter = 0
         taxids = {str(x['ncbi_taxid']): True for x in Taxa.select(Taxa.ncbi_taxid).dicts()}
-        accessions = {str(x['accession']): True for x in Accession.select(Accession.accession).dicts()}
+        # Reach out of memory
+        # accessions = {str(x['accession']): True for x in Accession.select(Accession.accession).dicts()}
+        accessions = {}
         if acc2taxid is None:
             acc2taxid = self.acc_file
         self.check_file(acc2taxid)
         if not chunk:
             chunk = self.chunk
+        self.verbose("Parsing %s" % str(acc2taxid))
         with gzip.open(acc2taxid, 'rb') as f:
             f.readline()  # discard the header
             for line in f:
@@ -216,12 +233,16 @@ class Accession2TaxidParser(TaxaParser):
                 # In case of an update or parsing an already inserted list of accessions
                 if line_list[0] in accessions:
                     continue
-                data_dict = {
-                    'accession': line_list[0],
-                    'taxid': line_list[2]
-                }
-                entries.append(data_dict)
-                counter += 1
+                try:
+                    acc_id = Accession.get(Accession.accession == line_list[0])
+                except Accession.DoesNotExist as err:
+                    accessions[line_list[0]] = True
+                    data_dict = {
+                        'accession': line_list[0],
+                        'taxid': line_list[2]
+                    }
+                    entries.append(data_dict)
+                    counter += 1
                 if counter == chunk:
                     yield(entries)
                     entries = []
