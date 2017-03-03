@@ -6,7 +6,7 @@ pages:
     - yum install -y epel-release make
     - yum install -y python34 python34-devel
     - yum install -y python-pip
-    - pip install sphinx recommonmark sphinxcontrib.napoleon sphinx-rtd-theme
+    - pip install sphinx recommonmark sphinxcontrib-napoleon sphinx-rtd-theme
     - mkdir public && cd doc && make html
     - mv _build/html/* ../public
   artifacts:
