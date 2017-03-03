@@ -9,25 +9,26 @@ from taxadb.util import fatal
 
 
 class TaxaParser(object):
-    """
-    Main parser class for taxonomic files
-    """
+    """Base parser class for taxonomic files"""
 
     def __init__(self):
-        """
-        Base class
-        """
         pass
 
     def check_file(self, element):
-        """
-        Make some check on a file
-        :param element: File to check
-        :type element: str
-        :return: True
-        :rtype: bool
-        :raise `SystemExit`: if input file does not exist
-        :raise `SystemExit`: if input is not a file
+        """Make some check on a file
+
+        This method is used to check an `element` is a real file.
+
+        Args:
+            element (:obj:`type`): File to check
+
+        Returns:
+            True
+
+        Raises:
+            SystemExit: if `element` file does not exist
+            SystemExit: if `element` is not a file
+
         """
         if element is None:
             fatal("Please provide an input file to check")
@@ -39,25 +40,33 @@ class TaxaParser(object):
 
 
 class TaxaDumpParser(TaxaParser):
-    """
-    Main parser class for taxdump files
+    """Main parser class for ncbi taxdump files
+
+    This class is used to parse NCBI taxonomy files found in taxdump.gz archive.
+
+    Args:
+        nodes_file (:obj:`str`): Path to nodes.dmp file
+        names_file (:obj:`str`): Path to names.dmp file
+
     """
 
-    def __init__(self, nodes_files=None, names_file=None):
-        """
-
-        """
+    def __init__(self, nodes_file=None, names_file=None):
         super().__init__()
-        self.nodes_file = nodes_files
+        self.nodes_file = nodes_file
         self.names_file = names_file
 
     def taxdump(self, nodes_file=None, names_file=None):
-        """Parse the nodes.dmp and names.dmp files (from taxdump.tgz) and insert
-        taxons in the Taxa table.
+        """Parse .dmp files
 
-        Arguments:
-        nodes_file -- the nodes.dmp file
-        names_file -- the names.dmp file
+        Parse nodes.dmp and names.dmp files (from taxdump.tgz) and insert taxons in Taxa table.
+
+        Args:
+            nodes_file (:obj:`str`): Path to nodes.dmp file
+            names_file (:obj:`str`): Path to names.dmp file
+
+        Returns:
+            list: Zipped data from both files
+
         """
         if nodes_file is None:
             nodes_file = self.nodes_file
@@ -107,14 +116,20 @@ class TaxaDumpParser(TaxaParser):
         print('merge successful')
         return taxa_info_list
 
-    def set_nodes_files(self, nodes_file):
-        """
+    def set_nodes_file(self, nodes_file):
+        """Set nodes_file
+
         Set the accession file to use
-        :param nodes_file: Nodes file to be set
-        :type nodes_file: str
-        :return: True
-        :rtype: bool
-        :raise `SystemExit`: If argument is None or not a file (`check_file`)
+
+        Args:
+            nodes_file (:obj:`str`): Nodes file to be set
+
+        Returns:
+            True
+
+        Raises:
+            SystemExit: If `nodes_file` is None or not a file (`check_file`)
+
         """
         if nodes_file is None:
             fatal("Please provide an accession file to set")
@@ -122,14 +137,20 @@ class TaxaDumpParser(TaxaParser):
         self.nodes_file = nodes_file
         return True
 
-    def set_names_files(self, names_file):
-        """
+    def set_names_file(self, names_file):
+        """Set names_file
+
         Set the accession file to use
-        :param names_file: Nodes file to be set
-        :type names_file: str
-        :return: True
-        :rtype: bool
-        :raise `SystemExit`: If argument is None or not a file (`check_file`)
+
+        Args:
+            names_file (:obj:`str`): Nodes file to be set
+
+        Returns:
+            True
+
+        Raises:
+            SystemExit: If `names_file` is None or not a file (`check_file`)
+
         """
         if names_file is None:
             fatal("Please provide an accession file to set")
@@ -139,28 +160,41 @@ class TaxaDumpParser(TaxaParser):
 
     
 class Accession2TaxidParser(TaxaParser):
-    """
-    Main parser class for nucl_xxx_accession2taxid files
+    """Main parser class for nucl_xxx_accession2taxid files
+
+    This class is used to parse accession2taxid files.
+
+    Args:
+        acc_file (:obj:`str`): File to parse
+        chunk (:obj:`int`): Chunk insert size. Default 500
+
     """
 
     def __init__(self, acc_file=None, chunk=500):
-        """
-
-        :param acc_file: File to parse
-        :type acc_file: str
-        :param chunk: Default insert chunk size
-        :type chunk: int
-        """
         super().__init__()
         self.acc_file = acc_file
         self.chunk = chunk
 
     def accession2taxid(self, acc2taxid=None, chunk=500):
-        """Parses the accession2taxid files and insert sequences in Sequences table(s).
+        """Parses the accession2taxid files
 
-        Arguments:
-        acc2taxid -- input file (gzipped)
-        chunk -- Chunk size of entries to gather before yielding, default 500
+        This method parses the accession2taxid file, build a dictionary, stores it in a list and yield for insertion
+        in the database.
+        ::
+
+            {
+                'accession': accession_id_from_file,
+                'taxid': associated_taxonomic_id
+            }
+
+
+        Args:
+            acc2taxid (:obj:`str`): Path to acc2taxid input file (gzipped)
+            chunk (:obj:`int`): Chunk size of entries to gather before yielding. Default 500
+
+        Yields:
+            list: Chunk size of read entries
+
         """
         # Some accessions (e.g.: AAA22826) have a taxid = 0
         entries = []
@@ -196,13 +230,15 @@ class Accession2TaxidParser(TaxaParser):
                 yield(entries)
 
     def set_accession_file(self, acc_file):
-        """
-        Set the accession file to use
-        :param acc_file: File to be set
-        :type acc_file: str
-        :return: True
-        :rtype: bool
-        :raise `SystemExit`: If argument is None or not a file (`check_file`)
+        """Set the accession file to use
+
+        Args:
+            acc_file (:obj:`str`): File to be set
+
+        Returns:
+            True
+        Raises:
+            SystemExit: If `acc_file` is None or not a file (`check_file`)
         """
         if acc_file is None:
             fatal("Please provide an accession file to set")

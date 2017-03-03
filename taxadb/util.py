@@ -7,9 +7,9 @@ import sys
 def md5_check(file, block_size=256*128):
     """Check the md5 of large files
 
-    Arguments:
-    file -- input file
-    block_size -- block_size for the file chunks. default = 256*128
+    Args:
+        file (:obj:`str`): input file
+        block_size (:obj:`int`): block_size for the file chunks. Default = 256*128
     """
     print('Checking md5')
     md5 = open(file + '.md5').readline().split()[0]
@@ -24,8 +24,12 @@ def md5_check(file, block_size=256*128):
 def fatal(msg):
     """Prints a FATAL message and exit with status code 1
 
-    :param msg: Error message to print
-    :return:
+    Args:
+        msg (:obj:`str`): Error message to print
+
+    Raises:
+        SystemExit
+
     """
     if msg is not None:
         print("[FATAL] %s" % str(msg), file=sys.stderr)

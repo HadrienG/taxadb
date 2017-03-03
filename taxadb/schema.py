@@ -12,13 +12,16 @@ class BaseModel(pw.Model):
 
 
 class Taxa(BaseModel):
-    """table Taxa. Each row is a taxon.
+    """table Taxa.
 
-    Fields:
-    ncbi_taxid -- the TaxID of the taxon (from nodes.dmp)
-    parent_taxid -- the TaxID of the parent taxon (from nodes.dmp)
-    tax_name -- the scientific name of the taxon (from names.dmp)
-    lineage_level -- the level of lineage of the taxon (from nodes.dmp)
+    Each row is a taxon.
+
+    Attributes:
+        ncbi_taxid (:obj:`pw.IntegerField`): the TaxID of the taxon (from nodes.dmp)
+        parent_taxid (:obj:`pw.IntegerField`): the TaxID of the parent taxon (from nodes.dmp)
+        tax_name (:obj:`pw.CharField`): the scientific name of the taxon (from names.dmp)
+        lineage_level (:obj:`pw.CharField`): the level of lineage of the taxon (from nodes.dmp)
+
     """
     ncbi_taxid = pw.IntegerField(null=False, primary_key=True, unique=True)
     parent_taxid = pw.IntegerField(null=False)
@@ -27,12 +30,15 @@ class Taxa(BaseModel):
 
 
 class Accession(BaseModel):
-    """table Accession. Each row is a sequence from nucl_*.accession2taxid.gz. Each sequence has a taxid.
+    """table Accession.
 
-    Fields:
-    primary -- the primary key
-    taxid -- reference to a taxon in the table Taxa.
-    accession -- the accession number of the sequence.
+    Each row is a sequence from nucl_*.accession2taxid.gz. Each sequence has a taxid.
+
+    Attributes:
+        id (:obj:`pw.PrimaryKeyField`): the primary key
+        taxid (:obj:`pw.ForeignKeyField`): reference to a taxon in the table Taxa.
+        accession (:obj:`pw.CharField`): the accession number of the sequence.
+
     """
     id = pw.PrimaryKeyField()
     taxid = pw.ForeignKeyField(Taxa, related_name='accession')
@@ -40,20 +46,20 @@ class Accession(BaseModel):
 
 
 class DatabaseFactory(object):
-    """Databas factory to support multiple database type"""
+    """Database factory to support multiple database type.
+
+    This class may be used to create a database for different type (SQLite, PostgreSQL, MySQL).
+
+    Args:
+        dbname (:obj:`str`): Database name to connect to.
+        dbtype (:obj:`str`): Database type to connect to (`sqlite`, `postgres`, `mysql`). Default to `sqlite`.
+        **kwargs: Arbitrary arguments. Supported (username, password, port, hostname)
+
+    """
 
     SUPPORTED_DBS = ['sqlite', 'postgres', 'mysql']
 
     def __init__(self, dbname=None, dbtype='sqlite', **kwargs):
-        """
-
-        :param dbname: Database name
-        :type dbname: str
-        :param dbtype: Database type, default 'sqlite'
-        :type dbtype: str
-        :param kwargs: Keyword arguments
-        :type kwargs: dict
-        """
         if dbtype not in DatabaseFactory.SUPPORTED_DBS:
             raise AttributeError("Database type '%s' not supported" % str(dbtype))
         if not dbname:
@@ -63,10 +69,13 @@ class DatabaseFactory(object):
         self.args = kwargs
 
     def get_database(self):
-        """
-        Returns the correct database driver
+        """Returns the correct database driver
 
-        :return:
+        Returns:
+            :obj:`pw.Database`
+        Raises:
+            AttributeError: if `--username` or `--password` not passed (if `--dbtype [postgres|mysql]`)
+
         """
         if self.dbtype == 'sqlite':
             return pw.SqliteDatabase(self.dbname)

@@ -81,14 +81,14 @@ Get the taxonomic information for accession number(s).
 
 ### Creating the Database
 
-1) **Download data**
+##### *Download data*
 
 The following commands will download the necessary files from the ncbi ftp into the directory `taxadb`.
 ```
 $ taxadb download -o taxadb
 ```
 
-2) **Insert data**
+##### *Insert data*
 
 * SQLite
 
@@ -114,7 +114,7 @@ $ mysql> CREATE DATABASE taxadb;
 ```
 
 Load data
-```commandline
+```
 $ taxadb create -i taxadb --dbname taxadb --dbtype mysql --username <user> --password <pwd> ...
 ```
 
@@ -130,7 +130,7 @@ $ psql> CREATE DATABASE taxadb;
 ```
 
 Load data
-```commandline
+```
 $ taxadb create -i taxadb --dbname taxadb --dbtype postgres --username <user> --password <pwd> ...
 ```
 
@@ -165,9 +165,9 @@ More info at [nose-testconfig](https://pypi.python.org/pypi/nose-testconfig)
 
 #### Running tests against PostgreSQL or MySQL
 
-* **First create a test database to insert test data**
+##### *First create a test database to insert test data*
 
-1) PostgreSQL
+* PostgreSQL
 
 ```
 $ createdb <test_db>
@@ -178,26 +178,26 @@ $ psql -U postgres
 psql> CREATE DATABASE <test_db>;
 ```
 
-2) MySQL
+* MySQL
 
 ```
 $ mysql -u root
 mysql> CREATE DATABASE <test_db>;
 ```
 
-* **Load test data**
+##### *Load test data*
 
-1) PostgreSQL
+* PostgreSQL
 ```
 $ gunzip -c /path/to/taxadb/taxadb/test/test_mypg_db.sql.gz | psql -d <test_db> -U <user>
 ```
 
-2) MySQL
+* MySQL
 ```
 $ gunzip -c /path/to/taxadb/taxadb/test/test_mypg_db.sql.gz | mysql -D <test_db> -u <user> -p
 ```
 
-* **Then run tests**
+##### *Run tests*
 
 Either edit `taxadb.ini` to fit database configuration or use `--tc` command line option and set appropriate values like
 `username, password, port, hostname, dbtype(postgres or mysql), dbname`.

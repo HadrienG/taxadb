@@ -17,8 +17,8 @@ def download(args):
     from the ncbi ftp.
 
     Arguments:
-    args -- parser from the argparse library. contains:
-    args.outdir -- output directory
+             args.output (str): output directory
+
     """
     ncbi_ftp = 'ftp.ncbi.nlm.nih.gov'
 
@@ -56,19 +56,17 @@ def download(args):
 
 
 def create_db(args):
-    """Main function for the 'taxadb create' sub-command. This function
-    creates a taxonomy database with 2 tables: Taxa and Sequence.
+    """Main function for the 'taxadb create' sub-command.
 
-    Arguments:
-    args -- parser from the argparse library. contains:
-    args.input -- input directory. It is the directory created by
-        'taxadb download'
-    args.dbname -- name of the database to be created
-    args.dbtype -- type of database to be used. Currently only sqlite is
-        supported
-    args.division -- division to create the db for. Full will build all the
-        tables, prot will only build the prot table, nucl will build gb, wgs,
-        gss and est
+    This function creates a taxonomy database with 2 tables: Taxa and Sequence.
+
+    Args:
+
+        args.input (str): input directory. It is the directory created by `taxadb download`
+        args.dbname (str): name of the database to be created
+        args.dbtype (str): type of database to be used.
+        args.division (str): division to create the db for.
+
     """
     database = DatabaseFactory(**args.__dict__).get_database()
     div = args.division  # am lazy at typing
@@ -91,7 +89,7 @@ def create_db(args):
     db.create_table(Taxa, safe=True)
     if args.verbose is True:
         print("Parsing files")
-    parser = TaxaDumpParser(nodes_files=os.path.join(args.input, 'nodes.dmp'),
+    parser = TaxaDumpParser(nodes_file=os.path.join(args.input, 'nodes.dmp'),
                             names_file=os.path.join(args.input, 'names.dmp'))
     taxa_info_list = parser.taxdump()
 

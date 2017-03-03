@@ -1,20 +1,27 @@
 from taxadb.schema import *
 from taxadb.util import fatal
+import sys
 
 
 class TaxaDB(object):
-    """
-    Main TaxaDB package class
+    """Main TaxaDB package class
+
+    Args:
+        dbname (:obj:`str`): Database name to connect to
+        dbtype (:obj:`str`): Database type to connect to (`sqlite`, `postgre`, `mysql`). Default `sqlite`
+        **kwargs: Arbitrary arguments. Supported (username, password, port, hostname)
+
+    Raises:
+        AttributeError: If cannot instantiate `taxadb.schema.DatabaseFactory`.
+    Attributes:
+        MAX_LIST (:obj:`int`): Maximum number of bind variables to pass to request methods
+            Due to SQLite limit of passed arguments to a statement, we limit number of accession and taxid to
+            request to 999 (https://www.sqlite.org/c3ref/bind_blob.html)
     """
 
-    # Due to SQLite limit of passed arguments to a statement, we limit number of accession and taxid to
-    # request to 999 (https://www.sqlite.org/c3ref/bind_blob.html)
     MAX_LIST = 999
 
     def __init__(self, dbname=None, dbtype='sqlite', **kwargs):
-        """
-
-        """
         self.db = None
         self.dbname = dbname
         try:
@@ -34,9 +41,14 @@ class TaxaDB(object):
     def check_table_exists(cls, table):
         """Check a table exists in the database
 
-        Arguments:
-        table -- table name
-        Throws `SystemExit` if table does not exist
+        Args:
+            table (:obj:`str`): Database `table` name to check.
+
+        Returns:
+            True
+
+        Raises:
+             SystemExit: if `table` does not exist
         """
         if not table.table_exists():
             fatal("Table %s does not exist" % (str(table._meta.db_table)))
@@ -44,7 +56,17 @@ class TaxaDB(object):
 
     @staticmethod
     def check_list_ids(ids):
-        """Check the list of ids is not longer that MAX_LIST"""
+        """Check the list of ids is not longer that MAX_LIST
+
+        Args:
+            ids (:obj:`list`): List of bind values
+
+        Returns:
+            True
+
+        Raises:
+            SystemExit: If `len` of the list of greater than `MAX_LIST`.
+        """
         if len(ids) > TaxaDB.MAX_LIST:
             fatal("Too many accession entries to request (%d), max %d" % (len(ids), AccessionID.MAX_LIST))
         return True
@@ -54,12 +76,11 @@ class TaxaDB(object):
 
         Source ftp://ftp.ncbi.nlm.nih.gov/pub/taxonomy/accession2taxid/README
         >> If for some reason the source organism cannot be mapped to the taxonomy
-        database,
-        the column will contain 0.<<
+        database, the column will contain 0.<<
 
-        Arguments:
-        acc -- Accession number not mapped with taxid
-        do_exit -- Exit with code 1, default False
+        Args:
+            acc (:obj:`str`): Accession number not mapped with taxid
+            do_exit (:obj:`bool`): Exit with code 1. Default False
         """
         print("No taxid mapped for accession %s" % str(acc), file=sys.stderr)
         if do_exit:
@@ -68,20 +89,34 @@ class TaxaDB(object):
 
 
 class AccessionID(TaxaDB):
-    """
-    Main accession class
+    """Main accession class
+
+    Provide methods to request accession table and get associated taxonomy for accession ids.
+
+    Args:
+        dbtype (:obj:`str`): Database to connect to
+        dbtype (:obj:`str`): Database type to connect to (`sqlite`, `postgre`, `mysql`). Default `sqlite`
+        **kwargs: Arbitrary arguments. Supported (username, password, port, hostname)
+
+    Raises:
+        SystemExit: If table `accession` does not exist
     """
 
-    def __init__(self, dbtype='sqlite', dbname=None, **kwargs):
-        super().__init__(dbtype=dbtype, dbname=dbname, **kwargs)
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
         self.check_table_exists(Accession)
 
     def taxid(self, acc_number_list):
-        """given a list of accession numbers, yield
-        the accession number and their associated taxids as tuples
+        """Get taxonomy of accession ids
 
-        Arguments:
-        acc_number_list -- a list of accession numbers
+        Given a list of accession numbers, yield the accession number and their associated taxids as tuples
+
+        Args:
+            acc_number_list (:obj:`list`): a list of accession numbers
+
+        Yields:
+            tuple: (accession id, taxonomy id)
+
         """
         self.check_list_ids(acc_number_list)
         with db.atomic():
@@ -93,11 +128,16 @@ class AccessionID(TaxaDB):
                     self._unmapped_taxid(i.accession)
 
     def sci_name(self, acc_number_list):
-        """given a list of acession numbers, yield
-        the accession number and their associated scientific name as tuples
+        """Get taxonomic scientific name for accession ids
 
-        Arguments:
-        acc_number_list -- a list of accession numbers
+        Given a list of acession numbers, yield the accession number and their associated scientific name as tuples
+
+        Args:
+            acc_number_list (:obj:`list`): a list of accession numbers
+
+        Yields:
+            tuple: (accession id, taxonomy id)
+
         """
         self.check_list_ids(acc_number_list)
         with db.atomic():
@@ -109,11 +149,17 @@ class AccessionID(TaxaDB):
                     self._unmapped_taxid(i.accession)
 
     def lineage_id(self, acc_number_list):
-        """given a list of acession numbers, yield the accession number and their
-        associated lineage (in the form of taxids) as tuples
+        """Get taxonomic lineage name for accession ids
 
-        Arguments:
-        acc_number_list -- a list of accession numbers
+        Given a list of accession numbers, yield the accession number and their associated lineage (in the form of
+        taxids) as tuples
+
+        Args:
+            acc_number_list (:obj:`list`): a list of accession numbers
+
+        Yields:
+            tuple: (accession id, lineage list)
+
         """
         self.check_list_ids(acc_number_list)
         with db.atomic():
@@ -135,11 +181,16 @@ class AccessionID(TaxaDB):
                     self._unmapped_taxid(i.accession)
 
     def lineage_name(self, acc_number_list):
-        """given a list of acession numbers, yield the accession number and their
-        associated lineage as tuples
+        """Get a lineage name for accession ids
 
-        Arguments:
-        acc_number_list -- a list of accession numbers
+        Given a list of acession numbers, yield the accession number and their associated lineage as tuples
+
+        Args:
+            acc_number_list (:obj:`list`): a list of accession numbers
+
+        Yields:
+            tuple: (accession id, lineage name)
+
         """
         self.check_list_ids(acc_number_list)
         with db.atomic():
@@ -160,20 +211,34 @@ class AccessionID(TaxaDB):
 
 
 class TaxID(TaxaDB):
-    """Main class for querying taxid"""
+    """Main class for querying taxid
+
+    Provide methods to request taxa table and get associated accession ids.
+
+    Args:
+        dbtype (:obj:`str`): Database to connect to
+        dbtype (:obj:`str`): Database type to connect to (`sqlite`, `postgre`, `mysql`). Default `sqlite`
+        **kwargs: Arbitrary arguments. Supported (username, password, port, hostname)
+
+    Raises:
+        SystemExit: If table `taxa` does not exist
+
+    """
 
     def __init__(self, dbtype='sqlite', dbname=None, **kwargs):
         super().__init__(dbtype=dbtype, dbname=dbname, **kwargs)
         self.check_table_exists(Taxa)
 
     def sci_name(self, taxid):
-        """given a taxid, return its associated scientific name
+        """Get taxonomic scientific name for taxonomy id
 
-        You can access data from several database type (sqlite3/mysql/postgresql)
-        Arguments:
-        taxid -- a taxid (int)
+        Given a taxid, return its associated scientific name
+
+        Args:
+            taxid (:obj:`int`): a taxid
         Returns:
-        name -- scientific name (str) or None if taxid not found
+            str: name, scientific name or None if taxid not found
+
         """
         try:
             name = Taxa.get(Taxa.ncbi_taxid == taxid).tax_name
@@ -182,14 +247,16 @@ class TaxID(TaxaDB):
             return None
 
     def lineage_id(self, taxid, reverse=False):
-        """given a taxid, return its associated lineage (in the form of a list
-        of taxids, each parents of each others)
+        """Get lineage for a taxonomic id
 
-        Arguments:
-        taxid -- a taxid (int)
-        reverse -- Inverted lineage, from top to bottom taxonomy hierarchy
+        Given a taxid, return its associated lineage (in the form of a list of taxids, each parents of each others)
+
+        Args:
+            taxid (:obj:`int`): a taxid
+            reverse (:obj:`bool`): Inverted lineage, from top to bottom taxonomy hierarchy. Default False
         Returns:
-        lineage_list -- associated lineage id with taxid (list) or None if taxid not found
+            list: lineage_list, associated lineage id with taxid or None if taxid not found
+
         """
         try:
             lineage_list = []
@@ -210,13 +277,17 @@ class TaxID(TaxaDB):
             return None
 
     def lineage_name(slef, taxid, reverse=False):
-        """given a taxid, return its associated lineage
+        """Get a lineage name for a taxonomic id
+
+        Given a taxid, return its associated lineage
 
         Arguments:
-        taxid -- a taxid (int)
-        reverse -- Inverted lineage, from top to bottom taxonomy hierarchy
+            taxid (:obj:`int`): a taxid
+            reverse (:obj:`bool`): Inverted lineage, from top to bottom taxonomy hierarchy. Default False
+
         Returns:
-        lineage_name -- associated lineage name with taxid (list) or None if taxid not found
+            list: lineage_name, associated lineage name with taxid  or None if taxid not found
+
         """
         try:
             lineage_list = []
