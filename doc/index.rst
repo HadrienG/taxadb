@@ -37,7 +37,7 @@ Taxadb's source code hosted on `GitHub <https://github.com/HadrienG/taxadb.git>`
 * :ref:`Installation guide <install>` explains how to install Taxadb.
 * :ref:`Download or build data <download>` explain how to build Taxadb database(s).
 * :ref:`Querying taxadb <query>` shows some example on how to use Taxadb application.
-* :ref:`API reference <api>` lists the various field types peewee supports and the parameters they accept.
+* :ref:`API reference <api>` describes available classes and methods to use Taxadb.
 
 Contents:
 ---------
