@@ -18,7 +18,6 @@ setup(
     packages=find_packages(exclude=['tests']),
 
     install_requires=['ftputil', 'peewee==2.8.1', 'nose', 'nose-testconfig'],
-
     # Allow PostgreSQL and MySQL as option
     extras_require={
         'postgres': ["psycopg2>=2.6.2"],
