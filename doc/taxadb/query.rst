@@ -11,7 +11,7 @@ Play with taxonimc identifiers:
 
 .. code-block:: python
 
-   >>> from taxadb.taxadb import TaxID
+   >>> from taxadb.taxid import TaxID
 
    >>> taxid = TaxID(dbype='sqlite', dbname='taxadb.sqlite')
    >>> name = taxid.sci_name(33208)
@@ -29,7 +29,7 @@ Get taxonomic information from accession number(s).
 
 .. code-block:: python
 
-   >>> from taxadb.taxadb import AccessionID
+   >>> from taxadb.accessionid import AccessionID
 
    >>> my_accessions = ['X17276', 'Z12029']
    >>> accession = AccessionID(dbtype='sqlite', dbname='taxadb.sqlite')
