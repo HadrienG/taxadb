@@ -80,7 +80,7 @@ def create_db(args):
     acc_dl_list = []
 
     db.connect()
-    parser = TaxaDumpParser(nodes_files=os.path.join(args.input, 'nodes.dmp'),
+    parser = TaxaDumpParser(nodes_file=os.path.join(args.input, 'nodes.dmp'),
                             names_file=os.path.join(args.input, 'names.dmp'),
                             verbose=args.verbose)
 

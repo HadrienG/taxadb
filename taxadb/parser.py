@@ -58,12 +58,12 @@ class TaxaDumpParser(TaxaParser):
         names_file (:obj:`str`): Path to names.dmp file
 
     """
-    def __init__(self, nodes_files=None, names_file=None, **kwargs):
+    def __init__(self, nodes_file=None, names_file=None, **kwargs):
         """
 
         """
         super().__init__(**kwargs)
-        self.nodes_file = nodes_files
+        self.nodes_file = nodes_file
         self.names_file = names_file
 
     def taxdump(self, nodes_file=None, names_file=None):
@@ -172,7 +172,7 @@ class TaxaDumpParser(TaxaParser):
         self.names_file = names_file
         return True
 
-    
+
 class Accession2TaxidParser(TaxaParser):
     """Main parser class for nucl_xxx_accession2taxid files
 
