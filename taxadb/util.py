@@ -4,6 +4,7 @@
 import hashlib
 import sys
 
+
 def md5_check(file, block_size=256*128):
     """Check the md5 of large files
 
@@ -36,4 +37,3 @@ def fatal(msg):
     else:
         print("[FATAL] An error occured", file=sys.stderr)
     sys.exit(1)
-
