@@ -10,7 +10,8 @@ def md5_check(file, block_size=256*128):
 
     Args:
         file (:obj:`str`): input file
-        block_size (:obj:`int`): block_size for the file chunks. Default = 256*128
+        block_size (:obj:`int`): block_size for the file chunks.
+            Default = 256*128
     """
     print('Checking md5')
     md5 = open(file + '.md5').readline().split()[0]

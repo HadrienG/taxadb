@@ -51,7 +51,7 @@ class TaxaParser(object):
 class TaxaDumpParser(TaxaParser):
     """Main parser class for ncbi taxdump files
 
-    This class is used to parse NCBI taxonomy files found in taxdump.gz archive.
+    This class is used to parse NCBI taxonomy files found in taxdump.gz archive
 
     Args:
         nodes_file (:obj:`str`): Path to nodes.dmp file
@@ -69,7 +69,8 @@ class TaxaDumpParser(TaxaParser):
     def taxdump(self, nodes_file=None, names_file=None):
         """Parse .dmp files
 
-        Parse nodes.dmp and names.dmp files (from taxdump.tgz) and insert taxons in Taxa table.
+        Parse nodes.dmp and names.dmp files (from taxdump.tgz) and insert
+            taxons in Taxa table.
 
         Args:
             nodes_file (:obj:`str`): Path to nodes.dmp file
@@ -88,7 +89,8 @@ class TaxaDumpParser(TaxaParser):
         # parse nodes.dmp
         nodes_data = list()
         self.verbose("Loading taxa data ...")
-        ncbi_ids = {str(x['ncbi_taxid']): True for x in Taxa.select(Taxa.ncbi_taxid).dicts()}
+        ncbi_ids = {str(x['ncbi_taxid']): True for x in Taxa.select(
+            Taxa.ncbi_taxid).dicts()}
         self.verbose("Parsing %s" % str(nodes_file))
         with open(nodes_file, 'r') as f:
             for line in f:
@@ -192,8 +194,8 @@ class Accession2TaxidParser(TaxaParser):
     def accession2taxid(self, acc2taxid=None, chunk=500):
         """Parses the accession2taxid files
 
-        This method parses the accession2taxid file, build a dictionary, stores it in a list and yield for insertion
-        in the database.
+        This method parses the accession2taxid file, build a dictionary,
+            stores it in a list and yield for insertion in the database.
         ::
 
             {
@@ -204,7 +206,8 @@ class Accession2TaxidParser(TaxaParser):
 
         Args:
             acc2taxid (:obj:`str`): Path to acc2taxid input file (gzipped)
-            chunk (:obj:`int`): Chunk size of entries to gather before yielding. Default 500
+            chunk (:obj:`int`): Chunk size of entries to gather before
+                yielding. Default 500
 
         Yields:
             list: Chunk size of read entries
@@ -213,9 +216,11 @@ class Accession2TaxidParser(TaxaParser):
         # Some accessions (e.g.: AAA22826) have a taxid = 0
         entries = []
         counter = 0
-        taxids = {str(x['ncbi_taxid']): True for x in Taxa.select(Taxa.ncbi_taxid).dicts()}
+        taxids = {str(x['ncbi_taxid']): True for x in Taxa.select(
+            Taxa.ncbi_taxid).dicts()}
         # Reach out of memory
-        # accessions = {str(x['accession']): True for x in Accession.select(Accession.accession).dicts()}
+        # accessions = {str(x['accession']): True for x in Accession.select(
+        #     Accession.accession).dicts()}
         accessions = {}
         if acc2taxid is None:
             acc2taxid = self.acc_file
@@ -230,7 +235,8 @@ class Accession2TaxidParser(TaxaParser):
                 # Check the taxid already exists and get its id
                 if line_list[2] not in taxids:
                     continue
-                # In case of an update or parsing an already inserted list of accessions
+                # In case of an update or parsing an already inserted list of
+                # accessions
                 if line_list[0] in accessions:
                     continue
                 try:

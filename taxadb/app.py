@@ -62,7 +62,8 @@ def create_db(args):
 
     Args:
 
-        args.input (str): input directory. It is the directory created by `taxadb download`
+        args.input (str): input directory. It is the directory created by
+            `taxadb download`
         args.dbname (str): name of the database to be created
         args.dbtype (str): type of database to be used.
         args.division (str): division to create the db for.
@@ -120,10 +121,12 @@ def create_db(args):
         for acc_file in acc_dl_list:
             inserted_rows = 0
             parser.verbose("Parsing %s" % str(acc_file))
-            for data_dict in parser.accession2taxid(acc2taxid=os.path.join(args.input, acc_file), chunk=args.chunk):
+            for data_dict in parser.accession2taxid(acc2taxid=os.path.join(
+                    args.input, acc_file), chunk=args.chunk):
                 Accession.insert_many(data_dict[0:args.chunk]).execute()
                 inserted_rows += len(data_dict)
-            print('%s: %s added to database (%d rows inserted)' % (Accession._meta.db_table, acc_file, inserted_rows))
+            print('%s: %s added to database (%d rows inserted)' % (
+                Accession._meta.db_table, acc_file, inserted_rows))
     print('Sequence: completed')
     db.close()
 
@@ -139,8 +142,14 @@ def main():
         description='download and create the database used by the taxadb \
         library'
     )
-    parser.add_argument('-v', '--verbose', action="store_true", default=False, dest="verbose",
-                        help="Prints verbose messages")
+    parser.add_argument(
+        '-v',
+        '--verbose',
+        action="store_true",
+        default=False,
+        dest="verbose",
+        help="Prints verbose messages")
+
     subparsers = parser.add_subparsers(
         title='available commands',
         metavar=''
@@ -210,24 +219,28 @@ def main():
         '-H',
         default='localhost',
         action="store",
-        help='Database connection host (Optional, for MySQLdatabase and PostgreSQLdatabase) (default: %(default)s)'
+        help='Database connection host (Optional, for MySQLdatabase and \
+            PostgreSQLdatabase) (default: %(default)s)'
     )
     parser_create.add_argument(
         '--password',
         '-p',
         default=None,
-        help='Password to use (required for MySQLdatabase and PostgreSQLdatabase)'
+        help='Password to use (required for MySQLdatabase \
+            and PostgreSQLdatabase)'
     )
     parser_create.add_argument(
         '--port',
         '-P',
-        help='Database connection port (default: 5432 (postgres), 3306 (MySQL))'
+        help='Database connection port (default: 5432 (postgres), \
+            3306 (MySQL))'
     )
     parser_create.add_argument(
         '--username',
         '-u',
         default=None,
-        help='Username to login as (required for MySQLdatabase and PostgreSQLdatabase)'
+        help='Username to login as (required for MySQLdatabase \
+            and PostgreSQLdatabase)'
     )
     parser_create.set_defaults(func=create_db)
 

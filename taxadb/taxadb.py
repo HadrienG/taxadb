@@ -8,14 +8,17 @@ class TaxaDB(object):
 
     Args:
         dbname (:obj:`str`): Database name to connect to
-        dbtype (:obj:`str`): Database type to connect to (`sqlite`, `postgre`, `mysql`). Default `sqlite`
-        **kwargs: Arbitrary arguments. Supported (username, password, port, hostname)
+        dbtype (:obj:`str`): Database type to connect to (`sqlite`, `postgre`,
+            `mysql`). Default `sqlite`
+        **kwargs: Arbitrary arguments. Supported (username, password, port,
+            hostname)
 
     Raises:
         AttributeError: If cannot instantiate `taxadb.schema.DatabaseFactory`.
     Attributes:
-        MAX_LIST (:obj:`int`): Maximum number of bind variables to pass to request methods
-            Due to SQLite limit of passed arguments to a statement, we limit number of accession and taxid to
+        MAX_LIST (:obj:`int`): Maximum number of bind variables to pass to
+            request methods. Due to SQLite limit of passed arguments to a
+            statement, we limit number of accession and taxid to
             request to 999 (https://www.sqlite.org/c3ref/bind_blob.html)
     """
 
@@ -25,7 +28,10 @@ class TaxaDB(object):
         self.db = None
         self.dbname = dbname
         try:
-            self.database = DatabaseFactory(dbname=dbname, dbtype=dbtype, **kwargs).get_database()
+            self.database = DatabaseFactory(
+                dbname=dbname,
+                dbtype=dbtype,
+                **kwargs).get_database()
         except AttributeError as err:
             fatal("Can't create database object: %s" % str(err))
         self.db = db
@@ -68,15 +74,17 @@ class TaxaDB(object):
             SystemExit: If `len` of the list of greater than `MAX_LIST`.
         """
         if len(ids) > TaxaDB.MAX_LIST:
-            fatal("Too many accession entries to request (%d), max %d" % (len(ids), AccessionID.MAX_LIST))
+            fatal("Too many accession entries to request (%d), max %d" % (
+                        len(ids), AccessionID.MAX_LIST))
         return True
 
     def _unmapped_taxid(self, acc, do_exit=False):
-        """Prints an error message on stderr an accession number is not mapped with a taxid
+        """Prints an error message on stderr an accession number is not mapped
+            with a taxid
 
         Source ftp://ftp.ncbi.nlm.nih.gov/pub/taxonomy/accession2taxid/README
-        >> If for some reason the source organism cannot be mapped to the taxonomy
-        database, the column will contain 0.<<
+        >> If for some reason the source organism cannot be mapped to the
+        taxonomy database, the column will contain 0.<<
 
         Args:
             acc (:obj:`str`): Accession number not mapped with taxid
@@ -91,12 +99,15 @@ class TaxaDB(object):
 class AccessionID(TaxaDB):
     """Main accession class
 
-    Provide methods to request accession table and get associated taxonomy for accession ids.
+    Provide methods to request accession table and get associated taxonomy for
+        accession ids.
 
     Args:
         dbtype (:obj:`str`): Database to connect to
-        dbtype (:obj:`str`): Database type to connect to (`sqlite`, `postgre`, `mysql`). Default `sqlite`
-        **kwargs: Arbitrary arguments. Supported (username, password, port, hostname)
+        dbtype (:obj:`str`): Database type to connect to (`sqlite`, `postgre`,
+            `mysql`). Default `sqlite`
+        **kwargs: Arbitrary arguments. Supported (username, password, port,
+            hostname)
 
     Raises:
         SystemExit: If table `accession` does not exist
@@ -109,7 +120,8 @@ class AccessionID(TaxaDB):
     def taxid(self, acc_number_list):
         """Get taxonomy of accession ids
 
-        Given a list of accession numbers, yield the accession number and their associated taxids as tuples
+        Given a list of accession numbers, yield the accession number and their
+        associated taxids as tuples
 
         Args:
             acc_number_list (:obj:`list`): a list of accession numbers
@@ -120,7 +132,8 @@ class AccessionID(TaxaDB):
         """
         self.check_list_ids(acc_number_list)
         with db.atomic():
-            query = Accession.select().where(Accession.accession << acc_number_list)
+            query = Accession.select().where(
+                Accession.accession << acc_number_list)
             for i in query:
                 try:
                     yield (i.accession, i.taxid.ncbi_taxid)
@@ -130,7 +143,8 @@ class AccessionID(TaxaDB):
     def sci_name(self, acc_number_list):
         """Get taxonomic scientific name for accession ids
 
-        Given a list of acession numbers, yield the accession number and their associated scientific name as tuples
+        Given a list of acession numbers, yield the accession number and their
+            associated scientific name as tuples
 
         Args:
             acc_number_list (:obj:`list`): a list of accession numbers
@@ -141,7 +155,8 @@ class AccessionID(TaxaDB):
         """
         self.check_list_ids(acc_number_list)
         with db.atomic():
-            query = Accession.select().where(Accession.accession << acc_number_list)
+            query = Accession.select().where(
+                Accession.accession << acc_number_list)
             for i in query:
                 try:
                     yield (i.accession, i.taxid.tax_name)
@@ -151,8 +166,8 @@ class AccessionID(TaxaDB):
     def lineage_id(self, acc_number_list):
         """Get taxonomic lineage name for accession ids
 
-        Given a list of accession numbers, yield the accession number and their associated lineage (in the form of
-        taxids) as tuples
+        Given a list of accession numbers, yield the accession number and their
+            associated lineage (in the form of taxids) as tuples
 
         Args:
             acc_number_list (:obj:`list`): a list of accession numbers
@@ -163,7 +178,8 @@ class AccessionID(TaxaDB):
         """
         self.check_list_ids(acc_number_list)
         with db.atomic():
-            query = Accession.select().where(Accession.accession << acc_number_list)
+            query = Accession.select().where(
+                Accession.accession << acc_number_list)
             for i in query:
                 try:
                     lineage_list = []
@@ -183,7 +199,8 @@ class AccessionID(TaxaDB):
     def lineage_name(self, acc_number_list):
         """Get a lineage name for accession ids
 
-        Given a list of acession numbers, yield the accession number and their associated lineage as tuples
+        Given a list of acession numbers, yield the accession number and their
+            associated lineage as tuples
 
         Args:
             acc_number_list (:obj:`list`): a list of accession numbers
@@ -194,7 +211,8 @@ class AccessionID(TaxaDB):
         """
         self.check_list_ids(acc_number_list)
         with db.atomic():
-            query = Accession.select().where(Accession.accession << acc_number_list)
+            query = Accession.select().where(
+                Accession.accession << acc_number_list)
             for i in query:
                 try:
                     lineage_list = []
@@ -217,8 +235,10 @@ class TaxID(TaxaDB):
 
     Args:
         dbtype (:obj:`str`): Database to connect to
-        dbtype (:obj:`str`): Database type to connect to (`sqlite`, `postgre`, `mysql`). Default `sqlite`
-        **kwargs: Arbitrary arguments. Supported (username, password, port, hostname)
+        dbtype (:obj:`str`): Database type to connect to (`sqlite`, `postgre`,
+            `mysql`). Default `sqlite`
+        **kwargs: Arbitrary arguments. Supported (username, password, port,
+            hostname)
 
     Raises:
         SystemExit: If table `taxa` does not exist
@@ -249,13 +269,16 @@ class TaxID(TaxaDB):
     def lineage_id(self, taxid, reverse=False):
         """Get lineage for a taxonomic id
 
-        Given a taxid, return its associated lineage (in the form of a list of taxids, each parents of each others)
+        Given a taxid, return its associated lineage (in the form of a list of
+            taxids, each parents of each others)
 
         Args:
             taxid (:obj:`int`): a taxid
-            reverse (:obj:`bool`): Inverted lineage, from top to bottom taxonomy hierarchy. Default False
+            reverse (:obj:`bool`): Inverted lineage, from top to bottom
+                taxonomy hierarchy. Default False
         Returns:
-            list: lineage_list, associated lineage id with taxid or None if taxid not found
+            list: lineage_list, associated lineage id with taxid or None if
+                taxid not found
 
         """
         try:
@@ -283,10 +306,12 @@ class TaxID(TaxaDB):
 
         Arguments:
             taxid (:obj:`int`): a taxid
-            reverse (:obj:`bool`): Inverted lineage, from top to bottom taxonomy hierarchy. Default False
+            reverse (:obj:`bool`): Inverted lineage, from top to bottom
+                taxonomy hierarchy. Default False
 
         Returns:
-            list: lineage_name, associated lineage name with taxid  or None if taxid not found
+            list: lineage_name, associated lineage name with taxid or None if
+                taxid not found
 
         """
         try:
