@@ -10,8 +10,10 @@ Taxadb is a application to locally query the ncbi taxonomy. Taxadb is written in
 the `peewee <http://peewee.readthedocs.io>`_ library.
 
 .. image:: biobook_taxonomy_graphik_6.png
-   :height: 246
-   :width: 200
+   :scale: 50
+
+..   :height: 246
+..   :width: 200
 
 * A small tool to query `NCBI <https://ncbi.nlm.nih.gov/taxonomy>`_ taxonomy.
 * Written in python 3.5.
@@ -36,8 +38,14 @@ Taxadb's source code hosted on `GitHub <https://github.com/HadrienG/taxadb.git>`
 
 * :ref:`Installation guide <install>` explains how to install Taxadb.
 * :ref:`Download or build data <download>` explain how to build Taxadb database(s).
+* :ref:`Test the application <tests>` allow to run several tests for supported databases.
 * :ref:`Querying taxadb <query>` shows some example on how to use Taxadb application.
-* :ref:`API reference <api>` lists the various field types peewee supports and the parameters they accept.
+* :ref:`API reference <api>` describes available classes and methods to use Taxadb.
+
+Note
+----
+
+If you find any bugs, odd behavior, or have an idea for a new feature please don't hesitate to `open an issue <https://github.com/Hadien/taxadb/issues?state=open>`_ .
 
 Contents:
 ---------
@@ -48,13 +56,9 @@ Contents:
 
    taxadb/install
    taxadb/download
+   taxadb/tests
    taxadb/query
    taxadb/api
-
-Note
-----
-
-If you find any bugs, odd behavior, or have an idea for a new feature please don't hesitate to `open an issue <https://github.com/Hadien/taxadb/issues?state=open>`_ .
 
 Indices and tables
 ==================
@@ -62,3 +66,8 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
+
+.. |date| date::
+.. |time| date:: %H:%M
+
+*This documentation was generated on* |date| *at* |time|.

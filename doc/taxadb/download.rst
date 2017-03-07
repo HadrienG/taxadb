@@ -74,7 +74,7 @@ Then, fill database with data
 
 .. code-block:: bash
 
-   taxadb create -i taxadb --dbname taxadb --dbtype mysql --username user --password secret --port 3306 --hostname localhost`
+   taxadb create -i taxadb --dbname taxadb --dbtype mysql --username user --password secret --port 3306 --hostname localhost
 
 .. _using_postgres:
 
@@ -93,7 +93,7 @@ Then, fill database with data
 
 .. code-block:: bash
 
-   taxadb create -i taxadb --dbname taxadb --dbtype postgres --username user --password secret --port 5432 --hostname localhost`
+   taxadb create -i taxadb --dbname taxadb --dbtype postgres --username user --password secret --port 5432 --hostname localhost
 
 Following options have default value if not set on command line:
 
