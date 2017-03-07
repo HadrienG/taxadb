@@ -2,7 +2,9 @@
 # -*- coding: utf-8 -*-
 
 import unittest
-from taxadb.taxadb import AccessionID, TaxID, TaxaDB
+from taxadb.taxadb import TaxaDB
+from taxadb.accessionid import AccessionID
+from taxadb.taxid import TaxID
 from taxadb.schema import Accession, Taxa
 from nose.plugins.attrib import attr
 from testconfig import config

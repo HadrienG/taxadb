@@ -1,10 +1,10 @@
-.. _taxadb:
+.. _taxaid:
 
 
-taxadb API reference
+taxaid API reference
 ====================
 
-.. automodule:: taxadb.taxadb
+.. automodule:: taxadb.taxid
   :members:
   :private-members:
   :special-members:

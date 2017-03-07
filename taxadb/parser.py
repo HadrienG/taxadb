@@ -3,7 +3,6 @@
 
 import gzip
 import os
-import sys
 from taxadb.schema import Taxa, Accession
 from taxadb.util import fatal
 
@@ -196,6 +195,7 @@ class Accession2TaxidParser(TaxaParser):
 
         This method parses the accession2taxid file, build a dictionary,
             stores it in a list and yield for insertion in the database.
+
         ::
 
             {
@@ -266,6 +266,7 @@ class Accession2TaxidParser(TaxaParser):
             True
         Raises:
             SystemExit: If `acc_file` is None or not a file (`check_file`)
+
         """
         if acc_file is None:
             fatal("Please provide an accession file to set")
