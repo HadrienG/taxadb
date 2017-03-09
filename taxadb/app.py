@@ -254,9 +254,8 @@ def main():
     parser_query.set_defaults(func=query)
 
     args = parser.parse_args()
-    args.func(args)
-    # try:
-    #     args.func(args)
-    # except Exception as e:
-    #     parser.print_help()
-    #     print('\nERROR: %s' % str(e))  # for debugging purposes
+    try:
+        args.func(args)
+    except Exception as e:
+        parser.print_help()
+        print('\nERROR: %s' % str(e))  # for debugging purposes
