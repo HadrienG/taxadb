@@ -1,22 +1,17 @@
 .. _download:
 
-Download Pre built database
-===========================
+Download and Create a database
+==============================
 
-In order to download the required data to create Taxadb database, you can use following command
+.. _available_databases:
 
-.. code-block:: bash
-
-   taxadb download -o taxadb
-
-where :code:`-o` refers to an output directory where to download the data.
-
-Available databases
+Pre-built databases
 -------------------
 
 The databases used by Taxadb are lengthy to build, therefore we provide pre-built databases.
 They are available for download below (**SQLite**).
-However, it is possible to build and create your :ref:`own databases <build_own_databases>`
+We try to update them on a regular basis.
+If you wish, it is also possible to build and create your :ref:`own databases <build_own_databases>`
 
 +------+------+----------------+---------------------------------------------------------------+
 | Name | Size | Size (gzipped) | download link                                                 |
@@ -42,14 +37,20 @@ However, it is possible to build and create your :ref:`own databases <build_own_
 Build you own database
 ----------------------
 
-* :ref:`SQLite <using_sqlite>`
-* :ref:`MySQL <using_mysql>`
-* :ref:`PostgreSQL <using_postgres>`
+In order to create your own database, you first need to download the required data from
+the ncbi ftp. The following command does it for you:
+
+.. code-block:: bash
+
+   taxadb download -o taxadb
+
+where :code:`-o` refers to an output directory where to download the data.
+
 
 .. _using_sqlite:
 
 SQLite
-------
+^^^^^^
 
 The following command will create an **SQLite** database in the current directory.
 
@@ -60,7 +61,7 @@ The following command will create an **SQLite** database in the current director
 .. _using_mysql:
 
 MySQL
------
+^^^^^
 
 Creating databases is a very vendor specific task. **Peewee**, as most ORMs, can create tables but not databases.
 In order to use taxadb with **MySQL**, you'll have to create the database yourself.
@@ -79,7 +80,7 @@ Then, fill database with data
 .. _using_postgres:
 
 PostgreSQL
-----------
+^^^^^^^^^^
 
 Creating databases is a very vendor specific task. **Peewee**, as most ORMs, can create tables but not databases.
 In order to use taxadb with **PostgreSQL**, you'll have to create the database yourself.
@@ -95,14 +96,14 @@ Then, fill database with data
 
    taxadb create -i taxadb --dbname taxadb --dbtype postgres --username user --password secret --port 5432 --hostname localhost
 
-Following options have default value if not set on command line:
+
+The following options have default value if not set on the command line:
 
 * :code:`--port` (:code:`5432` for **PostgreSQL**, :code:`3306` for **MySQL**)
 * :code:`--hostname` (localhost)
 
-For more information about available options, please type:
+For more information about all the available options, please type:
 
 .. code-block:: bash
 
    taxadb create --help
-
