@@ -24,6 +24,7 @@ venv/
 # testing
 .cache
 data/
+.idea
 
 # distribution / packaging
 *.egg-info/
@@ -31,3 +32,11 @@ dist/
 
 # mac stuff
 .DS_Store
+
+# Site for gitlab pages
+public
+
+doc/_build
+doc/_static
+doc/_sources
+
