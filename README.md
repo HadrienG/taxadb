@@ -47,7 +47,7 @@ Firstly, make sure you have [downloaded](#available-databases) or [built](#creat
 Below you can find basic examples. For more complete examples, please refer to the complete documentation (Available soon!)
 
 ```python
-    >>> from taxadb.taxadb import TaxID
+    >>> from taxadb.taxid import TaxID
 
     >>> taxid = TaxID(dbtype='sqlite', dbname='mydb.sqlite')
     >>> name = taxid.sci_name(33208)
@@ -65,7 +65,7 @@ Below you can find basic examples. For more complete examples, please refer to t
 Get the taxonomic information for accession number(s).
 
 ```python
-    >>> from taxadb.taxadb import AccessionID
+    >>> from taxadb.accessionid import AccessionID
 
     >>> my_accessions = ['X17276', 'Z12029']
     >>> accession = AccessionID(dbtype='sqlite', dbname='mydb.sqlite')
