@@ -1,6 +1,6 @@
 .. _api:
 
-Taxadb's API Documentation
+API Documentation
 ==========================
 
 Contents:
@@ -15,4 +15,3 @@ Contents:
    taxid.rst
    schema.rst
    util.rst
-

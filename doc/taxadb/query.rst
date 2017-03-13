@@ -4,10 +4,16 @@
 Querying the database
 =====================
 
-Firstly make sure you have :ref:`downloaded <download>` or :ref:`build <build_own_databases>` the database.
+Firstly make sure you have :ref:`downloaded <download>` or :ref:`built <build_own_databases>` the database.
 
 Below you can find basic examples. For more complex examples, please refer to the complete :ref:`documentation <api>`.
-Play with taxonimc identifiers:
+
+.. _taxids:
+
+taxids
+------
+
+Several operations on taxids are available in taxadb:
 
 .. code-block:: python
 
@@ -24,6 +30,24 @@ Play with taxonimc identifiers:
    >>> lineage = taxid.lineage_name(33208, reverse=True)
    >>> print(lineage)
    ['cellular organism', 'Eukaryota', 'Opisthokonta', 'Metazoa']
+
+If you are using MySQL or postgres, you'll have to provide your username and password
+(and optionally the port and hostname):
+
+.. code-block:: python
+
+    >>> from taxadb.taxid import TaxID
+
+    >>> taxid = TaxID(dbype='postgres', dbname='taxadb',
+                        username='taxadb', password='*****')
+    >>> name = taxid.sci_name(33208)
+    >>> print(name)
+    Metazoa
+
+.. _accessions:
+
+accession numbers
+-----------------
 
 Get taxonomic information from accession number(s).
 
