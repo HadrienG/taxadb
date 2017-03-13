@@ -4,25 +4,28 @@
 [![PyPI](https://img.shields.io/badge/python-3.5-blue.svg)]()
 [![LICENSE](https://img.shields.io/badge/license-MIT-lightgrey.svg)]()
 
-Taxadb is a application to locally query the ncbi taxonomy. Taxadb is written in python, and access its database using the [peewee](http://peewee.readthedocs.io) library.
+Taxadb is an application to locally query the ncbi taxonomy. Taxadb is written in python, and access its database using the [peewee](http://peewee.readthedocs.io) library.
 
-Taxadb is very much a work in progress, the following are still not implemented:  
-- [x] taxadb download: download all the required files from the ncbi ftp  
-- [x] taxadb create: build the sqlite database  
-- [ ] API: python library to query the database
+In brief Taxadb:
+
+* is a small tool to query the [ncbi](https://ncbi.nlm.nih.gov/taxonomy) taxonomy.
+* is written in python >= 3.5.
+* has built-in support for [SQLite](https://www.sqlite.org), [MySQL](https://www.mysql.com) and [PostgreSQL](https://www.postgresql.org).
+* has available pre-built SQLite databases.
+* has a comprehensive API documentation.
 
 
 ## Installation
 
-Taxadb requires python 3.5 to work. To install, simply type the following in your terminal:
+Taxadb requires python >= 3.5 to work. To install taxadb with sqlite support, simply type the following in your terminal:
 
-    pip install taxadb
-    
-    python setup.py install
+    pip3 install taxadb
+
+If you wish to use MySQL or PostgreSQL, please refer to the full [documentation](http://taxadb.readthedocs.io/en/latest/)
 
 ### Available databases
 
-The databases used by Taxadb are lengthy to build, therefore we provide pre-built databases. They are available for download below.
+The databases used by Taxadb are lengthy to build, therefore we provide pre-built sqlite databases. They are available for download below.
 
 #### Sqlite
 
@@ -44,7 +47,7 @@ Build date: December 2016
 
 Firstly, make sure you have [downloaded](#available-databases) or [built](#creating-the-database) the database
 
-Below you can find basic examples. For more complete examples, please refer to the complete documentation (Available soon!)
+Below you can find basic examples. For more complete examples, please refer to the complete [API documentation](http://taxadb.readthedocs.io/en/latest/)
 
 ```python
     >>> from taxadb.taxadb import TaxID
@@ -81,16 +84,16 @@ Get the taxonomic information for accession number(s).
 
 ### Creating the Database
 
-##### *Download data*
+#### Download data
 
 The following commands will download the necessary files from the ncbi ftp into the directory `taxadb`.
 ```
 $ taxadb download -o taxadb
 ```
 
-##### *Insert data*
+#### Insert data
 
-* SQLite
+##### SQLite
 
 
 ```
@@ -101,7 +104,7 @@ You can then safely remove the downloaded files
 $ rm -r taxadb
 ```
 
-* MySQL
+##### MySQL
 
 Creating databases is a very vendor specific task. Peewee, as most ORMs, can create tables but not databases.
 In order to use taxadb with MySQL, you'll have to create the database yourself.
@@ -118,7 +121,7 @@ Load data
 $ taxadb create -i taxadb --dbname taxadb --dbtype mysql --username <user> --password <pwd> ...
 ```
 
-* PostgreSQL
+##### PostgreSQL
 
 Creating databases is a very vendor specific task. Peewee, as most ORMs, can create tables but not databases.
 In order to use taxadb with PosgreSQL, you'll have to create the database yourself.
@@ -163,9 +166,9 @@ $ nosetest --tc-file taxadb.ini --tc=sql.dbname:another_dbname
 
 More info at [nose-testconfig](https://pypi.python.org/pypi/nose-testconfig)
 
-#### Running tests against PostgreSQL or MySQL
+### Running tests against PostgreSQL or MySQL
 
-##### *First create a test database to insert test data*
+#### First create a test database to insert test data
 
 * PostgreSQL
 
@@ -185,7 +188,7 @@ $ mysql -u root
 mysql> CREATE DATABASE <test_db>;
 ```
 
-##### *Load test data*
+#### Load test data
 
 * PostgreSQL
 ```
@@ -197,7 +200,7 @@ $ gunzip -c /path/to/taxadb/taxadb/test/test_mypg_db.sql.gz | psql -d <test_db> 
 $ gunzip -c /path/to/taxadb/taxadb/test/test_mypg_db.sql.gz | mysql -D <test_db> -u <user> -p
 ```
 
-##### *Run tests*
+#### Run tests
 
 Either edit `taxadb.ini` to fit database configuration or use `--tc` command line option and set appropriate values like
 `username, password, port, hostname, dbtype(postgres or mysql), dbname`.
