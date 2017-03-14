@@ -36,7 +36,7 @@ from recommonmark.parser import CommonMarkParser
 # extensions = ['sphinx.ext.githubpages']
 extensions = [
     'sphinx.ext.autodoc',
-    'sphinxcontrib.napoleon',
+    'sphinx.ext.napoleon',
     'sphinx.ext.viewcode',
 ]
 # Add any paths that contain templates here, relative to this directory.

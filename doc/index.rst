@@ -6,48 +6,50 @@
 Taxadb
 ======
 
-Taxadb is a application to locally query the ncbi taxonomy. Taxadb is written in python, and access its database using
+Taxadb is an application to locally query the ncbi taxonomy. Taxadb is written in python, and access its database using
 the `peewee <http://peewee.readthedocs.io>`_ library.
 
-.. image:: biobook_taxonomy_graphik_6.png
-   :scale: 50
+.. .. image:: biobook_taxonomy_graphik_6.png
+..    :scale: 50
+..
+.. ..   :height: 246
+.. ..   :width: 200
 
-..   :height: 246
-..   :width: 200
+In brief Taxadb:
 
-* A small tool to query `NCBI <https://ncbi.nlm.nih.gov/taxonomy>`_ taxonomy.
-* Written in python 3.5.
-* Built-in support for `SQLite <https://www.sqlite.org>`_, `MySQL <https://www.mysql.com>`_ and
+* is a small tool to query the `ncbi <https://ncbi.nlm.nih.gov/taxonomy>`_ taxonomy.
+* is written in python >= 3.5.
+* has built-in support for `SQLite <https://www.sqlite.org>`_, `MySQL <https://www.mysql.com>`_ and
   `PostgreSQL <https://www.postgresql.org>`_.
-* Available pre-built SQLite databases (:ref:`Download build databases <download>`).
-* `API documentation <api>`_.
+* has available pre-built SQLite databases (:ref:`Download build databases <download>`).
+* has a comprehensive :ref:`API documentation <api>`.
+* is actively being developped on `GitHub <https://github.com/HadrienG/taxadb.git>`_ and available under the MIT license. Please see the `README <https://github.com/HadrienG/taxadb>`_ for more information on development, support, and contributing.
 
-.. image:: postgresql.png
+Quickstart
+----------
+
+Click on the images below to access the documentation for creating the database with the engine you wish to use:
+
+.. image:: img/postgresql.png
     :target: taxadb/download.html#using-postgres
     :alt: postgresql
 
-.. image:: mysql.png
+.. image:: img/mysql.png
     :target: taxadb/download.html#using-mysql
     :alt: mysql
 
-.. image:: sqlite.png
+.. image:: img/sqlite.png
     :target: taxadb/download.html#using-sqlite
     :alt: sqlite
 
-Taxadb's source code hosted on `GitHub <https://github.com/HadrienG/taxadb.git>`_.
-
 * :ref:`Installation guide <install>` explains how to install Taxadb.
-* :ref:`Download or build data <download>` explain how to build Taxadb database(s).
-* :ref:`Test the application <tests>` allow to run several tests for supported databases.
-* :ref:`Querying taxadb <query>` shows some example on how to use Taxadb application.
+* :ref:`Download or build data <download>` explains how to build Taxadb database(s).
+* :ref:`Test the application <tests>` allows to run several tests for supported databases.
+* :ref:`Querying taxadb <query>` shows examples on how to query a Taxadb database.
 * :ref:`API reference <api>` describes available classes and methods to use Taxadb.
 
-Note
-----
 
-If you find any bugs, odd behavior, or have an idea for a new feature please don't hesitate to `open an issue <https://github.com/Hadien/taxadb/issues?state=open>`_ .
-
-Contents:
+Contents
 ---------
 
 .. toctree::
@@ -61,7 +63,7 @@ Contents:
    taxadb/api
 
 Indices and tables
-==================
+------------------
 
 * :ref:`genindex`
 * :ref:`modindex`
