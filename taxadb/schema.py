@@ -3,7 +3,6 @@
 
 import peewee as pw
 
-
 db = pw.Proxy()
 
 
@@ -13,80 +12,108 @@ class BaseModel(pw.Model):
 
 
 class Taxa(BaseModel):
-    """table Taxa. Each row is a taxon.
+    """table Taxa.
 
-    Fields:
-    ncbi_taxid -- the TaxID of the taxon (from nodes.dmp)
-    parent_taxid -- the TaxID of the parent taxon (from nodes.dmp)
-    tax_name -- the scientific name of the taxon (from names.dmp)
-    lineage_level -- the level of lineage of the taxon (from nodes.dmp)
+    Each row is a taxon.
+
+    Attributes:
+        ncbi_taxid (:obj:`pw.IntegerField`): the TaxID of
+            the taxon (from nodes.dmp)
+        parent_taxid (:obj:`pw.IntegerField`): the TaxID of
+            the parent taxon (from nodes.dmp)
+        tax_name (:obj:`pw.CharField`): the scientific name of
+            the taxon (from names.dmp)
+        lineage_level (:obj:`pw.CharField`): the level of lineage of
+            the taxon (from nodes.dmp)
+
     """
-    ncbi_taxid = pw.IntegerField(null=False, index=True, primary_key=True)
+    ncbi_taxid = pw.IntegerField(null=False, primary_key=True, unique=True)
     parent_taxid = pw.IntegerField(null=False)
     tax_name = pw.CharField()
     lineage_level = pw.CharField()
 
 
-class Est(BaseModel):
-    """table Est. Each row is a sequence from nucl_est. Each sequence has a taxid.
+class Accession(BaseModel):
+    """table Accession.
 
-    Fields:
-    primary -- the primary key
-    taxid -- reference to a taxon in the table Taxa.
-    accession -- the accession number of the sequence.
+    Each row is a sequence from nucl_*.accession2taxid.gz. Each sequence
+        has a taxid.
+
+    Attributes:
+        id (:obj:`pw.PrimaryKeyField`): the primary key
+        taxid (:obj:`pw.ForeignKeyField`): reference to a taxon in the table
+            Taxa.
+        accession (:obj:`pw.CharField`): the accession number of the sequence.
+
     """
-    primary = pw.PrimaryKeyField()
-    taxid = pw.ForeignKeyField(Taxa, related_name='est')
-    accession = pw.CharField(null=False, index=True)
+    id = pw.PrimaryKeyField()
+    taxid = pw.ForeignKeyField(Taxa, related_name='accession')
+    accession = pw.CharField(null=False, unique=True)
 
 
-class Gb(BaseModel):
-    """table Gb. Each row is a sequence from nucl_gb. Each sequence has a taxid.
+class DatabaseFactory(object):
+    """Database factory to support multiple database type.
 
-    Fields:
-    primary -- the primary key
-    taxid -- reference to a taxon in the table Taxa.
-    accession -- the accession number of the sequence.
+    This class may be used to create a database for different type (SQLite,
+        PostgreSQL, MySQL).
+
+    Args:
+        dbname (:obj:`str`): Database name to connect to.
+        dbtype (:obj:`str`): Database type to connect to (`sqlite`, `postgres`,
+            `mysql`). Default to `sqlite`.
+        **kwargs: Arbitrary arguments. Supported (username, password, port,
+            hostname)
+
     """
-    primary = pw.PrimaryKeyField()
-    taxid = pw.ForeignKeyField(Taxa, related_name='gb')
-    accession = pw.CharField(null=False, index=True)
 
+    SUPPORTED_DBS = ['sqlite', 'postgres', 'mysql']
 
-class Gss(BaseModel):
-    """table Gss. Each row is a sequence from nucl_gss. Each sequence has a taxid.
+    def __init__(self, dbname=None, dbtype='sqlite', **kwargs):
+        if dbtype not in DatabaseFactory.SUPPORTED_DBS:
+            raise AttributeError(
+                "Database type '%s' not supported" % str(dbtype))
+        if not dbname:
+            raise AttributeError("A database name is required")
+        self.dbtype = dbtype
+        self.dbname = dbname
+        self.args = kwargs
 
-    Fields:
-    primary -- the primary key
-    taxid -- reference to a taxon in the table Taxa.
-    accession -- the accession number of the sequence.
-    """
-    primary = pw.PrimaryKeyField()
-    taxid = pw.ForeignKeyField(Taxa, related_name='gss')
-    accession = pw.CharField(null=False, index=True)
+    def get_database(self):
+        """Returns the correct database driver
 
+        Returns:
+            :obj:`pw.Database`
+        Raises:
+            AttributeError: if `--username` or `--password` not passed
+                (if `--dbtype [postgres|mysql]`)
 
-class Wgs(BaseModel):
-    """table Wgs. Each row is a sequence from nucl_wgs. Each sequence has a taxid.
-
-    Fields:
-    primary -- the primary key
-    taxid -- reference to a taxon in the table Taxa.
-    accession -- the accession number of the sequence.
-    """
-    primary = pw.PrimaryKeyField()
-    taxid = pw.ForeignKeyField(Taxa, related_name='wgs')
-    accession = pw.CharField(null=False, index=True)
-
-
-class Prot(BaseModel):
-    """table prot. Each row is a sequence from prot. Each sequence has a taxid.
-
-    Fields:
-    primary -- the primary key
-    taxid -- reference to a taxon in the table Taxa.
-    accession -- the accession number of the sequence.
-    """
-    primary = pw.PrimaryKeyField()
-    taxid = pw.ForeignKeyField(Taxa, related_name='prot')
-    accession = pw.CharField(null=False, index=True)
+        """
+        if self.dbtype == 'sqlite':
+            return pw.SqliteDatabase(self.dbname)
+        else:
+            if 'username' not in self.args or 'password' not in self.args:
+                raise AttributeError('[ERROR] --dbtype %s requires --username \
+                and --password.\n' % str(self.dbtype))
+            if self.args['username'] is None or self.args['password'] is None:
+                raise AttributeError('[ERROR] --dbtype %s requires --username \
+                and --password.\n' % str(self.dbtype))
+            if 'hostname' not in self.args:
+                self.args['hostname'] = 'localhost'
+            if self.dbtype == 'mysql':
+                if 'port' not in self.args:
+                    self.args['port'] = 3306
+                return pw.MySQLDatabase(
+                    self.dbname,
+                    user=self.args['username'],
+                    password=self.args['password'],
+                    host=self.args['hostname'],
+                    port=int(self.args['port']))
+            elif self.dbtype == 'postgres':
+                if 'port' not in self.args:
+                    self.args['port'] = 5432
+                return pw.PostgresqlDatabase(
+                    self.dbname,
+                    user=self.args['username'],
+                    password=self.args['password'],
+                    host=self.args['hostname'],
+                    port=int(self.args['port']))
