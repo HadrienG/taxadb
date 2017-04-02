@@ -8,15 +8,27 @@ from taxadb.util import fatal
 
 
 class TaxaParser(object):
+
     """Base parser class for taxonomic files"""
 
     def __init__(self, verbose=False):
-        """
-        Base class
-        """
+        """Base class"""
         self._verbose = verbose
 
-    def check_file(self, element):
+    def cache_taxids(self):
+        """Load data from taxa table into a dictionary
+
+        Returns:
+            data (:obj:`dict`): Data from taxa table mapped as dictionary
+
+        """
+        data = {}
+        for x in Taxa.select(Taxa.ncbi_taxid).dicts():
+            data[str(x['ncbi_taxid'])] = True
+        return data
+
+    @staticmethod
+    def check_file(element):
         """Make some check on a file
 
         This method is used to check an `element` is a real file.
@@ -48,6 +60,7 @@ class TaxaParser(object):
 
 
 class TaxaDumpParser(TaxaParser):
+
     """Main parser class for ncbi taxdump files
 
     This class is used to parse NCBI taxonomy files found in taxdump.gz archive
@@ -88,8 +101,7 @@ class TaxaDumpParser(TaxaParser):
         # parse nodes.dmp
         nodes_data = list()
         self.verbose("Loading taxa data ...")
-        ncbi_ids = {str(x['ncbi_taxid']): True for x in Taxa.select(
-            Taxa.ncbi_taxid).dicts()}
+        ncbi_ids = self.cache_taxids()
         self.verbose("Parsing %s" % str(nodes_file))
         with open(nodes_file, 'r') as f:
             for line in f:
@@ -102,7 +114,7 @@ class TaxaDumpParser(TaxaParser):
                     'parent_taxid': line_list[1].strip('\t'),
                     'tax_name': '',
                     'lineage_level': line_list[2].strip('\t')
-                    }
+                }
                 nodes_data.append(data_dict)
         print('parsed nodes')
 
@@ -147,7 +159,7 @@ class TaxaDumpParser(TaxaParser):
 
         """
         if nodes_file is None:
-            fatal("Please provide an accession file to set")
+            fatal("Please provide an nodes file to set")
         self.check_file(nodes_file)
         self.nodes_file = nodes_file
         return True
@@ -168,13 +180,14 @@ class TaxaDumpParser(TaxaParser):
 
         """
         if names_file is None:
-            fatal("Please provide an accession file to set")
+            fatal("Please provide an names file to set")
         self.check_file(names_file)
         self.names_file = names_file
         return True
 
 
 class Accession2TaxidParser(TaxaParser):
+
     """Main parser class for nucl_xxx_accession2taxid files
 
     This class is used to parse accession2taxid files.
@@ -190,7 +203,7 @@ class Accession2TaxidParser(TaxaParser):
         self.acc_file = acc_file
         self.chunk = chunk
 
-    def accession2taxid(self, acc2taxid=None, chunk=500):
+    def accession2taxid(self, acc2taxid=None, chunk=None):
         """Parses the accession2taxid files
 
         This method parses the accession2taxid file, build a dictionary,
@@ -207,7 +220,7 @@ class Accession2TaxidParser(TaxaParser):
         Args:
             acc2taxid (:obj:`str`): Path to acc2taxid input file (gzipped)
             chunk (:obj:`int`): Chunk size of entries to gather before
-                yielding. Default 500
+                yielding. Default 500 (set at object construction)
 
         Yields:
             list: Chunk size of read entries
@@ -216,16 +229,12 @@ class Accession2TaxidParser(TaxaParser):
         # Some accessions (e.g.: AAA22826) have a taxid = 0
         entries = []
         counter = 0
-        taxids = {str(x['ncbi_taxid']): True for x in Taxa.select(
-            Taxa.ncbi_taxid).dicts()}
-        # Reach out of memory
-        # accessions = {str(x['accession']): True for x in Accession.select(
-        #     Accession.accession).dicts()}
+        taxids = self.cache_taxids()
         accessions = {}
         if acc2taxid is None:
             acc2taxid = self.acc_file
         self.check_file(acc2taxid)
-        if not chunk:
+        if chunk is None:
             chunk = self.chunk
         self.verbose("Parsing %s" % str(acc2taxid))
         with gzip.open(acc2taxid, 'rb') as f:
@@ -240,8 +249,8 @@ class Accession2TaxidParser(TaxaParser):
                 if line_list[0] in accessions:
                     continue
                 try:
-                    acc_id = Accession.get(Accession.accession == line_list[0])
-                except Accession.DoesNotExist as err:
+                    Accession.get(Accession.accession == line_list[0])
+                except Accession.DoesNotExist:
                     accessions[line_list[0]] = True
                     data_dict = {
                         'accession': line_list[0],
@@ -253,8 +262,8 @@ class Accession2TaxidParser(TaxaParser):
                     yield(entries)
                     entries = []
                     counter = 0
-            if len(entries):
-                yield(entries)
+        if len(entries):
+            yield(entries)
 
     def set_accession_file(self, acc_file):
         """Set the accession file to use

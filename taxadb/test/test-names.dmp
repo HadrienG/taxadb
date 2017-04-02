@@ -1,0 +1,77 @@
+1	|	all	|		|	synonym	|
+1	|	root	|		|	scientific name	|
+2	|	Bacteria	|	Bacteria <prokaryotes>	|	scientific name	|
+2	|	Monera	|	Monera <Bacteria>	|	in-part	|
+2	|	Procaryotae	|	Procaryotae <Bacteria>	|	in-part	|
+2	|	Prokaryota	|	Prokaryota <Bacteria>	|	in-part	|
+2	|	Prokaryotae	|	Prokaryotae <Bacteria>	|	in-part	|
+2	|	bacteria	|	bacteria <blast2>	|	blast name	|
+2	|	eubacteria	|		|	genbank common name	|
+2	|	not Bacteria Haeckel 1894	|		|	synonym	|
+2	|	prokaryote	|	prokaryote <Bacteria>	|	in-part	|
+2	|	prokaryotes	|	prokaryotes <Bacteria>	|	in-part	|
+6	|	Azorhizobium	|		|	scientific name	|
+6	|	Azorhizobium Dreyfus et al. 1988 emend. Lang et al. 2013	|		|	authority	|
+6	|	Azotirhizobium	|		|	misspelling	|
+7	|	ATCC 43989	|		|	type material	|
+7	|	Azorhizobium caulinodans	|		|	scientific name	|
+7	|	Azorhizobium caulinodans Dreyfus et al. 1988	|		|	authority	|
+7	|	Azotirhizobium caulinodans	|		|	equivalent name	|
+7	|	CCUG 26647	|		|	type material	|
+7	|	DSM 5975	|		|	type material	|
+7	|	IFO 14845	|		|	type material	|
+7	|	JCM 20966	|		|	type material	|
+7	|	LMG 6465	|		|	type material	|
+7	|	NBRC 14845	|		|	type material	|
+7	|	ORS 571	|		|	type material	|
+9	|	Acyrthosiphon pisum symbiont P	|		|	includes	|
+9	|	Buchnera aphidicola	|		|	scientific name	|
+9	|	Buchnera aphidicola Munson et al. 1991	|		|	authority	|
+10	|	"Cellvibrio" Winogradsky 1929	|		|	synonym	|
+10	|	Cellvibrio	|		|	scientific name	|
+10	|	Cellvibrio (ex Winogradsky 1929) Blackall et al. 1986 emend. Humphry et al. 2003	|		|	authority	|
+10	|	Cellvibrio (ex Winogradsky 1929) Blackall et al. 1986 emend. Suarez et al. 2014	|		|	authority	|
+11	|	"Cellulomonas gilvus" (Hulcher and King 1958) Christopherson et al. 2013	|		|	authority	|
+11	|	"Cellvibrio gilvus" Hulcher and King 1958	|		|	authority	|
+11	|	ATCC 13127	|		|	type material	|
+11	|	Cellulomonas gilvus	|		|	scientific name	|
+11	|	Cellvibrio gilvus	|		|	synonym	|
+11	|	NRRL B-14078	|		|	type material	|
+11	|	[Cellvibrio] gilvus	|		|	equivalent name	|
+13	|	Dictyoglomus	|		|	scientific name	|
+13	|	Dictyoglomus Saiki et al. 1985	|		|	authority	|
+14	|	ATCC 35947	|		|	type material	|
+14	|	DSM 3960	|		|	type material	|
+14	|	Dictyoglomus thermophilum	|		|	scientific name	|
+14	|	Dictyoglomus thermophilum Saiki et al. 1985	|		|	authority	|
+14	|	strain H-6-12	|		|	type material	|
+16	|	Methyliphilus	|		|	equivalent name	|
+16	|	Methylophilus	|		|	scientific name	|
+16	|	Methylophilus Jenkins et al. 1987	|		|	authority	|
+16	|	Methylotrophus	|		|	misspelling	|
+31033	|	Fugu rubripes	|		|	genbank synonym	|
+31033	|	Sphaeroides rubripes	|		|	synonym	|
+31033	|	Takifugu rubripes	|		|	scientific name	|
+31033	|	Takifugu rubripes (Temminck & Schlegel, 1850)	|		|	authority	|
+31033	|	Tetraodon rubripes	|		|	synonym	|
+31033	|	tiger puffer	|		|	common name	|
+31033	|	torafugu	|		|	genbank common name	|
+102618	|	Helicobacter pylori (strain NCTC11637)	|		|	synonym	|
+102618	|	Helicobacter pylori ATCC 43504	|		|	synonym	|
+102618	|	Helicobacter pylori ATCC43504	|		|	misspelling	|
+102618	|	Helicobacter pylori CCUG 17874	|		|	synonym	|
+102618	|	Helicobacter pylori CCUG 17874 = NCTC 11637	|		|	equivalent name	|
+102618	|	Helicobacter pylori NCTC 11637	|		|	synonym	|
+102618	|	Helicobacter pylori NCTC 11637 = CCUG 17874	|		|	synonym	|
+102618	|	Helicobacter pylori NCTC 11637 = CCUG 17874 = ATCC 43504	|		|	scientific name	|
+102618	|	Helicobacter pylori NCTC11637	|		|	misspelling	|
+5664	|	Leishmania (Leishmania) major	|		|	synonym	|
+5664	|	Leishmania major	|		|	scientific name	|
+5664	|	Leishmania tropica major	|		|	synonym	|
+1090	|	"Chlorobi" Garrity and Holt 2001	|		|	authority	|
+1090	|	Chlorobaeota	|		|	synonym	|
+1090	|	Chlorobaeota Oren et al. 2015	|		|	authority	|
+1090	|	Chlorobi	|		|	scientific name	|
+1090	|	Chlorobi Iino et al. 2010	|		|	authority	|
+1090	|	Green sulfur bacteria	|		|	synonym	|
+1090	|	green sulfur bacteria	|	green sulfur bacteria<blast1090>	|	blast name	|

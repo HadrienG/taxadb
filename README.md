@@ -82,6 +82,34 @@ Get the taxonomic information for accession number(s).
     ('Z12029', 9915)
 ```
 
+You can also use a configuration file in order to automatically set database
+connection parameters at object build. Either set `config` parameter to `__init__`
+ object method:
+ ```python
+    >>> from taxadb.accessionid import AccessionID
+
+    >>> my_accessions = ['X17276', 'Z12029']
+    >>> accession = AccessionID(config='/path/to/taxadb.cfg')
+    >>> taxids = accession.taxid(my_accessions)
+    >>> ...
+ ```
+
+ or set environment variable `TAXADB_CONFIG` which point to configuration file:
+ ```bash
+    $ export TAXADB_CONFIG='/path/to/taxadb.cfg'
+ ```
+ then
+ ```python
+    >>> from taxadb.accessionid import AccessionID
+
+    >>> my_accessions = ['X17276', 'Z12029']
+    >>> accession = AccessionID()
+    >>> taxids = accession.taxid(my_accessions)
+    >>> ...
+ ```
+
+Check documentation for more information.
+
 ### Creating the Database
 
 #### Download data

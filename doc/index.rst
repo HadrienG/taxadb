@@ -23,7 +23,7 @@ In brief Taxadb:
   `PostgreSQL <https://www.postgresql.org>`_.
 * has available pre-built SQLite databases (:ref:`Download build databases <download>`).
 * has a comprehensive :ref:`API documentation <api>`.
-* is actively being developped on `GitHub <https://github.com/HadrienG/taxadb.git>`_ and available under the MIT license. Please see the `README <https://github.com/HadrienG/taxadb>`_ for more information on development, support, and contributing.
+* is actively being developed on `GitHub <https://github.com/HadrienG/taxadb.git>`_ and available under the MIT license. Please see the `README <https://github.com/HadrienG/taxadb>`_ for more information on development, support, and contributing.
 
 Quickstart
 ----------

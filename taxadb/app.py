@@ -8,13 +8,13 @@ import argparse
 
 from taxadb import util
 from taxadb.parser import TaxaDumpParser, Accession2TaxidParser
-from taxadb.schema import *
+from taxadb.schema import DatabaseFactory, db, Taxa, Accession
 
 
 def download(args):
     """Main function for the 'taxadb download' sub-command.
 
-    This function downloads taxump.tar.gz and the content of the accession2taxid
+    This function downloads taxump.tar.gz and the content of accession2taxid
     directory from the ncbi ftp.
 
     Arguments:
@@ -37,20 +37,20 @@ def download(args):
     os.chdir(os.path.abspath(out))
 
     for file in acc_dl_list:
-        print('Started Downloading %s' % (file))
+        print('Started Downloading %s' % file)
         with ftputil.FTPHost(ncbi_ftp, 'anonymous', 'password') as ncbi:
             ncbi.chdir('pub/taxonomy/accession2taxid/')
             ncbi.download_if_newer(file, file)
             ncbi.download_if_newer(file + '.md5', file + '.md5')
             util.md5_check(file)
 
-    print('Started Downloading %s' % (taxdump))
+    print('Started Downloading %s' % taxdump)
     with ftputil.FTPHost(ncbi_ftp, 'anonymous', 'password') as ncbi:
         ncbi.chdir('pub/taxonomy/')
         ncbi.download_if_newer(taxdump, taxdump)
         ncbi.download_if_newer(taxdump + '.md5', taxdump + '.md5')
         util.md5_check(taxdump)
-    print('Unpacking %s' % (taxdump))
+    print('Unpacking %s' % taxdump)
     with tarfile.open(taxdump, "r:gz") as tar:
         tar.extractall()
         tar.close()
@@ -90,7 +90,7 @@ def create_db(args):
     # If taxa table already exists, do not recreate and fill it
     # safe=True prevent not to create the table if it already exists
     if not Taxa.table_exists():
-        parser.verbose("Creating table %s" % str(Taxa._meta.db_table))
+        parser.verbose("Creating table %s" % str(Taxa.get_table_name()))
     db.create_table(Taxa, safe=True)
     parser = TaxaDumpParser(nodes_file=os.path.join(args.input, 'nodes.dmp'),
                             names_file=os.path.join(args.input, 'names.dmp'))
@@ -127,7 +127,7 @@ def create_db(args):
                 Accession.insert_many(data_dict[0:args.chunk]).execute()
                 inserted_rows += len(data_dict)
             print('%s: %s added to database (%d rows inserted)' % (
-                Accession._meta.db_table, acc_file, inserted_rows))
+                Accession.get_table_name(), acc_file, inserted_rows))
     print('Sequence: completed')
     db.close()
 

@@ -33,8 +33,5 @@ def fatal(msg):
         SystemExit
 
     """
-    if msg is not None:
-        print("[FATAL] %s" % str(msg), file=sys.stderr)
-    else:
-        print("[FATAL] An error occured", file=sys.stderr)
+    print("[FATAL] %s" % str(msg), file=sys.stderr)
     sys.exit(1)
