@@ -14,8 +14,8 @@ from taxadb.schema import *
 def download(args):
     """Main function for the 'taxadb download' sub-command.
 
-    This function downloads taxump.tar.gz and the content of the accession2taxid
-    directory from the ncbi ftp.
+    This function downloads taxump.tar.gz and the content of the
+    accession2taxid directory from the ncbi ftp.
 
     Arguments:
              args.output (str): output directory
@@ -117,7 +117,7 @@ def create_db(args):
         acc_dl_list.append(nucl_wgs)
     if div in ['full', 'prot']:
         acc_dl_list.append(prot)
-    parser = Accession2TaxidParser(verbose=args.verbose)
+    parser = Accession2TaxidParser(verbose=args.verbose, fast=args.fast)
     with db.atomic():
         for acc_file in acc_dl_list:
             inserted_rows = 0
@@ -176,6 +176,12 @@ def main():
         prog='taxadb create',
         description='build the database',
         help='build the database'
+    )
+    parser_create.add_argument(
+        '--fast',
+        action='store_true',
+        default=False,
+        help='Disables checks for faster db creation. Use with caution!'
     )
     parser_create.add_argument(
         '--chunk',

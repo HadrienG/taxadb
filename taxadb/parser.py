@@ -185,10 +185,11 @@ class Accession2TaxidParser(TaxaParser):
 
     """
 
-    def __init__(self, acc_file=None, chunk=500, **kwargs):
+    def __init__(self, acc_file=None, chunk=500, fast=False, **kwargs):
         super().__init__(**kwargs)
         self.acc_file = acc_file
         self.chunk = chunk
+        self.fast = fast
 
     def accession2taxid(self, acc2taxid=None, chunk=500):
         """Parses the accession2taxid files
@@ -221,7 +222,8 @@ class Accession2TaxidParser(TaxaParser):
         # Reach out of memory
         # accessions = {str(x['accession']): True for x in Accession.select(
         #     Accession.accession).dicts()}
-        accessions = {}
+        if not self.fast:
+            accessions = {}
         if acc2taxid is None:
             acc2taxid = self.acc_file
         self.check_file(acc2taxid)
@@ -237,12 +239,20 @@ class Accession2TaxidParser(TaxaParser):
                     continue
                 # In case of an update or parsing an already inserted list of
                 # accessions
-                if line_list[0] in accessions:
-                    continue
-                try:
-                    acc_id = Accession.get(Accession.accession == line_list[0])
-                except Accession.DoesNotExist as err:
-                    accessions[line_list[0]] = True
+                if not self.fast:
+                    if line_list[0] in accessions:
+                        continue
+                    try:
+                        acc_id = Accession.get(Accession.accession == line_list[0])
+                    except Accession.DoesNotExist as err:
+                        accessions[line_list[0]] = True
+                    data_dict = {
+                        'accession': line_list[0],
+                        'taxid': line_list[2]
+                    }
+                    entries.append(data_dict)
+                    counter += 1
+                else:
                     data_dict = {
                         'accession': line_list[0],
                         'taxid': line_list[2]
