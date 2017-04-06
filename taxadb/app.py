@@ -63,11 +63,13 @@ def create_db(args):
 
     Args:
 
-        args.input (str): input directory. It is the directory created by
+        args.input (:obj:`str`): input directory. It is the directory created by
             `taxadb download`
-        args.dbname (str): name of the database to be created
-        args.dbtype (str): type of database to be used.
-        args.division (str): division to create the db for.
+        args.dbname (:obj:`str`): name of the database to be created
+        args.dbtype (:obj:`str`): type of database to be used.
+        args.division (:obj:`str`): division to create the db for.
+        args.fast (:obj:`bool`): Disables checks for faster db creation. Use
+                                 with caution!
 
     """
     database = DatabaseFactory(**args.__dict__).get_database()
