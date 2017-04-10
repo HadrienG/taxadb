@@ -11,14 +11,14 @@ class BaseModel(pw.Model):
     class Meta:
         database = db
 
-    @staticmethod
-    def get_table_name():
+    @classmethod
+    def get_table_name(cls):
         """Get table name
 
         Returns:
             name (:obj:`str`): Table name in database
         """
-        return BaseModel._meta.db_table
+        return cls._meta.db_table
 
 
 class Taxa(BaseModel):

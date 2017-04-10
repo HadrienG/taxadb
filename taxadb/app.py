@@ -9,6 +9,7 @@ import argparse
 from taxadb import util
 from taxadb.parser import TaxaDumpParser, Accession2TaxidParser
 from taxadb.schema import DatabaseFactory, db, Taxa, Accession
+from peewee import PeeweeException
 
 
 def download(args):
@@ -128,6 +129,14 @@ def create_db(args):
                 inserted_rows += len(data_dict)
             print('%s: %s added to database (%d rows inserted)' % (
                 Accession.get_table_name(), acc_file, inserted_rows))
+        indexes = db.get_indexes(Accession.get_table_name())
+        if not len(indexes):
+            print('Creating index for %s' % Accession.get_table_name())
+            try:
+                db.create_index(Accession, ['accession'], unique=True)
+            except PeeweeException as err:
+                raise Exception("Could not create Accession index: %s"
+                                % str(err))
     print('Sequence: completed')
     db.close()
 
