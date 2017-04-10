@@ -128,7 +128,9 @@ def create_db(args):
                 inserted_rows += len(data_dict)
             print('%s: %s added to database (%d rows inserted)' % (
                 Accession._meta.db_table, acc_file, inserted_rows))
-    print('Sequence: completed')
+    print('Creating index for %s' % (Accession._meta.db_table))
+    db.create_index(Accession, ['accession'], unique=True)
+    print('Accession: completed')
     db.close()
 
 
