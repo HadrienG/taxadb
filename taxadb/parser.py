@@ -195,13 +195,15 @@ class Accession2TaxidParser(TaxaParser):
     Args:
         acc_file (:obj:`str`): File to parse
         chunk (:obj:`int`): Chunk insert size. Default 500
-
+        fast (:obj:`bool`): Directly load accession into database, do not check
+                            existence.
     """
 
-    def __init__(self, acc_file=None, chunk=500, **kwargs):
+    def __init__(self, acc_file=None, chunk=500, fast=False, **kwargs):
         super().__init__(**kwargs)
         self.acc_file = acc_file
         self.chunk = chunk
+        self.fast = fast
 
     def accession2taxid(self, acc2taxid=None, chunk=None):
         """Parses the accession2taxid files
@@ -230,7 +232,8 @@ class Accession2TaxidParser(TaxaParser):
         entries = []
         counter = 0
         taxids = self.cache_taxids()
-        accessions = {}
+        if not self.fast:
+            accessions = {}
         if acc2taxid is None:
             acc2taxid = self.acc_file
         self.check_file(acc2taxid)
@@ -246,18 +249,24 @@ class Accession2TaxidParser(TaxaParser):
                     continue
                 # In case of an update or parsing an already inserted list of
                 # accessions
-                if line_list[0] in accessions:
-                    continue
-                try:
-                    Accession.get(Accession.accession == line_list[0])
-                except Accession.DoesNotExist:
-                    accessions[line_list[0]] = True
+                if not self.fast:
+                    if line_list[0] in accessions:
+                        continue
+                    try:
+                        acc_id = Accession.get(Accession.accession == line_list[0])
+                    except Accession.DoesNotExist as err:
+                        accessions[line_list[0]] = True
                     data_dict = {
                         'accession': line_list[0],
                         'taxid': line_list[2]
                     }
-                    entries.append(data_dict)
-                    counter += 1
+                else:
+                    data_dict = {
+                        'accession': line_list[0],
+                        'taxid': line_list[2]
+                    }
+                entries.append(data_dict)
+                counter += 1
                 if counter == chunk:
                     yield(entries)
                     entries = []

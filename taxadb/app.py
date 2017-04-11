@@ -15,8 +15,13 @@ from peewee import PeeweeException
 def download(args):
     """Main function for the 'taxadb download' sub-command.
 
+<<<<<<< HEAD
     This function downloads taxump.tar.gz and the content of accession2taxid
     directory from the ncbi ftp.
+=======
+    This function downloads taxump.tar.gz and the content of the
+    accession2taxid directory from the ncbi ftp.
+>>>>>>> ec99f15e91becc823e2ea3a13612473307825629
 
     Arguments:
              args.output (str): output directory
@@ -118,7 +123,7 @@ def create_db(args):
         acc_dl_list.append(nucl_wgs)
     if div in ['full', 'prot']:
         acc_dl_list.append(prot)
-    parser = Accession2TaxidParser(verbose=args.verbose)
+    parser = Accession2TaxidParser(verbose=args.verbose, fast=args.fast)
     with db.atomic():
         for acc_file in acc_dl_list:
             inserted_rows = 0
@@ -128,6 +133,7 @@ def create_db(args):
                 Accession.insert_many(data_dict[0:args.chunk]).execute()
                 inserted_rows += len(data_dict)
             print('%s: %s added to database (%d rows inserted)' % (
+<<<<<<< HEAD
                 Accession.get_table_name(), acc_file, inserted_rows))
         indexes = db.get_indexes(Accession.get_table_name())
         if not len(indexes):
@@ -138,6 +144,12 @@ def create_db(args):
                 raise Exception("Could not create Accession index: %s"
                                 % str(err))
     print('Sequence: completed')
+=======
+                Accession._meta.db_table, acc_file, inserted_rows))
+    print('Creating index for %s' % (Accession._meta.db_table))
+    db.create_index(Accession, ['accession'], unique=True)
+    print('Accession: completed')
+>>>>>>> ec99f15e91becc823e2ea3a13612473307825629
     db.close()
 
 
@@ -185,6 +197,12 @@ def main():
         prog='taxadb create',
         description='build the database',
         help='build the database'
+    )
+    parser_create.add_argument(
+        '--fast',
+        action='store_true',
+        default=False,
+        help='Disables checks for faster db creation. Use with caution!'
     )
     parser_create.add_argument(
         '--chunk',
