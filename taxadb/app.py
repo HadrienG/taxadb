@@ -98,8 +98,7 @@ def create_db(args):
     if not Taxa.table_exists():
         parser.verbose("Creating table %s" % str(Taxa.get_table_name()))
     db.create_table(Taxa, safe=True)
-    parser = TaxaDumpParser(nodes_file=os.path.join(args.input, 'nodes.dmp'),
-                            names_file=os.path.join(args.input, 'names.dmp'))
+
     parser.verbose("Parsing files")
     taxa_info_list = parser.taxdump()
 
@@ -253,6 +252,7 @@ def main():
     parser_create.add_argument(
         '--port',
         '-P',
+        type=int,
         help='Database connection port (default: 5432 (postgres), \
             3306 (MySQL))'
     )

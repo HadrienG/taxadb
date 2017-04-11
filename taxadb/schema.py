@@ -150,7 +150,12 @@ class DatabaseFactory(object):
         """
         if self.config is not None:
             if self.config.has_option(section, name):
-                return self.config.get(section, name)
+                value = self.config.get(section, name, fallback=None)
+                # When calling config.set, option and values must be string
+                # so None is converted into 'None'
+                if value == 'None':
+                    return None
+                return value
         return None
 
     def set(self, option, value, section=DEFAULT_SECTION):

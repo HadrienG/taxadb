@@ -15,7 +15,8 @@ class TaxaParser(object):
         """Base class"""
         self._verbose = verbose
 
-    def cache_taxids(self):
+    @staticmethod
+    def cache_taxids():
         """Load data from taxa table into a dictionary
 
         Returns:
@@ -240,6 +241,7 @@ class Accession2TaxidParser(TaxaParser):
         if chunk is None:
             chunk = self.chunk
         self.verbose("Parsing %s" % str(acc2taxid))
+        self.verbose("Fast mode %s" % "ON" if self.fast else "OFF")
         with gzip.open(acc2taxid, 'rb') as f:
             f.readline()  # discard the header
             for line in f:
@@ -253,8 +255,8 @@ class Accession2TaxidParser(TaxaParser):
                     if line_list[0] in accessions:
                         continue
                     try:
-                        acc_id = Accession.get(Accession.accession == line_list[0])
-                    except Accession.DoesNotExist as err:
+                        Accession.get(Accession.accession == line_list[0])
+                    except Accession.DoesNotExist:
                         accessions[line_list[0]] = True
                     data_dict = {
                         'accession': line_list[0],

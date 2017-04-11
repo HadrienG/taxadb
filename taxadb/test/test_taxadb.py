@@ -167,7 +167,7 @@ class TestTaxadb(unittest.TestCase):
         self.assertEqual(db.get('dbname'), 'taxadb/test/test_db.sqlite')
         self.assertEqual(db.get('dbtype'), 'sqlite')
 
-    @attr('config.1')
+    @attr('config')
     def test_setconfig_nodbname_raises(self):
         """Check method raises SystemExit when no dbname set"""
         with self.assertRaises(SystemExit):
@@ -201,6 +201,14 @@ class TestTaxadb(unittest.TestCase):
         configuration file"""
         db = AccessionID(config=os.path.join(self.testdir, 'taxadb.cfg'))
         self.assertIsNone(db.get('unknown'))
+
+    @attr('config')
+    def test_get_config_returnsNone(self):
+        """Check get method returns None when an option has no value in
+        configuration file"""
+        db = AccessionID(config=os.path.join(self.testdir, 'taxadb.cfg'))
+        db.set('foobar', None)
+        self.assertIsNone(db.get('foobar'))
 
     @attr('config')
     def test_set_config_option_unset_section(self):
