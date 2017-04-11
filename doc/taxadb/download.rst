@@ -107,3 +107,11 @@ For more information about all the available options, please type:
 .. code-block:: bash
 
    taxadb create --help
+
+.. warning::
+
+   When building your database with downloaded data, you can increase the speed
+   of data loading by using --fast option. This option avoid checking existence
+   of each accession id in the database before loading related info. In certain
+   case this may lead to duplicate entries in table accession when loading
+   the same file twice for example.
