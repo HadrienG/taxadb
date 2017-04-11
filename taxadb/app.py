@@ -132,9 +132,8 @@ def create_db(args):
                     args.input, acc_file), chunk=args.chunk):
                 Accession.insert_many(data_dict[0:args.chunk]).execute()
                 inserted_rows += len(data_dict)
-            print('%s: %s added to database (%d rows inserted)' % (
-<<<<<<< HEAD
-                Accession.get_table_name(), acc_file, inserted_rows))
+            print('%s: %s added to database (%d rows inserted)'
+                  % (Accession.get_table_name(), acc_file, inserted_rows))
         indexes = db.get_indexes(Accession.get_table_name())
         if not len(indexes):
             print('Creating index for %s' % Accession.get_table_name())
@@ -143,13 +142,7 @@ def create_db(args):
             except PeeweeException as err:
                 raise Exception("Could not create Accession index: %s"
                                 % str(err))
-    print('Sequence: completed')
-=======
-                Accession._meta.db_table, acc_file, inserted_rows))
-    print('Creating index for %s' % (Accession._meta.db_table))
-    db.create_index(Accession, ['accession'], unique=True)
     print('Accession: completed')
->>>>>>> ec99f15e91becc823e2ea3a13612473307825629
     db.close()
 
 
