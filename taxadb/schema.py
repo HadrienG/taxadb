@@ -20,6 +20,50 @@ class BaseModel(pw.Model):
         """
         return cls._meta.db_table
 
+    @classmethod
+    def has_index(cls, name=None, columns=None):
+        """Check if the table has an index (other than primary key)
+
+        Search either by index name or by column name
+
+        Args:
+            name (:obj:`str`): Index name to check
+            columns (:obj:`list`): List of columns making the index
+
+        Returns:
+            True or False
+
+        Raises:
+            SystemExit: If `table` object does not exists
+        """
+        if not cls.table_exists():
+            return False
+        # Returned object by get_indexes (namedtuple):
+        # 'IndexMetadata', ('name', 'sql', 'columns', 'unique', 'table'))
+        if name is not None:
+            return cls._has_named_index(name)
+        if columns is not None:
+            return cls._has_columns_index(columns)
+        return False
+
+    @classmethod
+    def _has_named_index(cls, name):
+        indexes = db.get_indexes(cls.get_table_name())
+        for idx in indexes:
+            if idx[0] == name:
+                return True
+        return False
+
+    @classmethod
+    def _has_columns_index(cls, columns):
+        if type(columns) is not list:
+            return False
+        indexes = db.get_indexes(cls.get_table_name())
+        for idx in indexes:
+            if sorted(columns) == sorted(idx[2]):
+                return True
+        return False
+
 
 class Taxa(BaseModel):
 

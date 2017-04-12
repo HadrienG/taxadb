@@ -147,17 +147,38 @@ class TestTaxadb(unittest.TestCase):
         """Check the method throws SystemExit if a table does not exist"""
         from taxadb.schema import BaseModel
         import peewee as pw
-        import sys
 
 
         class NotFound(BaseModel):
             id = pw.IntegerField(null=False)
             name = pw.CharField()
         obj = self._buildTaxaDBObject(TaxaDB)
-        print("NotFound table: %s" % NotFound.get_table_name(),
-              file=sys.stderr)
         with self.assertRaises(SystemExit):
             obj.check_table_exists(NotFound)
+
+    @attr('schema')
+    def test_has_index(self):
+        """Check method returns False and True when either table or index 
+        does not exist"""
+        from taxadb.schema import BaseModel
+        import peewee as pw
+
+        class FooBar(BaseModel):
+            id = pw.IntegerField(null=False)
+            name = pw.CharField()
+        obj = self._buildTaxaDBObject(TaxaDB)
+        # Test returns False
+        self.assertFalse(FooBar.has_index(name='foo'))
+        FooBar.create_table(fail_silently=True)
+        self.assertFalse(FooBar.has_index(name='foo'))
+        self.assertFalse(FooBar.has_index(columns=['name']))
+        self.assertFalse(FooBar.has_index())
+        self.assertFalse(FooBar.has_index(columns=10))
+        # Test returns True
+        obj.db.create_index(FooBar, ['name'], unique=True)
+        self.assertTrue(FooBar.has_index(name='foobar_name'))
+        self.assertTrue(FooBar.has_index(columns=['name']))
+        FooBar.drop_table()
 
     @attr('config')
     def test_setconfig_from_envvar(self):

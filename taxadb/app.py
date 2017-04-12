@@ -130,8 +130,7 @@ def create_db(args):
                 inserted_rows += len(data_dict)
             print('%s: %s added to database (%d rows inserted)'
                   % (Accession.get_table_name(), acc_file, inserted_rows))
-        indexes = db.get_indexes(Accession.get_table_name())
-        if not len(indexes):
+        if not Accession.has_index(name='accession_accession'):
             print('Creating index for %s' % Accession.get_table_name())
             try:
                 db.create_index(Accession, ['accession'], unique=True)
