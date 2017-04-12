@@ -15,16 +15,11 @@ from peewee import PeeweeException
 def download(args):
     """Main function for the 'taxadb download' sub-command.
 
-<<<<<<< HEAD
-    This function downloads taxump.tar.gz and the content of accession2taxid
-    directory from the ncbi ftp.
-=======
     This function downloads taxump.tar.gz and the content of the
     accession2taxid directory from the ncbi ftp.
->>>>>>> ec99f15e91becc823e2ea3a13612473307825629
 
     Arguments:
-             args.output (str): output directory
+             args.output (:obj:`str`): output directory
 
     """
     ncbi_ftp = 'ftp.ncbi.nlm.nih.gov'
