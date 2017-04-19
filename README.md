@@ -31,15 +31,15 @@ The databases used by Taxadb are lengthy to build, therefore we provide pre-buil
 
 | Name | Size | Size (gzipped) | download link
 | --- | --- | --- | ---
-| full | 21G | 4.4G | [link](http://139.162.178.46/files/taxadb/taxadb_full.sqlite.gz)
-| nucl | 14G | 2.9G | [link](http://139.162.178.46/files/taxadb/taxadb_nucl.sqlite.gz)
-| prot | 7.1G | 1.6G | [link](http://139.162.178.46/files/taxadb/taxadb_prot.sqlite.gz)
-| gb | 2.5G | 576M | [link](http://139.162.178.46/files/taxadb/taxadb_gb.sqlite.gz)
-| wgs | 8.5G | 1.9G | [link](http://139.162.178.46/files/taxadb/taxadb_wgs.sqlite.gz)
-| gss | 880M | 172M | [link](http://139.162.178.46/files/taxadb/taxadb_gss.sqlite.gz)
-| est | 1.6G | 320M | [link](http://139.162.178.46/files/taxadb/taxadb_est.sqlite.gz)
+| full | 40G | 8.1G | [link](http://139.162.178.46/files/taxadb/taxadb_full.sqlite.gz)
+| nucl | 25G | 5.0G | [link](http://139.162.178.46/files/taxadb/taxadb_nucl.sqlite.gz)
+| prot | 15G | 3.2G | [link](http://139.162.178.46/files/taxadb/taxadb_prot.sqlite.gz)
+| gb | 4.4G | 962M | [link](http://139.162.178.46/files/taxadb/taxadb_gb.sqlite.gz)
+| wgs | 17G | 3.2G | [link](http://139.162.178.46/files/taxadb/taxadb_wgs.sqlite.gz)
+| gss | 1.6M | 316M | [link](http://139.162.178.46/files/taxadb/taxadb_gss.sqlite.gz)
+| est | 2.9G | 599M | [link](http://139.162.178.46/files/taxadb/taxadb_est.sqlite.gz)
 
-Build date: December 2016
+Build date: April 2017
 
 ## Usage
 
@@ -81,6 +81,34 @@ Get the taxonomic information for accession number(s).
     ('X17276', 9646)
     ('Z12029', 9915)
 ```
+
+You can also use a configuration file in order to automatically set database
+connection parameters at object build. Either set `config` parameter to `__init__`
+ object method:
+ ```python
+    >>> from taxadb.accessionid import AccessionID
+
+    >>> my_accessions = ['X17276', 'Z12029']
+    >>> accession = AccessionID(config='/path/to/taxadb.cfg')
+    >>> taxids = accession.taxid(my_accessions)
+    >>> ...
+ ```
+
+ or set environment variable `TAXADB_CONFIG` which point to configuration file:
+ ```bash
+    $ export TAXADB_CONFIG='/path/to/taxadb.cfg'
+ ```
+ then
+ ```python
+    >>> from taxadb.accessionid import AccessionID
+
+    >>> my_accessions = ['X17276', 'Z12029']
+    >>> accession = AccessionID()
+    >>> taxids = accession.taxid(my_accessions)
+    >>> ...
+ ```
+
+Check documentation for more information.
 
 ### Creating the Database
 

@@ -1,0 +1,24 @@
+engines:
+  pep8:
+    enabled: true
+  duplication:
+    enabled: true
+    checks:
+      Similar Code:
+        enabled: true
+    config:
+      languages:
+        python:
+          python_version: 3
+  fixme:
+    enabled: true
+  radon:
+    enabled: true
+    config:
+      python_version: 3
+
+exclude_paths:
+  - "taxadb/test/*"
+ratings:
+  paths:
+    - "taxadb/*.py"

@@ -3,8 +3,9 @@ python:
 - '3.5'
 install:
 - pip install -r requirements.txt
+- pip install codecov
 - pip install -e .
-script: nosetests --tc-file taxadb.ini
+script: nosetests --tc-file taxadb.ini --with-coverage --cover-package=taxadb
 notifications:
   email: false
   slack:
@@ -12,3 +13,6 @@ notifications:
     - sgbcgroup:LQx8YcBhBqAUTON9eMivOuFr
     rooms:
       secure: Fdzf2EpffyQCgWKt5iDCIE7SiX2ElX4wtwcZPCtmlBL58JjxW5yQnh4Wgh7/cOdVs2HNzq6ANyFoVUe5S/2+bW9bjcDuvRLzoVy5FYZNoDQiT2/AphvYeZ1SkGJQsqVtnW+llOSteKRe3lJDipby+mtn8Qphiq96890IItAm6MV1MU08O24WwnB+bUt/GpUY907Q2e9CTL6JRt0GSPO3+azg/WtL9f0AxeJFcqpjJ2sSqXAqwQorB5QNAZJtSnsUO7TTlt1PMaaVa/g2x5xXcioABP37k+9XykidHj32fN1SgdJulbJuJQazpme0blgq8pdxp0ECnSBLba5zuuHzQo1e9pXZV7yil6jCaIhZclBKFDuwx+8zT8Dut7RzJZPd85u0pwHLr1UWdmH1xUQKWjCmQFvAl+tNviYTe0kUKK8OHJCTLHaZ6uAPqA5p0mfT21tTKds0OMfk00fTDxJx7D5HDSbaRtDbgprhld8l5HGNcbdjYmARbYruONw5unV8F+lgpt2FcIoXoPUIK0l8oXXf8Q3kQM1ER2IE3uA2o8a5oTuQQp+tQ8/sbnd4JWy7JbWdywsXmAX/OFpoujfRyMIVx/Y2JoFJ1EXxPwvYmd8Vnt9N/D89hw8Gnz1T3jKSJI9x7iOEYe55Ef0QRR73XfF+aBcvImFPVF20TNbMbi4=
+
+after_success:
+  - codecov

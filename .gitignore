@@ -1,7 +1,7 @@
 # taxa_db specific stuff
 *accession2taxid*
 taxdump*
-*.dmp
+n*.dmp
 gc.prt
 readme.txt
 

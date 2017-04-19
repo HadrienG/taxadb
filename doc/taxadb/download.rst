@@ -16,19 +16,19 @@ If you wish, it is also possible to build and create your :ref:`own databases <b
 +------+------+----------------+---------------------------------------------------------------+
 | Name | Size | Size (gzipped) | download link                                                 |
 +======+======+================+===============================================================+
-| full | 21G  | 4.4G           | `<http://139.162.178.46/files/taxadb/taxadb_full.sqlite.gz>`_ |
+| full | 40G  | 8.1G           | `<http://139.162.178.46/files/taxadb/taxadb_full.sqlite.gz>`_ |
 +------+------+----------------+---------------------------------------------------------------+
-| nucl | 14G  | 2.9G           | `<http://139.162.178.46/files/taxadb/taxadb_nucl.sqlite.gz>`_ |
+| nucl | 25G  | 5.0G           | `<http://139.162.178.46/files/taxadb/taxadb_nucl.sqlite.gz>`_ |
 +------+------+----------------+---------------------------------------------------------------+
-| prot | 7.1G | 1.6G           | `<http://139.162.178.46/files/taxadb/taxadb_prot.sqlite.gz>`_ |
+| prot | 15G  | 3.2G           | `<http://139.162.178.46/files/taxadb/taxadb_prot.sqlite.gz>`_ |
 +------+------+----------------+---------------------------------------------------------------+
-| gb   | 2.5G | 576M           | `<http://139.162.178.46/files/taxadb/taxadb_gb.sqlite.gz>`_   |
+| gb   | 4.4G | 962M           | `<http://139.162.178.46/files/taxadb/taxadb_gb.sqlite.gz>`_   |
 +------+------+----------------+---------------------------------------------------------------+
-| wgs  | 8.5G | 1.9G           | `<http://139.162.178.46/files/taxadb/taxadb_wgs.sqlite.gz>`_  |
+| wgs  | 17G  | 3.2G           | `<http://139.162.178.46/files/taxadb/taxadb_wgs.sqlite.gz>`_  |
 +------+------+----------------+---------------------------------------------------------------+
-| gss  | 880M | 172M           | `<http://139.162.178.46/files/taxadb/taxadb_gss.sqlite.gz>`_  |
+| gss  | 1.6M | 316M           | `<http://139.162.178.46/files/taxadb/taxadb_gss.sqlite.gz>`_  |
 +------+------+----------------+---------------------------------------------------------------+
-| est  | 1.6G | 320M           | `<http://139.162.178.46/files/taxadb/taxadb_est.sqlite.gz>`_  |
+| est  | 2.9G | 599M           | `<http://139.162.178.46/files/taxadb/taxadb_est.sqlite.gz>`_  |
 +------+------+----------------+---------------------------------------------------------------+
 
 
@@ -107,3 +107,11 @@ For more information about all the available options, please type:
 .. code-block:: bash
 
    taxadb create --help
+
+.. warning::
+
+   When building your database with downloaded data, you can increase the speed
+   of data loading by using --fast option. This option avoid checking existence
+   of each accession id in the database before loading related info. In certain
+   case this may lead to duplicate entries in table accession when loading
+   the same file twice for example.

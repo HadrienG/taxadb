@@ -8,7 +8,8 @@ import argparse
 
 from taxadb import util
 from taxadb.parser import TaxaDumpParser, Accession2TaxidParser
-from taxadb.schema import *
+from taxadb.schema import DatabaseFactory, db, Taxa, Accession
+from peewee import PeeweeException
 
 
 def download(args):
@@ -18,7 +19,7 @@ def download(args):
     accession2taxid directory from the ncbi ftp.
 
     Arguments:
-             args.output (str): output directory
+             args.output (:obj:`str`): output directory
 
     """
     ncbi_ftp = 'ftp.ncbi.nlm.nih.gov'
@@ -37,20 +38,20 @@ def download(args):
     os.chdir(os.path.abspath(out))
 
     for file in acc_dl_list:
-        print('Started Downloading %s' % (file))
+        print('Started Downloading %s' % file)
         with ftputil.FTPHost(ncbi_ftp, 'anonymous', 'password') as ncbi:
             ncbi.chdir('pub/taxonomy/accession2taxid/')
             ncbi.download_if_newer(file, file)
             ncbi.download_if_newer(file + '.md5', file + '.md5')
             util.md5_check(file)
 
-    print('Started Downloading %s' % (taxdump))
+    print('Started Downloading %s' % taxdump)
     with ftputil.FTPHost(ncbi_ftp, 'anonymous', 'password') as ncbi:
         ncbi.chdir('pub/taxonomy/')
         ncbi.download_if_newer(taxdump, taxdump)
         ncbi.download_if_newer(taxdump + '.md5', taxdump + '.md5')
         util.md5_check(taxdump)
-    print('Unpacking %s' % (taxdump))
+    print('Unpacking %s' % taxdump)
     with tarfile.open(taxdump, "r:gz") as tar:
         tar.extractall()
         tar.close()
@@ -63,11 +64,13 @@ def create_db(args):
 
     Args:
 
-        args.input (str): input directory. It is the directory created by
+        args.input (:obj:`str`): input directory. It is the directory created by
             `taxadb download`
-        args.dbname (str): name of the database to be created
-        args.dbtype (str): type of database to be used.
-        args.division (str): division to create the db for.
+        args.dbname (:obj:`str`): name of the database to be created
+        args.dbtype (:obj:`str`): type of database to be used.
+        args.division (:obj:`str`): division to create the db for.
+        args.fast (:obj:`bool`): Disables checks for faster db creation. Use
+                                 with caution!
 
     """
     database = DatabaseFactory(**args.__dict__).get_database()
@@ -90,10 +93,9 @@ def create_db(args):
     # If taxa table already exists, do not recreate and fill it
     # safe=True prevent not to create the table if it already exists
     if not Taxa.table_exists():
-        parser.verbose("Creating table %s" % str(Taxa._meta.db_table))
+        parser.verbose("Creating table %s" % str(Taxa.get_table_name()))
     db.create_table(Taxa, safe=True)
-    parser = TaxaDumpParser(nodes_file=os.path.join(args.input, 'nodes.dmp'),
-                            names_file=os.path.join(args.input, 'names.dmp'))
+
     parser.verbose("Parsing files")
     taxa_info_list = parser.taxdump()
 
@@ -126,10 +128,15 @@ def create_db(args):
                     args.input, acc_file), chunk=args.chunk):
                 Accession.insert_many(data_dict[0:args.chunk]).execute()
                 inserted_rows += len(data_dict)
-            print('%s: %s added to database (%d rows inserted)' % (
-                Accession._meta.db_table, acc_file, inserted_rows))
-    print('Creating index for %s' % (Accession._meta.db_table))
-    db.create_index(Accession, ['accession'], unique=True)
+            print('%s: %s added to database (%d rows inserted)'
+                  % (Accession.get_table_name(), acc_file, inserted_rows))
+        if not Accession.has_index(name='accession_accession'):
+            print('Creating index for %s' % Accession.get_table_name())
+            try:
+                db.create_index(Accession, ['accession'], unique=True)
+            except PeeweeException as err:
+                raise Exception("Could not create Accession index: %s"
+                                % str(err))
     print('Accession: completed')
     db.close()
 
@@ -241,6 +248,7 @@ def main():
     parser_create.add_argument(
         '--port',
         '-P',
+        type=int,
         help='Database connection port (default: 5432 (postgres), \
             3306 (MySQL))'
     )

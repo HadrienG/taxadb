@@ -3,24 +3,22 @@ from taxadb.taxadb import TaxaDB
 
 
 class TaxID(TaxaDB):
+
     """Main class for querying taxid
 
     Provide methods to request taxa table and get associated accession ids.
 
     Args:
-        dbtype (:obj:`str`): Database to connect to
-        dbtype (:obj:`str`): Database type to connect to (`sqlite`, `postgre`,
-            `mysql`). Default `sqlite`
         **kwargs: Arbitrary arguments. Supported (username, password, port,
-            hostname)
+            hostname, config, dbtype, dbname)
 
     Raises:
         SystemExit: If table `taxa` does not exist
 
     """
 
-    def __init__(self, dbtype='sqlite', dbname=None, **kwargs):
-        super().__init__(dbtype=dbtype, dbname=dbname, **kwargs)
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
         self.check_table_exists(Taxa)
 
     def sci_name(self, taxid):
@@ -37,7 +35,7 @@ class TaxID(TaxaDB):
         try:
             name = Taxa.get(Taxa.ncbi_taxid == taxid).tax_name
             return name
-        except Taxa.DoesNotExist as err:
+        except Taxa.DoesNotExist:
             return None
 
     def lineage_id(self, taxid, reverse=False):
@@ -70,10 +68,10 @@ class TaxID(TaxaDB):
             if reverse is True:
                 lineage_list.reverse()
             return lineage_list
-        except Taxa.DoesNotExist as err:
+        except Taxa.DoesNotExist:
             return None
 
-    def lineage_name(slef, taxid, reverse=False):
+    def lineage_name(self, taxid, reverse=False):
         """Get a lineage name for a taxonomic id
 
         Given a taxid, return its associated lineage
