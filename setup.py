@@ -12,8 +12,8 @@ setup(
     url='https://github.com/HadrienG/taxadb',
     download_url='https://github.com/HadrienG/taxadb/tarball/0.5.0',
     author='Hadrien Gourlé, Juliette Hayer, Emmanuel Quevillon',
-    author_email='hadrien.gourle@slu.se, juliette.hayer@slu.se, '
-                 'tuco@pasteur.fr',
+    author_email='hadrien.gourle@slu.se, juliette.hayer@slu.se,\
+        tuco@pasteur.fr',
 
     license='MIT',
     packages=find_packages(exclude=['tests']),
