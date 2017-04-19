@@ -5,12 +5,12 @@ from setuptools import setup, find_packages
 
 setup(
     name='taxadb',
-    version='0.5.0',
+    version='0.6.0',
 
     description='locally query the ncbi taxonomy',
 
     url='https://github.com/HadrienG/taxadb',
-    download_url='https://github.com/HadrienG/taxadb/tarball/0.5.0',
+    download_url='https://github.com/HadrienG/taxadb/tarball/0.6.0',
     author='Hadrien Gourlé, Juliette Hayer, Emmanuel Quevillon',
     author_email='hadrien.gourle@slu.se, juliette.hayer@slu.se,\
         tuco@pasteur.fr',
