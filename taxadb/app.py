@@ -30,31 +30,47 @@ def download(args):
     nucl_gss = 'nucl_gss.accession2taxid.gz'
     nucl_wgs = 'nucl_wgs.accession2taxid.gz'
     prot = 'prot.accession2taxid.gz'
-    acc_dl_list = [nucl_est, nucl_gb, nucl_gss, nucl_wgs, prot]
     taxdump = 'taxdump.tar.gz'
+
+    # unpack list or list
+    args.type = [x for y in args.type for x in y]
+    acc_dl_list = [taxdump]
+
+    for div in args.type:
+        if div in ['full', 'nucl', 'est']:
+            acc_dl_list.append(nucl_est)
+        if div in ['full', 'nucl', 'gb']:
+            acc_dl_list.append(nucl_gb)
+        if div in ['full', 'nucl', 'gss']:
+            acc_dl_list.append(nucl_gss)
+        if div in ['full', 'nucl', 'wgs']:
+            acc_dl_list.append(nucl_wgs)
+        if div in ['full', 'prot']:
+            acc_dl_list.append(prot)
 
     out = args.outdir
     os.makedirs(os.path.abspath(out), exist_ok=True)
     os.chdir(os.path.abspath(out))
 
     for file in acc_dl_list:
-        print('Started Downloading %s' % file)
-        with ftputil.FTPHost(ncbi_ftp, 'anonymous', 'password') as ncbi:
-            ncbi.chdir('pub/taxonomy/accession2taxid/')
-            ncbi.download_if_newer(file, file)
-            ncbi.download_if_newer(file + '.md5', file + '.md5')
-            util.md5_check(file)
-
-    print('Started Downloading %s' % taxdump)
-    with ftputil.FTPHost(ncbi_ftp, 'anonymous', 'password') as ncbi:
-        ncbi.chdir('pub/taxonomy/')
-        ncbi.download_if_newer(taxdump, taxdump)
-        ncbi.download_if_newer(taxdump + '.md5', taxdump + '.md5')
-        util.md5_check(taxdump)
-    print('Unpacking %s' % taxdump)
-    with tarfile.open(taxdump, "r:gz") as tar:
-        tar.extractall()
-        tar.close()
+        if file != taxdump:
+            print('Started Downloading %s' % file)
+            with ftputil.FTPHost(ncbi_ftp, 'anonymous', 'password') as ncbi:
+                ncbi.chdir('pub/taxonomy/accession2taxid/')
+                ncbi.download_if_newer(file, file)
+                ncbi.download_if_newer(file + '.md5', file + '.md5')
+                util.md5_check(file)
+        else:
+            print('Started Downloading %s' % taxdump)
+            with ftputil.FTPHost(ncbi_ftp, 'anonymous', 'password') as ncbi:
+                ncbi.chdir('pub/taxonomy/')
+                ncbi.download_if_newer(taxdump, taxdump)
+                ncbi.download_if_newer(taxdump + '.md5', taxdump + '.md5')
+                util.md5_check(taxdump)
+            print('Unpacking %s' % taxdump)
+            with tarfile.open(taxdump, "r:gz") as tar:
+                tar.extractall()
+                tar.close()
 
 
 def create_db(args):
@@ -170,6 +186,17 @@ def main():
         prog='taxadb download',
         description='download the files required to create the database',
         help='download the files required to create the database'
+    )
+    parser_download.add_argument(
+        '--type',
+        '-t',
+        choices=['taxa', 'full', 'nucl', 'prot', 'gb', 'wgs', 'gss', 'est'],
+        action='append',
+        nargs='*',
+        metavar='<str>',
+        required=True,
+        help='divisions to download. Can be one or more of "taxa", "all",\
+            "nucl", "prot", "est", "gb", "gss" or "wgs". Space-separated.'
     )
     parser_download.add_argument(
         '--outdir',
