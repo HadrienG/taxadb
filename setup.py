@@ -22,7 +22,7 @@ setup(
     license='MIT',
     packages=find_packages(exclude=['tests']),
 
-    tests_require=['nose', 'nose-testconfig']
+    tests_require=['nose', 'nose-testconfig'],
     install_requires=['ftputil', 'peewee==2.8.1'],
     # Allow PostgreSQL and MySQL as option
     extras_require={
