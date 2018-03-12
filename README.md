@@ -125,7 +125,7 @@ $ taxadb download -o taxadb
 
 
 ```
-$ taxadb create -i taxadb --dbname taxadb
+$ taxadb create -i taxadb --dbname taxadb.sqlite
 ```
 You can then safely remove the downloaded files
 ```

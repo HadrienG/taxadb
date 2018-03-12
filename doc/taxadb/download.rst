@@ -56,7 +56,7 @@ The following command will create an **SQLite** database in the current director
 
 .. code-block:: bash
 
-   taxadb create -i taxadb --dbname taxadb
+   taxadb create -i taxadb --dbname taxadb.sqlite
 
 .. _using_mysql:
 
