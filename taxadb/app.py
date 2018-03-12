@@ -4,6 +4,7 @@
 import os
 import tarfile
 import ftputil
+import logging
 import argparse
 
 from taxadb import util
@@ -22,6 +23,8 @@ def download(args):
              args.output (:obj:`str`): output directory
 
     """
+    logger = logging.getLogger(__name__)
+
     ncbi_ftp = 'ftp.ncbi.nlm.nih.gov'
 
     # files to download in accession2taxid
@@ -54,20 +57,20 @@ def download(args):
 
     for file in acc_dl_list:
         if file != taxdump:
-            print('Started Downloading %s' % file)
+            logger.info('Started downloading %s' % file)
             with ftputil.FTPHost(ncbi_ftp, 'anonymous', 'password') as ncbi:
                 ncbi.chdir('pub/taxonomy/accession2taxid/')
                 ncbi.download_if_newer(file, file)
                 ncbi.download_if_newer(file + '.md5', file + '.md5')
                 util.md5_check(file)
         else:
-            print('Started Downloading %s' % taxdump)
+            logger.info('Started downloading %s' % file)
             with ftputil.FTPHost(ncbi_ftp, 'anonymous', 'password') as ncbi:
                 ncbi.chdir('pub/taxonomy/')
                 ncbi.download_if_newer(taxdump, taxdump)
                 ncbi.download_if_newer(taxdump + '.md5', taxdump + '.md5')
                 util.md5_check(taxdump)
-            print('Unpacking %s' % taxdump)
+            logger.info('Unpacking %s' % taxdump)
             with tarfile.open(taxdump, "r:gz") as tar:
                 tar.extractall()
                 tar.close()
@@ -298,7 +301,14 @@ def main():
 
     args = parser.parse_args()
     try:
+        if args.verbose:
+            logging.basicConfig(level=logging.DEBUG)
+        else:
+            logging.basicConfig(level=logging.INFO)
         args.func(args)
-    except Exception as e:
+        logging.shutdown()
+    except AttributeError as e:
+        logger = logging.getLogger(__name__)
+        logger.debug(e)
         parser.print_help()
-        print('\nERROR: %s' % str(e))  # for debugging purposes
+        # raise  # extra traceback to uncomment for extra debugging powers
