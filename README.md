@@ -29,6 +29,8 @@ The databases used by Taxadb are lengthy to build, therefore we provide pre-buil
 
 #### Sqlite
 
+**We currently had to remove the pre-built databases and are considering our options**
+
 | Name | Size | Size (gzipped) | download link
 | --- | --- | --- | ---
 | full | 40G | 8.1G | [link](http://139.162.178.46/files/taxadb/taxadb_full.sqlite.gz)
@@ -125,7 +127,7 @@ $ taxadb download -o taxadb
 
 
 ```
-$ taxadb create -i taxadb --dbname taxadb
+$ taxadb create -i taxadb --dbname taxadb.sqlite
 ```
 You can then safely remove the downloaded files
 ```
