@@ -47,7 +47,7 @@ class TestUtils(unittest.TestCase):
         """Check md5 fails"""
         badfile = os.path.join(os.path.dirname(os.path.realpath(__file__)),
                                'wrong.txt')
-        with self.assertRaises(AssertionError):
+        with self.assertRaises(SystemExit):
             md5_check(badfile)
 
     @attr('util')
@@ -158,7 +158,7 @@ class TestTaxadb(unittest.TestCase):
 
     @attr('schema')
     def test_has_index(self):
-        """Check method returns False and True when either table or index 
+        """Check method returns False and True when either table or index
         does not exist"""
         from taxadb.schema import BaseModel
         import peewee as pw
