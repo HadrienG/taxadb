@@ -2,18 +2,18 @@
 # -*- coding: utf-8 -*-
 
 import os
-import tarfile
-import ftputil
+import sys
 import logging
 import argparse
 
 from taxadb import util
+from taxadb import download
 from taxadb.parser import TaxaDumpParser, Accession2TaxidParser
 from taxadb.schema import DatabaseFactory, db, Taxa, Accession
 from peewee import PeeweeException
 
 
-def download(args):
+def download_files(args):
     """Main function for the 'taxadb download' sub-command.
 
     This function downloads taxump.tar.gz and the content of the
@@ -25,9 +25,7 @@ def download(args):
     """
     logger = logging.getLogger(__name__)
 
-    ncbi_ftp = 'ftp.ncbi.nlm.nih.gov'
-
-    # files to download in accession2taxid
+    # files to download
     nucl_est = 'nucl_est.accession2taxid.gz'
     nucl_gb = 'nucl_gb.accession2taxid.gz'
     nucl_gss = 'nucl_gss.accession2taxid.gz'
@@ -35,7 +33,6 @@ def download(args):
     prot = 'prot.accession2taxid.gz'
     taxdump = 'taxdump.tar.gz'
 
-    # unpack list or list
     args.type = [x for y in args.type for x in y]
     acc_dl_list = [taxdump]
 
@@ -51,29 +48,25 @@ def download(args):
         if div in ['full', 'prot']:
             acc_dl_list.append(prot)
 
-    out = args.outdir
-    os.makedirs(os.path.abspath(out), exist_ok=True)
-    os.chdir(os.path.abspath(out))
+    try:
+        out = args.outdir
+        os.makedirs(os.path.abspath(out), exist_ok=args.force)
+        os.chdir(os.path.abspath(out))
+    except FileExistsError as e:
+        logger.error('%s exists. Consider using -f if you want to overwrite'
+                     % out)
+        sys.exit(1)
 
     for file in acc_dl_list:
         if file != taxdump:
-            logger.info('Started downloading %s' % file)
-            with ftputil.FTPHost(ncbi_ftp, 'anonymous', 'password') as ncbi:
-                ncbi.chdir('pub/taxonomy/accession2taxid/')
-                ncbi.download_if_newer(file, file)
-                ncbi.download_if_newer(file + '.md5', file + '.md5')
-                util.md5_check(file)
+            download.ncbi('pub/taxonomy/accession2taxid/', file)
+            download.ncbi('pub/taxonomy/accession2taxid/', file + '.md5')
+            util.md5_check(file)
         else:
-            logger.info('Started downloading %s' % file)
-            with ftputil.FTPHost(ncbi_ftp, 'anonymous', 'password') as ncbi:
-                ncbi.chdir('pub/taxonomy/')
-                ncbi.download_if_newer(taxdump, taxdump)
-                ncbi.download_if_newer(taxdump + '.md5', taxdump + '.md5')
-                util.md5_check(taxdump)
-            logger.info('Unpacking %s' % taxdump)
-            with tarfile.open(taxdump, "r:gz") as tar:
-                tar.extractall()
-                tar.close()
+            download.ncbi('pub/taxonomy/', taxdump)
+            download.ncbi('pub/taxonomy/', taxdump + '.md5')
+            util.md5_check(taxdump)
+            download.unpack(taxdump)
 
 
 def create_db(args):
@@ -202,13 +195,20 @@ def main():
             "nucl", "prot", "est", "gb", "gss" or "wgs". Space-separated.'
     )
     parser_download.add_argument(
+        '--force',
+        '-f',
+        action="store_true",
+        default=False,
+        help='Force download if the output directory exists',
+    )
+    parser_download.add_argument(
         '--outdir',
         '-o',
         metavar='<dir>',
         help='Output Directory',
         required=True
     )
-    parser_download.set_defaults(func=download)
+    parser_download.set_defaults(func=download_files)
 
     parser_create = subparsers.add_parser(
         'create',
@@ -311,4 +311,4 @@ def main():
         logger = logging.getLogger(__name__)
         logger.debug(e)
         parser.print_help()
-        # raise  # extra traceback to uncomment for extra debugging powers
+        raise  # extra traceback to uncomment for extra debugging powers
