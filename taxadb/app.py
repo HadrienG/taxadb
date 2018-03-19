@@ -6,6 +6,7 @@ import sys
 import logging
 import argparse
 
+from tqdm import tqdm
 from taxadb import util
 from taxadb import download
 from taxadb.parser import TaxaDumpParser, Accession2TaxidParser
@@ -85,6 +86,7 @@ def create_db(args):
                                  with caution!
 
     """
+    logger = logging.getLogger(__name__)
     database = DatabaseFactory(**args.__dict__).get_database()
     div = args.division  # am lazy at typing
     db.initialize(database)
@@ -101,23 +103,25 @@ def create_db(args):
                             names_file=os.path.join(args.input, 'names.dmp'),
                             verbose=args.verbose)
 
-    parser.verbose("Connected to database ...")
+    logger.debug('Connected to database')
     # If taxa table already exists, do not recreate and fill it
     # safe=True prevent not to create the table if it already exists
     if not Taxa.table_exists():
-        parser.verbose("Creating table %s" % str(Taxa.get_table_name()))
-    db.create_table(Taxa, safe=True)
+        logger.info('Creating table %s' % str(Taxa.get_table_name()))
+        db.create_table(Taxa, safe=True)
 
-    parser.verbose("Parsing files")
+    logger.info("Parsing files")
     taxa_info_list = parser.taxdump()
 
-    parser.verbose("Inserting taxa data")
+    logger.info("Inserting taxonomy data")
+    total_size = len(taxa_info_list)
     with db.atomic():
-        for i in range(0, len(taxa_info_list), args.chunk):
+        for i in tqdm(range(0, total_size, args.chunk),
+                      unit=' chunks', desc='INFO:taxadb.app',
+                      total=''):
             Taxa.insert_many(taxa_info_list[i:i+args.chunk]).execute()
-    print('Taxa: completed')
+    logger.info('Table Taxa completed')
 
-    parser.verbose("Checking table accession ...")
     # At first load, table accession does not exist yet, we create it
     db.create_table(Accession, safe=True)
 
@@ -136,20 +140,26 @@ def create_db(args):
         for acc_file in acc_dl_list:
             inserted_rows = 0
             parser.verbose("Parsing %s" % str(acc_file))
-            for data_dict in parser.accession2taxid(acc2taxid=os.path.join(
-                    args.input, acc_file), chunk=args.chunk):
+            for data_dict in tqdm(
+                parser.accession2taxid(
+                    acc2taxid=os.path.join(args.input, acc_file),
+                    chunk=args.chunk), unit=' chunks',
+                    desc='INFO:taxadb.app',
+                    total=''):
                 Accession.insert_many(data_dict[0:args.chunk]).execute()
                 inserted_rows += len(data_dict)
-            print('%s: %s added to database (%d rows inserted)'
-                  % (Accession.get_table_name(), acc_file, inserted_rows))
+            logger.info('%s: %s added to database (%d rows inserted)'
+                        % (Accession.get_table_name(),
+                            acc_file, inserted_rows))
         if not Accession.has_index(name='accession_accession'):
-            print('Creating index for %s' % Accession.get_table_name())
+            logger.info('Creating index for %s'
+                        % Accession.get_table_name())
             try:
                 db.create_index(Accession, ['accession'], unique=True)
             except PeeweeException as err:
                 raise Exception("Could not create Accession index: %s"
                                 % str(err))
-    print('Accession: completed')
+    logger.info('Table Accession completed')
     db.close()
 
 

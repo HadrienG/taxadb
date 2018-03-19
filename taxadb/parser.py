@@ -3,6 +3,7 @@
 
 import gzip
 import os
+import logging
 from taxadb.schema import Taxa, Accession
 from taxadb.util import fatal
 
@@ -14,6 +15,11 @@ class TaxaParser(object):
     def __init__(self, verbose=False):
         """Base class"""
         self._verbose = verbose
+
+    @property
+    def logger(self):
+        component = "{}.{}".format(type(self).__module__, type(self).__name__)
+        return logging.getLogger(component)
 
     @staticmethod
     def cache_taxids():
@@ -117,7 +123,7 @@ class TaxaDumpParser(TaxaParser):
                     'lineage_level': line_list[2].strip('\t')
                 }
                 nodes_data.append(data_dict)
-        print('parsed nodes')
+        self.logger.info('Parsed nodes.dmp')
 
         # parse names.dmp
         names_data = list()
@@ -134,14 +140,14 @@ class TaxaDumpParser(TaxaParser):
                         'tax_name': line_list[1].strip('\t')
                     }
                     names_data.append(data_dict)
-        print('parsed names')
+        self.logger.info('Parsed names.dmp')
 
         # merge the two dictionaries
         taxa_info_list = list()
         for nodes, names in zip(nodes_data, names_data):
             taxa_info = {**nodes, **names}  # PEP 448, requires python 3.5
             taxa_info_list.append(taxa_info)
-        print('merge successful')
+        self.logger.debug('merge successful')
         return taxa_info_list
 
     def set_nodes_file(self, nodes_file):
