@@ -23,31 +23,11 @@ Taxadb requires python >= 3.5 to work. To install taxadb with sqlite support, si
 
 If you wish to use MySQL or PostgreSQL, please refer to the full [documentation](http://taxadb.readthedocs.io/en/latest/)
 
-### Available databases
-
-The databases used by Taxadb are lengthy to build, therefore we provide pre-built sqlite databases. They are available for download below.
-
-#### Sqlite
-
-**We currently had to remove the pre-built databases and are considering our options**
-
-| Name | Size | Size (gzipped) | download link
-| --- | --- | --- | ---
-| full | 40G | 8.1G | [link](http://139.162.178.46/files/taxadb/taxadb_full.sqlite.gz)
-| nucl | 25G | 5.0G | [link](http://139.162.178.46/files/taxadb/taxadb_nucl.sqlite.gz)
-| prot | 15G | 3.2G | [link](http://139.162.178.46/files/taxadb/taxadb_prot.sqlite.gz)
-| gb | 4.4G | 962M | [link](http://139.162.178.46/files/taxadb/taxadb_gb.sqlite.gz)
-| wgs | 17G | 3.2G | [link](http://139.162.178.46/files/taxadb/taxadb_wgs.sqlite.gz)
-| gss | 1.6M | 316M | [link](http://139.162.178.46/files/taxadb/taxadb_gss.sqlite.gz)
-| est | 2.9G | 599M | [link](http://139.162.178.46/files/taxadb/taxadb_est.sqlite.gz)
-
-Build date: April 2017
-
 ## Usage
 
 ### Querying the Database
 
-Firstly, make sure you have [downloaded](#available-databases) or [built](#creating-the-database) the database
+Firstly, make sure you have [built](#creating-the-database) the database
 
 Below you can find basic examples. For more complete examples, please refer to the complete [API documentation](http://taxadb.readthedocs.io/en/latest/)
 

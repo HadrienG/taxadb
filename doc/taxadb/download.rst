@@ -1,36 +1,7 @@
 .. _download:
 
-Download and Create a database
-==============================
-
-.. _available_databases:
-
-Pre-built databases
--------------------
-
-The databases used by Taxadb are lengthy to build, therefore we provide pre-built databases.
-They are available for download below (**SQLite**).
-We try to update them on a regular basis.
-If you wish, it is also possible to build and create your :ref:`own databases <build_own_databases>`
-
-+------+------+----------------+---------------------------------------------------------------+
-| Name | Size | Size (gzipped) | download link                                                 |
-+======+======+================+===============================================================+
-| full | 40G  | 8.1G           | `<http://139.162.178.46/files/taxadb/taxadb_full.sqlite.gz>`_ |
-+------+------+----------------+---------------------------------------------------------------+
-| nucl | 25G  | 5.0G           | `<http://139.162.178.46/files/taxadb/taxadb_nucl.sqlite.gz>`_ |
-+------+------+----------------+---------------------------------------------------------------+
-| prot | 15G  | 3.2G           | `<http://139.162.178.46/files/taxadb/taxadb_prot.sqlite.gz>`_ |
-+------+------+----------------+---------------------------------------------------------------+
-| gb   | 4.4G | 962M           | `<http://139.162.178.46/files/taxadb/taxadb_gb.sqlite.gz>`_   |
-+------+------+----------------+---------------------------------------------------------------+
-| wgs  | 17G  | 3.2G           | `<http://139.162.178.46/files/taxadb/taxadb_wgs.sqlite.gz>`_  |
-+------+------+----------------+---------------------------------------------------------------+
-| gss  | 1.6M | 316M           | `<http://139.162.178.46/files/taxadb/taxadb_gss.sqlite.gz>`_  |
-+------+------+----------------+---------------------------------------------------------------+
-| est  | 2.9G | 599M           | `<http://139.162.178.46/files/taxadb/taxadb_est.sqlite.gz>`_  |
-+------+------+----------------+---------------------------------------------------------------+
-
+Create a database
+=================
 
 .. _build_own_databases:
 
