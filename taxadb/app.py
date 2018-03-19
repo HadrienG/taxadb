@@ -14,13 +14,13 @@ from peewee import PeeweeException
 
 
 def download_files(args):
-    """Main function for the 'taxadb download' sub-command.
+    """Main function for the `taxadb download` sub-command.
 
-    This function downloads taxump.tar.gz and the content of the
+    This function can download taxump.tar.gz and the content of the
     accession2taxid directory from the ncbi ftp.
 
     Arguments:
-             args.output (:obj:`str`): output directory
+             args (object): The arguments from argparse
 
     """
     logger = logging.getLogger(__name__)

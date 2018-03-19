@@ -10,12 +10,12 @@ import requests
 
 
 def ncbi(path, filename, base_url='https://ftp.ncbi.nlm.nih.gov/'):
-    """newer download function using requests
-
-    EXPERIMENTAL
+    """Download a file from the NCBI ftp using https
 
     Arguments:
-        url: a string encoding a valid url
+        path (string): base path to the file
+        filename (string): filename
+        base_url (string): address to the ncbi ftp
     """
     logger = logging.getLogger(__name__)
 
@@ -44,6 +44,3 @@ def unpack(filename):
     with tarfile.open(filename, "r:gz") as archive:
         archive.extractall()
         archive.close()
-
-
-# ncbi(path='pub/taxonomy/', filename='taxdump.tar.gz')
