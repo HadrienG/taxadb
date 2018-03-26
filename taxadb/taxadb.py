@@ -62,12 +62,14 @@ class TaxaDB(object):
         Raises:
              SystemExit: if `table` does not exist
         """
+        logger = logging.getLogger('TaxaDB')
         if not table.table_exists():
-            self.logger.error(
+            logger.error(
                 "Table %s does not exist" % (str(table.get_table_name())))
             sys.exit(1)
         return True
 
+    @staticmethod
     def check_list_ids(ids):
         """Check the list of ids is not longer that MAX_LIST
 
@@ -80,8 +82,9 @@ class TaxaDB(object):
         Raises:
             SystemExit: If `len` of the list of greater than `MAX_LIST`.
         """
+        logger = logging.getLogger('TaxaDB')
         if len(ids) > TaxaDB.MAX_LIST:
-            self.logger.error(
+            logger.error(
                 "Too many accession entries to request (%d), max %d"
                 % (len(ids), TaxaDB.MAX_LIST))
             sys.exit(1)

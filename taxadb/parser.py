@@ -35,7 +35,8 @@ class TaxaParser(object):
             data[str(x['ncbi_taxid'])] = True
         return data
 
-    def check_file(self, element):
+    @staticmethod
+    def check_file(element):
         """Make some check on a file
 
         This method is used to check an `element` is a real file.
@@ -51,14 +52,15 @@ class TaxaParser(object):
             SystemExit: if `element` is not a file
 
         """
+        logger = logging.getLogger('parser')
         if element is None:
-            self.logger.error("Please provide an input file to check")
+            logger.error("Please provide an input file to check")
             sys.exit(1)
         if not os.path.exists(element):
-            self.logger.error("File %s does not exist" % str(element))
+            logger.error("File %s does not exist" % str(element))
             sys.exit(1)
         if not os.path.isfile(element):
-            self.logger.error("%s is not a file" % str(element))
+            logger.error("%s is not a file" % str(element))
             sys.exit(1)
         return True
 
