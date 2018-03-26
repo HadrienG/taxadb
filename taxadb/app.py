@@ -7,12 +7,13 @@ import logging
 import argparse
 
 from tqdm import tqdm
+from peewee import PeeweeException
+
 from taxadb import util
 from taxadb import download
 from taxadb.version import __version__
-from taxadb.parser import TaxaDumpParser, Accession2TaxidParser
 from taxadb.schema import DatabaseFactory, db, Taxa, Accession
-from peewee import PeeweeException
+from taxadb.parser import TaxaDumpParser, Accession2TaxidParser
 
 
 def download_files(args):

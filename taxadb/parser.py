@@ -1,12 +1,12 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import gzip
 import os
-import logging
 import sys
+import gzip
+import logging
+
 from taxadb.schema import Taxa, Accession
-from taxadb.util import fatal
 
 
 class TaxaParser(object):

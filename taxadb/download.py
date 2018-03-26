@@ -1,12 +1,12 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from tqdm import tqdm
-
 import shutil
 import logging
 import tarfile
 import requests
+
+from tqdm import tqdm
 
 
 def ncbi(path, filename, base_url='https://ftp.ncbi.nlm.nih.gov/'):

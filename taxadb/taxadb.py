@@ -1,7 +1,9 @@
-from peewee import PeeweeException
-from taxadb.schema import db, DatabaseFactory
 import sys
 import logging
+
+from peewee import PeeweeException
+
+from taxadb.schema import db, DatabaseFactory
 
 
 class TaxaDB(object):
