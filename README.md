@@ -1,8 +1,11 @@
 # Taxadb
 
 [![Build Status](https://travis-ci.org/HadrienG/taxadb.svg?branch=master)](https://travis-ci.org/HadrienG/taxadb)
-[![PyPI](https://img.shields.io/badge/python-3.5-blue.svg)]()
-[![LICENSE](https://img.shields.io/badge/license-MIT-lightgrey.svg)]()
+[![Documentation Status](https://readthedocs.org/projects/taxadb/badge/?version=latest)](http://taxadb.readthedocs.io/en/latest/?badge=latest)
+[![made-with-python](https://img.shields.io/badge/made%20with-python3-blue.svg)](https://www.python.org/)
+[![PyPI version](https://badge.fury.io/py/taxadb.svg)](https://pypi.org/project/taxadb/)
+[![codecov](https://codecov.io/gh/HadrienG/taxadb/branch/master/graph/badge.svg)](https://codecov.io/gh/HadrienG/taxadb)
+[![LICENSE](https://img.shields.io/badge/license-MIT-lightgrey.svg)](https://github.com/HadrienG/taxadb)
 
 Taxadb is an application to locally query the ncbi taxonomy. Taxadb is written in python, and access its database using the [peewee](http://peewee.readthedocs.io) library.
 
