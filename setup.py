@@ -7,11 +7,16 @@ from taxadb.version import __version__
 
 url = 'https://github.com/HadrienG/taxadb'
 
+with open('README.md') as f:
+    long_description = f.read()
+
 setup(
     name='taxadb',
     version=__version__,
 
     description='locally query the ncbi taxonomy',
+    long_description=long_description,
+    long_description_content_type='text/markdown',
 
     url=url,
     download_url=url + '/tarball/' + __version__,
