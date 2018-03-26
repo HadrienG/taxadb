@@ -9,6 +9,7 @@ import argparse
 from tqdm import tqdm
 from taxadb import util
 from taxadb import download
+from taxadb.version import __version__
 from taxadb.parser import TaxaDumpParser, Accession2TaxidParser
 from taxadb.schema import DatabaseFactory, db, Taxa, Accession
 from peewee import PeeweeException
@@ -77,8 +78,8 @@ def create_db(args):
 
     Args:
 
-        args.input (:obj:`str`): input directory. It is the directory created by
-            `taxadb download`
+        args.input (:obj:`str`): input directory. It is the directory created
+            by `taxadb download`
         args.dbname (:obj:`str`): name of the database to be created
         args.dbtype (:obj:`str`): type of database to be used.
         args.division (:obj:`str`): division to create the db for.
@@ -176,11 +177,11 @@ def main():
     )
     parser.add_argument(
         '-v',
-        '--verbose',
-        action="store_true",
+        '--version',
+        action='store_true',
         default=False,
-        dest="verbose",
-        help="Prints verbose messages")
+        help='print software version and exit'
+    )
 
     subparsers = parser.add_subparsers(
         title='available commands',
@@ -192,6 +193,19 @@ def main():
         prog='taxadb download',
         description='download the files required to create the database',
         help='download the files required to create the database'
+    )
+    param_logging_dl = parser_download.add_mutually_exclusive_group()
+    param_logging_dl.add_argument(
+        '--quiet',
+        action='store_true',
+        default=False,
+        help='Disable info logging. (default: %(default)s).'
+    )
+    param_logging_dl.add_argument(
+        '--debug',
+        action="store_true",
+        default=False,
+        help='Enable debug logging. (default: %(default)s).'
     )
     parser_download.add_argument(
         '--type',
@@ -225,6 +239,19 @@ def main():
         prog='taxadb create',
         description='build the database',
         help='build the database'
+    )
+    param_logging_cr = parser_create.add_mutually_exclusive_group()
+    param_logging_cr.add_argument(
+        '--quiet',
+        action='store_true',
+        default=False,
+        help='Disable info logging. (default: %(default)s).'
+    )
+    param_logging_cr.add_argument(
+        '--debug',
+        action="store_true",
+        default=False,
+        help='Enable debug logging. (default: %(default)s).'
     )
     parser_create.add_argument(
         '--fast',
@@ -311,14 +338,20 @@ def main():
 
     args = parser.parse_args()
     try:
-        if args.verbose:
+        if args.version:
+            print('taxadb version %s' % __version__)
+            sys.exit(0)
+        elif args.quiet:
+            logging.basicConfig(level=logging.ERROR)
+        elif args.debug:
             logging.basicConfig(level=logging.DEBUG)
         else:
             logging.basicConfig(level=logging.INFO)
+
         args.func(args)
         logging.shutdown()
     except AttributeError as e:
         logger = logging.getLogger(__name__)
         logger.debug(e)
         parser.print_help()
-        raise  # extra traceback to uncomment for extra debugging powers
+        # raise  # extra traceback to uncomment for extra debugging powers
