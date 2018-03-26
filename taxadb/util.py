@@ -29,17 +29,3 @@ def md5_check(file, block_size=256*128):
         sys.exit(1)
     else:
         logger.info('Checking md5 of %s: OK' % file)
-
-
-def fatal(msg):
-    """Prints a FATAL message and exit with status code 1
-
-    Args:
-        msg (:obj:`str`): Error message to print
-
-    Raises:
-        SystemExit
-
-    """
-    print("[FATAL] %s" % str(msg), file=sys.stderr)
-    sys.exit(1)

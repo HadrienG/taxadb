@@ -202,7 +202,7 @@ def main():
         help='Disable info logging. (default: %(default)s).'
     )
     param_logging_dl.add_argument(
-        '--debug',
+        '--verbose',
         action="store_true",
         default=False,
         help='Enable debug logging. (default: %(default)s).'
@@ -248,7 +248,7 @@ def main():
         help='Disable info logging. (default: %(default)s).'
     )
     param_logging_cr.add_argument(
-        '--debug',
+        '--verbose',
         action="store_true",
         default=False,
         help='Enable debug logging. (default: %(default)s).'
@@ -343,7 +343,7 @@ def main():
             sys.exit(0)
         elif args.quiet:
             logging.basicConfig(level=logging.ERROR)
-        elif args.debug:
+        elif args.verbose:
             logging.basicConfig(level=logging.DEBUG)
         else:
             logging.basicConfig(level=logging.INFO)
@@ -354,4 +354,4 @@ def main():
         logger = logging.getLogger(__name__)
         logger.debug(e)
         parser.print_help()
-        # raise  # extra traceback to uncomment for extra debugging powers
+        raise  # extra traceback to uncomment for extra debugging powers
