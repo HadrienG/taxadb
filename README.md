@@ -1,8 +1,11 @@
 # Taxadb
 
 [![Build Status](https://travis-ci.org/HadrienG/taxadb.svg?branch=master)](https://travis-ci.org/HadrienG/taxadb)
-[![PyPI](https://img.shields.io/badge/python-3.5-blue.svg)]()
-[![LICENSE](https://img.shields.io/badge/license-MIT-lightgrey.svg)]()
+[![Documentation Status](https://readthedocs.org/projects/taxadb/badge/?version=latest)](http://taxadb.readthedocs.io/en/latest/?badge=latest)
+[![made-with-python](https://img.shields.io/badge/made%20with-python3-blue.svg)](https://www.python.org/)
+[![PyPI version](https://badge.fury.io/py/taxadb.svg)](https://pypi.org/project/taxadb/)
+[![codecov](https://codecov.io/gh/HadrienG/taxadb/branch/master/graph/badge.svg)](https://codecov.io/gh/HadrienG/taxadb)
+[![LICENSE](https://img.shields.io/badge/license-MIT-lightgrey.svg)](https://github.com/HadrienG/taxadb)
 
 Taxadb is an application to locally query the ncbi taxonomy. Taxadb is written in python, and access its database using the [peewee](http://peewee.readthedocs.io) library.
 
@@ -23,29 +26,11 @@ Taxadb requires python >= 3.5 to work. To install taxadb with sqlite support, si
 
 If you wish to use MySQL or PostgreSQL, please refer to the full [documentation](http://taxadb.readthedocs.io/en/latest/)
 
-### Available databases
-
-The databases used by Taxadb are lengthy to build, therefore we provide pre-built sqlite databases. They are available for download below.
-
-#### Sqlite
-
-| Name | Size | Size (gzipped) | download link
-| --- | --- | --- | ---
-| full | 40G | 8.1G | [link](http://139.162.178.46/files/taxadb/taxadb_full.sqlite.gz)
-| nucl | 25G | 5.0G | [link](http://139.162.178.46/files/taxadb/taxadb_nucl.sqlite.gz)
-| prot | 15G | 3.2G | [link](http://139.162.178.46/files/taxadb/taxadb_prot.sqlite.gz)
-| gb | 4.4G | 962M | [link](http://139.162.178.46/files/taxadb/taxadb_gb.sqlite.gz)
-| wgs | 17G | 3.2G | [link](http://139.162.178.46/files/taxadb/taxadb_wgs.sqlite.gz)
-| gss | 1.6M | 316M | [link](http://139.162.178.46/files/taxadb/taxadb_gss.sqlite.gz)
-| est | 2.9G | 599M | [link](http://139.162.178.46/files/taxadb/taxadb_est.sqlite.gz)
-
-Build date: April 2017
-
 ## Usage
 
 ### Querying the Database
 
-Firstly, make sure you have [downloaded](#available-databases) or [built](#creating-the-database) the database
+Firstly, make sure you have [built](#creating-the-database) the database
 
 Below you can find basic examples. For more complete examples, please refer to the complete [API documentation](http://taxadb.readthedocs.io/en/latest/)
 

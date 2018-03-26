@@ -4,6 +4,11 @@ taxdump*
 n*.dmp
 gc.prt
 readme.txt
+citations.dmp
+delnodes.dmp
+division.dmp
+gencode.dmp
+merged.dmp
 
 # db
 *.sqlite
@@ -29,6 +34,7 @@ data/
 # distribution / packaging
 *.egg-info/
 dist/
+build/
 
 # mac stuff
 .DS_Store
@@ -39,4 +45,3 @@ public
 doc/_build
 doc/_static
 doc/_sources
-

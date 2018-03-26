@@ -2,59 +2,74 @@
 # -*- coding: utf-8 -*-
 
 import os
-import tarfile
-import ftputil
+import sys
+import logging
 import argparse
 
-from taxadb import util
-from taxadb.parser import TaxaDumpParser, Accession2TaxidParser
-from taxadb.schema import DatabaseFactory, db, Taxa, Accession
+from tqdm import tqdm
 from peewee import PeeweeException
 
+from taxadb import util
+from taxadb import download
+from taxadb.version import __version__
+from taxadb.schema import DatabaseFactory, db, Taxa, Accession
+from taxadb.parser import TaxaDumpParser, Accession2TaxidParser
 
-def download(args):
-    """Main function for the 'taxadb download' sub-command.
 
-    This function downloads taxump.tar.gz and the content of the
+def download_files(args):
+    """Main function for the `taxadb download` sub-command.
+
+    This function can download taxump.tar.gz and the content of the
     accession2taxid directory from the ncbi ftp.
 
     Arguments:
-             args.output (:obj:`str`): output directory
+             args (object): The arguments from argparse
 
     """
-    ncbi_ftp = 'ftp.ncbi.nlm.nih.gov'
+    logger = logging.getLogger(__name__)
 
-    # files to download in accession2taxid
+    # files to download
     nucl_est = 'nucl_est.accession2taxid.gz'
     nucl_gb = 'nucl_gb.accession2taxid.gz'
     nucl_gss = 'nucl_gss.accession2taxid.gz'
     nucl_wgs = 'nucl_wgs.accession2taxid.gz'
     prot = 'prot.accession2taxid.gz'
-    acc_dl_list = [nucl_est, nucl_gb, nucl_gss, nucl_wgs, prot]
     taxdump = 'taxdump.tar.gz'
 
-    out = args.outdir
-    os.makedirs(os.path.abspath(out), exist_ok=True)
-    os.chdir(os.path.abspath(out))
+    args.type = [x for y in args.type for x in y]
+    acc_dl_list = [taxdump]
+
+    for div in args.type:
+        if div in ['full', 'nucl', 'est']:
+            acc_dl_list.append(nucl_est)
+        if div in ['full', 'nucl', 'gb']:
+            acc_dl_list.append(nucl_gb)
+        if div in ['full', 'nucl', 'gss']:
+            acc_dl_list.append(nucl_gss)
+        if div in ['full', 'nucl', 'wgs']:
+            acc_dl_list.append(nucl_wgs)
+        if div in ['full', 'prot']:
+            acc_dl_list.append(prot)
+
+    try:
+        out = args.outdir
+        os.makedirs(os.path.abspath(out), exist_ok=args.force)
+        os.chdir(os.path.abspath(out))
+    except FileExistsError as e:
+        logger.error('%s exists. Consider using -f if you want to overwrite'
+                     % out)
+        sys.exit(1)
 
     for file in acc_dl_list:
-        print('Started Downloading %s' % file)
-        with ftputil.FTPHost(ncbi_ftp, 'anonymous', 'password') as ncbi:
-            ncbi.chdir('pub/taxonomy/accession2taxid/')
-            ncbi.download_if_newer(file, file)
-            ncbi.download_if_newer(file + '.md5', file + '.md5')
+        if file != taxdump:
+            download.ncbi('pub/taxonomy/accession2taxid/', file)
+            download.ncbi('pub/taxonomy/accession2taxid/', file + '.md5')
             util.md5_check(file)
-
-    print('Started Downloading %s' % taxdump)
-    with ftputil.FTPHost(ncbi_ftp, 'anonymous', 'password') as ncbi:
-        ncbi.chdir('pub/taxonomy/')
-        ncbi.download_if_newer(taxdump, taxdump)
-        ncbi.download_if_newer(taxdump + '.md5', taxdump + '.md5')
-        util.md5_check(taxdump)
-    print('Unpacking %s' % taxdump)
-    with tarfile.open(taxdump, "r:gz") as tar:
-        tar.extractall()
-        tar.close()
+        else:
+            download.ncbi('pub/taxonomy/', taxdump)
+            download.ncbi('pub/taxonomy/', taxdump + '.md5')
+            util.md5_check(taxdump)
+            download.unpack(taxdump)
 
 
 def create_db(args):
@@ -64,8 +79,8 @@ def create_db(args):
 
     Args:
 
-        args.input (:obj:`str`): input directory. It is the directory created by
-            `taxadb download`
+        args.input (:obj:`str`): input directory. It is the directory created
+            by `taxadb download`
         args.dbname (:obj:`str`): name of the database to be created
         args.dbtype (:obj:`str`): type of database to be used.
         args.division (:obj:`str`): division to create the db for.
@@ -73,6 +88,7 @@ def create_db(args):
                                  with caution!
 
     """
+    logger = logging.getLogger(__name__)
     database = DatabaseFactory(**args.__dict__).get_database()
     div = args.division  # am lazy at typing
     db.initialize(database)
@@ -89,23 +105,25 @@ def create_db(args):
                             names_file=os.path.join(args.input, 'names.dmp'),
                             verbose=args.verbose)
 
-    parser.verbose("Connected to database ...")
+    logger.debug('Connected to database')
     # If taxa table already exists, do not recreate and fill it
     # safe=True prevent not to create the table if it already exists
     if not Taxa.table_exists():
-        parser.verbose("Creating table %s" % str(Taxa.get_table_name()))
-    db.create_table(Taxa, safe=True)
+        logger.info('Creating table %s' % str(Taxa.get_table_name()))
+        db.create_table(Taxa, safe=True)
 
-    parser.verbose("Parsing files")
+    logger.info("Parsing files")
     taxa_info_list = parser.taxdump()
 
-    parser.verbose("Inserting taxa data")
+    logger.info("Inserting taxonomy data")
+    total_size = len(taxa_info_list)
     with db.atomic():
-        for i in range(0, len(taxa_info_list), args.chunk):
+        for i in tqdm(range(0, total_size, args.chunk),
+                      unit=' chunks', desc='INFO:taxadb.app',
+                      total=''):
             Taxa.insert_many(taxa_info_list[i:i+args.chunk]).execute()
-    print('Taxa: completed')
+    logger.info('Table Taxa completed')
 
-    parser.verbose("Checking table accession ...")
     # At first load, table accession does not exist yet, we create it
     db.create_table(Accession, safe=True)
 
@@ -124,20 +142,26 @@ def create_db(args):
         for acc_file in acc_dl_list:
             inserted_rows = 0
             parser.verbose("Parsing %s" % str(acc_file))
-            for data_dict in parser.accession2taxid(acc2taxid=os.path.join(
-                    args.input, acc_file), chunk=args.chunk):
+            for data_dict in tqdm(
+                parser.accession2taxid(
+                    acc2taxid=os.path.join(args.input, acc_file),
+                    chunk=args.chunk), unit=' chunks',
+                    desc='INFO:taxadb.app',
+                    total=''):
                 Accession.insert_many(data_dict[0:args.chunk]).execute()
                 inserted_rows += len(data_dict)
-            print('%s: %s added to database (%d rows inserted)'
-                  % (Accession.get_table_name(), acc_file, inserted_rows))
+            logger.info('%s: %s added to database (%d rows inserted)'
+                        % (Accession.get_table_name(),
+                            acc_file, inserted_rows))
         if not Accession.has_index(name='accession_accession'):
-            print('Creating index for %s' % Accession.get_table_name())
+            logger.info('Creating index for %s'
+                        % Accession.get_table_name())
             try:
                 db.create_index(Accession, ['accession'], unique=True)
             except PeeweeException as err:
                 raise Exception("Could not create Accession index: %s"
                                 % str(err))
-    print('Accession: completed')
+    logger.info('Table Accession completed')
     db.close()
 
 
@@ -154,11 +178,11 @@ def main():
     )
     parser.add_argument(
         '-v',
-        '--verbose',
-        action="store_true",
+        '--version',
+        action='store_true',
         default=False,
-        dest="verbose",
-        help="Prints verbose messages")
+        help='print software version and exit'
+    )
 
     subparsers = parser.add_subparsers(
         title='available commands',
@@ -171,6 +195,37 @@ def main():
         description='download the files required to create the database',
         help='download the files required to create the database'
     )
+    param_logging_dl = parser_download.add_mutually_exclusive_group()
+    param_logging_dl.add_argument(
+        '--quiet',
+        action='store_true',
+        default=False,
+        help='Disable info logging. (default: %(default)s).'
+    )
+    param_logging_dl.add_argument(
+        '--verbose',
+        action="store_true",
+        default=False,
+        help='Enable debug logging. (default: %(default)s).'
+    )
+    parser_download.add_argument(
+        '--type',
+        '-t',
+        choices=['taxa', 'full', 'nucl', 'prot', 'gb', 'wgs', 'gss', 'est'],
+        action='append',
+        nargs='*',
+        metavar='<str>',
+        required=True,
+        help='divisions to download. Can be one or more of "taxa", "all",\
+            "nucl", "prot", "est", "gb", "gss" or "wgs". Space-separated.'
+    )
+    parser_download.add_argument(
+        '--force',
+        '-f',
+        action="store_true",
+        default=False,
+        help='Force download if the output directory exists',
+    )
     parser_download.add_argument(
         '--outdir',
         '-o',
@@ -178,13 +233,26 @@ def main():
         help='Output Directory',
         required=True
     )
-    parser_download.set_defaults(func=download)
+    parser_download.set_defaults(func=download_files)
 
     parser_create = subparsers.add_parser(
         'create',
         prog='taxadb create',
         description='build the database',
         help='build the database'
+    )
+    param_logging_cr = parser_create.add_mutually_exclusive_group()
+    param_logging_cr.add_argument(
+        '--quiet',
+        action='store_true',
+        default=False,
+        help='Disable info logging. (default: %(default)s).'
+    )
+    param_logging_cr.add_argument(
+        '--verbose',
+        action="store_true",
+        default=False,
+        help='Enable debug logging. (default: %(default)s).'
     )
     parser_create.add_argument(
         '--fast',
@@ -271,7 +339,20 @@ def main():
 
     args = parser.parse_args()
     try:
+        if args.version:
+            print('taxadb version %s' % __version__)
+            sys.exit(0)
+        elif args.quiet:
+            logging.basicConfig(level=logging.ERROR)
+        elif args.verbose:
+            logging.basicConfig(level=logging.DEBUG)
+        else:
+            logging.basicConfig(level=logging.INFO)
+
         args.func(args)
-    except Exception as e:
+        logging.shutdown()
+    except AttributeError as e:
+        logger = logging.getLogger(__name__)
+        logger.debug(e)
         parser.print_help()
-        print('\nERROR: %s' % str(e))  # for debugging purposes
+        raise  # extra traceback to uncomment for extra debugging powers

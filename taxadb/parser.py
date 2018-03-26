@@ -1,10 +1,12 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import gzip
 import os
+import sys
+import gzip
+import logging
+
 from taxadb.schema import Taxa, Accession
-from taxadb.util import fatal
 
 
 class TaxaParser(object):
@@ -14,6 +16,11 @@ class TaxaParser(object):
     def __init__(self, verbose=False):
         """Base class"""
         self._verbose = verbose
+
+    @property
+    def logger(self):
+        component = "{}.{}".format(type(self).__module__, type(self).__name__)
+        return logging.getLogger(component)
 
     @staticmethod
     def cache_taxids():
@@ -45,18 +52,16 @@ class TaxaParser(object):
             SystemExit: if `element` is not a file
 
         """
+        logger = logging.getLogger('parser')
         if element is None:
-            fatal("Please provide an input file to check")
+            logger.error("Please provide an input file to check")
+            sys.exit(1)
         if not os.path.exists(element):
-            fatal("File %s does not exist" % str(element))
+            logger.error("File %s does not exist" % str(element))
+            sys.exit(1)
         if not os.path.isfile(element):
-            fatal("%s is not a file" % str(element))
-        return True
-
-    def verbose(self, msg):
-        """Prints some message if verbose mode on"""
-        if self._verbose is True and msg and msg != '':
-            print("[VERBOSE] %s" % str(msg))
+            logger.error("%s is not a file" % str(element))
+            sys.exit(1)
         return True
 
 
@@ -101,9 +106,9 @@ class TaxaDumpParser(TaxaParser):
         self.check_file(nodes_file)
         # parse nodes.dmp
         nodes_data = list()
-        self.verbose("Loading taxa data ...")
+        self.logger.debug("Loading taxa data ...")
         ncbi_ids = self.cache_taxids()
-        self.verbose("Parsing %s" % str(nodes_file))
+        self.logger.debug("Parsing %s" % str(nodes_file))
         with open(nodes_file, 'r') as f:
             for line in f:
                 line_list = line.split('|')
@@ -117,11 +122,11 @@ class TaxaDumpParser(TaxaParser):
                     'lineage_level': line_list[2].strip('\t')
                 }
                 nodes_data.append(data_dict)
-        print('parsed nodes')
+        self.logger.info('Parsed nodes.dmp')
 
         # parse names.dmp
         names_data = list()
-        self.verbose("Parsing %s" % str(names_file))
+        self.logger.debug("Parsing %s" % str(names_file))
         with open(names_file, 'r') as f:
             for line in f:
                 if 'scientific name' in line:
@@ -134,14 +139,14 @@ class TaxaDumpParser(TaxaParser):
                         'tax_name': line_list[1].strip('\t')
                     }
                     names_data.append(data_dict)
-        print('parsed names')
+        self.logger.info('Parsed names.dmp')
 
         # merge the two dictionaries
         taxa_info_list = list()
         for nodes, names in zip(nodes_data, names_data):
             taxa_info = {**nodes, **names}  # PEP 448, requires python 3.5
             taxa_info_list.append(taxa_info)
-        print('merge successful')
+        self.logger.debug('merge successful')
         return taxa_info_list
 
     def set_nodes_file(self, nodes_file):
@@ -160,7 +165,8 @@ class TaxaDumpParser(TaxaParser):
 
         """
         if nodes_file is None:
-            fatal("Please provide an nodes file to set")
+            self.logger.error("Please provide an nodes file to set")
+            sys.exit(1)
         self.check_file(nodes_file)
         self.nodes_file = nodes_file
         return True
@@ -181,7 +187,8 @@ class TaxaDumpParser(TaxaParser):
 
         """
         if names_file is None:
-            fatal("Please provide an names file to set")
+            self.logger.error("Please provide an names file to set")
+            sys.exit(1)
         self.check_file(names_file)
         self.names_file = names_file
         return True
@@ -240,8 +247,8 @@ class Accession2TaxidParser(TaxaParser):
         self.check_file(acc2taxid)
         if chunk is None:
             chunk = self.chunk
-        self.verbose("Parsing %s" % str(acc2taxid))
-        self.verbose("Fast mode %s" % "ON" if self.fast else "OFF")
+        self.logger.debug("Parsing %s" % str(acc2taxid))
+        self.logger.debug("Fast mode %s" % "ON" if self.fast else "OFF")
         with gzip.open(acc2taxid, 'rb') as f:
             f.readline()  # discard the header
             for line in f:
@@ -289,7 +296,8 @@ class Accession2TaxidParser(TaxaParser):
 
         """
         if acc_file is None:
-            fatal("Please provide an accession file to set")
+            self.logger.error("Please provide an accession file to set")
+            sys.exit(1)
         self.check_file(acc_file)
         self.acc_file = acc_file
         return True

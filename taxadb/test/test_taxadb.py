@@ -1,16 +1,18 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import unittest
 import os
+import unittest
+
+from taxadb.taxid import TaxID
 from taxadb.taxadb import TaxaDB
+from taxadb.util import md5_check
+from taxadb.schema import Accession, Taxa
 from taxadb.accessionid import AccessionID
 from taxadb.parser import TaxaParser, TaxaDumpParser, Accession2TaxidParser
-from taxadb.taxid import TaxID
-from taxadb.schema import Accession, Taxa
-from taxadb.util import md5_check, fatal
-from nose.plugins.attrib import attr
+
 from testconfig import config
+from nose.plugins.attrib import attr
 
 
 class TestMainFunc(unittest.TestCase):
@@ -47,14 +49,8 @@ class TestUtils(unittest.TestCase):
         """Check md5 fails"""
         badfile = os.path.join(os.path.dirname(os.path.realpath(__file__)),
                                'wrong.txt')
-        with self.assertRaises(AssertionError):
-            md5_check(badfile)
-
-    @attr('util')
-    def test_fatal_throws(self):
-        """Check fatal throws SystemExit"""
         with self.assertRaises(SystemExit):
-            fatal("failed")
+            md5_check(badfile)
 
 
 class TestTaxadb(unittest.TestCase):
@@ -158,7 +154,7 @@ class TestTaxadb(unittest.TestCase):
 
     @attr('schema')
     def test_has_index(self):
-        """Check method returns False and True when either table or index 
+        """Check method returns False and True when either table or index
         does not exist"""
         from taxadb.schema import BaseModel
         import peewee as pw
@@ -468,22 +464,6 @@ class TestTaxadbParser(unittest.TestCase):
         """Check method returns True when file is ok"""
         tp = TaxaParser()
         self.assertTrue(tp.check_file(self.nodes))
-
-    @attr('parser')
-    def test_parser_verbose(self):
-        """Check method print good message"""
-        import sys
-        from io import StringIO
-        tp = TaxaParser(verbose=True)
-        expected = "[VERBOSE] HELLO"
-        new_out = StringIO()
-        old_out = sys.stdout
-        try:
-            sys.stdout = new_out
-            tp.verbose("HELLO")
-            self.assertEqual(new_out.getvalue().strip(), expected)
-        finally:
-            sys.stdout = old_out
 
     @attr('parser')
     def test_taxadumpparser_taxdump_noargs(self):

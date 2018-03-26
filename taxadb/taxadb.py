@@ -1,7 +1,9 @@
-from peewee import PeeweeException
-from taxadb.schema import db, DatabaseFactory
-from taxadb.util import fatal
 import sys
+import logging
+
+from peewee import PeeweeException
+
+from taxadb.schema import db, DatabaseFactory
 
 
 class TaxaDB(object):
@@ -26,6 +28,11 @@ class TaxaDB(object):
 
     MAX_LIST = 999
 
+    @property
+    def logger(self):
+        component = "{}.{}".format(type(self).__module__, type(self).__name__)
+        return logging.getLogger(component)
+
     def __init__(self, **kwargs):
         self.db = None
         try:
@@ -35,14 +42,14 @@ class TaxaDB(object):
             self.db.initialize(self.database)
             self.db.connect()
         except (AttributeError, PeeweeException) as err:
-            fatal("Can't create database object: %s" % str(err))
+            self.logger.error("Can't create database object: %s" % str(err))
+            sys.exit(1)
 
     def __del__(self):
         """Ensure database connection is closed"""
         if self.db and self.db is not None and not self.db.is_closed():
             self.db.close()
 
-    @classmethod
     def check_table_exists(cls, table):
         """Check a table exists in the database
 
@@ -55,8 +62,11 @@ class TaxaDB(object):
         Raises:
              SystemExit: if `table` does not exist
         """
+        logger = logging.getLogger('TaxaDB')
         if not table.table_exists():
-            fatal("Table %s does not exist" % (str(table.get_table_name())))
+            logger.error(
+                "Table %s does not exist" % (str(table.get_table_name())))
+            sys.exit(1)
         return True
 
     @staticmethod
@@ -72,9 +82,12 @@ class TaxaDB(object):
         Raises:
             SystemExit: If `len` of the list of greater than `MAX_LIST`.
         """
+        logger = logging.getLogger('TaxaDB')
         if len(ids) > TaxaDB.MAX_LIST:
-            fatal("Too many accession entries to request (%d), max %d"
-                  % (len(ids), TaxaDB.MAX_LIST))
+            logger.error(
+                "Too many accession entries to request (%d), max %d"
+                % (len(ids), TaxaDB.MAX_LIST))
+            sys.exit(1)
         return True
 
     def get(self, name):
@@ -111,7 +124,8 @@ class TaxaDB(object):
             acc (:obj:`str`): Accession number not mapped with taxid
             do_exit (:obj:`bool`): Exit with code 1. Default False
         """
-        print("No taxid mapped for accession %s" % str(acc), file=sys.stderr)
+        self.logger.error(
+            "No taxid mapped for accession %s" % str(acc))
         if do_exit:
             sys.exit(1)
         return True

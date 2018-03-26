@@ -3,14 +3,23 @@
 
 from setuptools import setup, find_packages
 
+from taxadb.version import __version__
+
+url = 'https://github.com/HadrienG/taxadb'
+
+with open('README.md') as f:
+    long_description = f.read()
+
 setup(
     name='taxadb',
-    version='0.6.0',
+    version=__version__,
 
     description='locally query the ncbi taxonomy',
+    long_description=long_description,
+    long_description_content_type='text/markdown',
 
-    url='https://github.com/HadrienG/taxadb',
-    download_url='https://github.com/HadrienG/taxadb/tarball/0.6.0',
+    url=url,
+    download_url=url + '/tarball/' + __version__,
     author='Hadrien Gourlé, Juliette Hayer, Emmanuel Quevillon',
     author_email='hadrien.gourle@slu.se, juliette.hayer@slu.se,\
         tuco@pasteur.fr',
@@ -18,7 +27,8 @@ setup(
     license='MIT',
     packages=find_packages(exclude=['tests']),
 
-    install_requires=['ftputil', 'peewee==2.8.1', 'nose', 'nose-testconfig'],
+    tests_require=['nose', 'nose-testconfig'],
+    install_requires=['requests', 'peewee==2.8.1'],
     # Allow PostgreSQL and MySQL as option
     extras_require={
         'postgres': ["psycopg2>=2.6.2"],

@@ -3,6 +3,7 @@ python:
 - '3.5'
 install:
 - pip install -r requirements.txt
+- pip install nose nose-testconfig
 - pip install codecov
 - pip install -e .
 script: nosetests --tc-file taxadb.ini --with-coverage --cover-package=taxadb

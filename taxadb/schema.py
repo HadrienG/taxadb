@@ -1,9 +1,12 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import peewee as pw
 import os
+import peewee as pw
+
 from configparser import ConfigParser, NoSectionError
+
+
 db = pw.Proxy()
 
 
