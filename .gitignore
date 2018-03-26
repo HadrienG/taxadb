@@ -34,6 +34,7 @@ data/
 # distribution / packaging
 *.egg-info/
 dist/
+build/
 
 # mac stuff
 .DS_Store
