@@ -363,6 +363,17 @@ class TestTaxadb(unittest.TestCase):
         self.assertEqual(taxid, 37572)
 
     @attr('taxid')
+    def test_taxid_has_parent(self):
+        taxid = self._buildTaxaDBObject(TaxID)
+        self.assertTrue(taxid.has_parent(37572, 'Insecta'))
+
+    @attr('taxid')
+    def test_taxid_has_parent_None(self):
+        taxid = self._buildTaxaDBObject(TaxID)
+        parent = taxid.has_parent(0000, 'Insecta')
+        self.assertIsNone(parent)
+
+    @attr('taxid')
     def test_sci_name_taxid_None(self):
         """Check method returns None, no results found"""
         name = self._buildTaxaDBObject(SciName)

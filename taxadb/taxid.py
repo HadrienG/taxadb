@@ -116,12 +116,11 @@ class TaxID(TaxaDB):
             bool: True if the taxid contains the parent in its lineage, False
                 otherwise. None if taxid not found
         """
-        try:
-            lineage_id = self.lineage_id(taxid)
-            lineage_name = self.lineage_name(taxid)
-            if parent in lineage_id[1:] or parent in lineage_name[1:]:
-                return True
-            else:
-                return False
-        except Taxa.DoesNotExist:
+        lineage_id = self.lineage_id(taxid)
+        lineage_name = self.lineage_name(taxid)
+        if lineage_id is None:
             return None
+        if parent in lineage_id[1:] or parent in lineage_name[1:]:
+            return True
+        else:
+            return False
