@@ -101,3 +101,27 @@ class TaxID(TaxaDB):
             return lineage_list
         except Taxa.DoesNotExist:
             return None
+
+    def has_parent(self, taxid, parent):
+        """Check if a taxid has a parent in its lineage
+
+        Given a taxid and a parent in the form of a taxid or a scientific name,
+            return True if the taxid contains the parent in its lineage
+
+        Arguments:
+            taxid (:obj:`int`): a taxid
+            parent (:obj:`int|str`): taxid or scientific name
+
+        Returns:
+            bool: True if the taxid contains the parent in its lineage, False
+                otherwise. None if taxid not found
+        """
+        try:
+            lineage_id = self.lineage_id(taxid)
+            lineage_name = self.lineage_name(taxid)
+            if parent in lineage_id[1:] or parent in lineage_name[1:]:
+                return True
+            else:
+                return False
+        except Taxa.DoesNotExist:
+            return None
