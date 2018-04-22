@@ -141,7 +141,7 @@ def create_db(args):
     with db.atomic():
         for acc_file in acc_dl_list:
             inserted_rows = 0
-            parser.verbose("Parsing %s" % str(acc_file))
+            logger.info("Parsing %s" % str(acc_file))
             for data_dict in tqdm(
                 parser.accession2taxid(
                     acc2taxid=os.path.join(args.input, acc_file),

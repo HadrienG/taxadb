@@ -101,6 +101,22 @@ Several operations on taxids are available in taxadb:
    >>> print(lineage)
    ['cellular organism', 'Eukaryota', 'Opisthokonta', 'Metazoa']
 
+   >>> taxid.has_parent(33208, 'Eukaryota')
+   True
+
+You can also get the taxid from the scientific name
+
+Get the taxid from a scientific name.
+
+.. code-block:: python
+
+    >>> from taxadb.names import SciName
+
+    >>> names = SciName(dbtype='sqlite', dbname='mydb.sqlite')
+    >>> taxid = names.taxid('Physisporinus cinereus')
+    >>> print(taxid)
+    2056287
+
 If you are using MySQL or postgres, you'll have to provide your username and password
 (and optionally the port and hostname):
 

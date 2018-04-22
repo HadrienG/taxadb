@@ -5,6 +5,7 @@ import os
 import unittest
 
 from taxadb.taxid import TaxID
+from taxadb.names import SciName
 from taxadb.taxadb import TaxaDB
 from taxadb.util import md5_check
 from taxadb.schema import Accession, Taxa
@@ -143,7 +144,6 @@ class TestTaxadb(unittest.TestCase):
         """Check the method throws SystemExit if a table does not exist"""
         from taxadb.schema import BaseModel
         import peewee as pw
-
 
         class NotFound(BaseModel):
             id = pw.IntegerField(null=False)
@@ -355,6 +355,30 @@ class TestTaxadb(unittest.TestCase):
         taxid = self._buildTaxaDBObject(TaxID)
         name = taxid.sci_name(37572)
         self.assertEqual(name, 'Papilionoidea')
+
+    @attr('taxid')
+    def test_sci_name_taxid(self):
+        name = self._buildTaxaDBObject(SciName)
+        taxid = name.taxid('Papilionoidea')
+        self.assertEqual(taxid, 37572)
+
+    @attr('taxid')
+    def test_taxid_has_parent(self):
+        taxid = self._buildTaxaDBObject(TaxID)
+        self.assertTrue(taxid.has_parent(37572, 'Insecta'))
+
+    @attr('taxid')
+    def test_taxid_has_parent_None(self):
+        taxid = self._buildTaxaDBObject(TaxID)
+        parent = taxid.has_parent(0000, 'Insecta')
+        self.assertIsNone(parent)
+
+    @attr('taxid')
+    def test_sci_name_taxid_None(self):
+        """Check method returns None, no results found"""
+        name = self._buildTaxaDBObject(SciName)
+        taxid = name.taxid('qwerty')
+        self.assertIsNone(taxid)
 
     @attr('taxid')
     def test_taxid_sci_name_None(self):

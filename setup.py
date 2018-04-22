@@ -28,7 +28,7 @@ setup(
     packages=find_packages(exclude=['tests']),
 
     tests_require=['nose', 'nose-testconfig'],
-    install_requires=['requests', 'peewee==2.8.1'],
+    install_requires=['requests', 'peewee==2.8.1', 'tqdm'],
     # Allow PostgreSQL and MySQL as option
     extras_require={
         'postgres': ["psycopg2>=2.6.2"],
