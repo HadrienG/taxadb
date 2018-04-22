@@ -48,6 +48,20 @@ Below you can find basic examples. For more complete examples, please refer to t
     >>> lineage = taxid.lineage_name(33208, reverse=True)
     >>> print(lineage)
     ['cellular organism', 'Eukaryota', 'Opisthokonta', 'Metazoa']
+
+    >>> taxid.has_parent(33208, 'Eukaryota')
+    True
+```
+
+Get the taxid from a scientific name.
+
+```python
+    >>> from taxadb.names import SciName
+
+    >>> names = SciName(dbtype='sqlite', dbname='mydb.sqlite')
+    >>> taxid = names.taxid('Physisporinus cinereus')
+    >>> print(taxid)
+    2056287
 ```
 
 Get the taxonomic information for accession number(s).
