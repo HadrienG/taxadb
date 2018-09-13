@@ -355,4 +355,4 @@ def main():
         logger = logging.getLogger(__name__)
         logger.debug(e)
         parser.print_help()
-        raise  # extra traceback to uncomment for extra debugging powers
+        # raise  # extra traceback to uncomment for extra debugging powers

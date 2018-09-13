@@ -11,3 +11,7 @@ tqdm = "*"
 [dev-packages]
 nose = "*"
 nose-testconfig = "*"
+
+[scripts]
+tests = "nosetests --tc-file taxadb.ini --with-coverage --cover-package=taxadb"
+taxadb = "python -m taxadb"
