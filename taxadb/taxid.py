@@ -38,7 +38,7 @@ class TaxID(TaxaDB):
         except Taxa.DoesNotExist:
             return None
 
-    def lineage_id(self, taxid, reverse=False):
+    def lineage_id(self, taxid, ranks=False, reverse=False):
         """Get lineage for a taxonomic id
 
         Given a taxid, return its associated lineage (in the form of a list of
@@ -46,6 +46,8 @@ class TaxID(TaxaDB):
 
         Args:
             taxid (:obj:`int`): a taxid
+            ranks (:obj:`bool`): Wether to return a dict with the tax ranks or
+                not. Default False
             reverse (:obj:`bool`): Inverted lineage, from top to bottom
                 taxonomy hierarchy. Default False
         Returns:
@@ -54,30 +56,39 @@ class TaxID(TaxaDB):
 
         """
         try:
-            lineage_list = []
+            lineages = {} if ranks else []
+            # lineage_list = []
             current_lineage = Taxa.get(Taxa.ncbi_taxid == taxid).tax_name
             current_lineage_id = Taxa.get(Taxa.ncbi_taxid == taxid).ncbi_taxid
             parent = Taxa.get(Taxa.ncbi_taxid == taxid).parent_taxid
+            rank = Taxa.get(Taxa.ncbi_taxid == taxid).lineage_level
             while current_lineage != 'root':
-                lineage_list.append(current_lineage_id)
+                if ranks:
+                    lineages[rank] = current_lineage_id
+                else:
+                    lineages.append(current_lineage_id)
+
                 new_query = Taxa.get(Taxa.ncbi_taxid == parent)
 
                 current_lineage = new_query.tax_name
                 current_lineage_id = new_query.ncbi_taxid
                 parent = new_query.parent_taxid
-            if reverse is True:
-                lineage_list.reverse()
-            return lineage_list
+                rank = new_query.lineage_level
+            if reverse is True and ranks is False:
+                lineages.reverse()
+            return lineages
         except Taxa.DoesNotExist:
             return None
 
-    def lineage_name(self, taxid, reverse=False):
+    def lineage_name(self, taxid, ranks=False, reverse=False):
         """Get a lineage name for a taxonomic id
 
         Given a taxid, return its associated lineage
 
         Arguments:
             taxid (:obj:`int`): a taxid
+            ranks (:obj:`bool`): Wether to return a dict with the tax ranks or
+                not. Default False
             reverse (:obj:`bool`): Inverted lineage, from top to bottom
                 taxonomy hierarchy. Default False
 
@@ -87,18 +98,23 @@ class TaxID(TaxaDB):
 
         """
         try:
-            lineage_list = []
+            lineages = {} if ranks else []
             current_lineage = Taxa.get(Taxa.ncbi_taxid == taxid).tax_name
             parent = Taxa.get(Taxa.ncbi_taxid == taxid).parent_taxid
+            rank = Taxa.get(Taxa.ncbi_taxid == taxid).lineage_level
             while current_lineage != 'root':
-                lineage_list.append(current_lineage)
+                if ranks:
+                    lineages[rank] = current_lineage
+                else:
+                    lineages.append(current_lineage)
                 new_query = Taxa.get(Taxa.ncbi_taxid == parent)
 
                 current_lineage = new_query.tax_name
                 parent = new_query.parent_taxid
-            if reverse is True:
-                lineage_list.reverse()
-            return lineage_list
+                rank = new_query.lineage_level
+            if reverse is True and ranks is False:
+                lineages.reverse()
+            return lineages
         except Taxa.DoesNotExist:
             return None
 
