@@ -293,9 +293,9 @@ def main():
     parser_create.add_argument(
         '--division',
         '-d',
-        choices=['full', 'nucl', 'prot', 'gb', 'wgs', 'gss', 'est'],
+        choices=['taxa', 'full', 'nucl', 'prot', 'gb', 'wgs', 'gss', 'est'],
         default='full',
-        metavar='[full|nucl|prot|gb|wgs|gss|est]',
+        metavar='[taxa|full|nucl|prot|gb|wgs|gss|est]',
         help='division to build (default: %(default)s))'
     )
     parser_create.add_argument(
@@ -355,4 +355,4 @@ def main():
         logger = logging.getLogger(__name__)
         logger.debug(e)
         parser.print_help()
-        raise  # extra traceback to uncomment for extra debugging powers
+        # raise  # extra traceback to uncomment for extra debugging powers

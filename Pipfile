@@ -1,0 +1,17 @@
+[[source]]
+url = "https://pypi.python.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+requests = "*"
+peewee = "==2.8.1"
+tqdm = "*"
+
+[dev-packages]
+nose = "*"
+nose-testconfig = "*"
+
+[scripts]
+tests = "nosetests --tc-file taxadb.ini --with-coverage --cover-package=taxadb"
+taxadb = "python -m taxadb"
