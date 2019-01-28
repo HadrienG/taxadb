@@ -21,7 +21,7 @@ class BaseModel(pw.Model):
         Returns:
             name (:obj:`str`): Table name in database
         """
-        return cls._meta.db_table
+        return cls._meta.table_name
 
     @classmethod
     def has_index(cls, name=None, columns=None):

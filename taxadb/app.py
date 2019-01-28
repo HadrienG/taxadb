@@ -110,7 +110,7 @@ def create_db(args):
     # safe=True prevent not to create the table if it already exists
     if not Taxa.table_exists():
         logger.info('Creating table %s' % str(Taxa.get_table_name()))
-        db.create_table(Taxa, safe=True)
+        db.create_tables([Taxa])
 
     logger.info("Parsing files")
     taxa_info_list = parser.taxdump()
@@ -125,7 +125,7 @@ def create_db(args):
     logger.info('Table Taxa completed')
 
     # At first load, table accession does not exist yet, we create it
-    db.create_table(Accession, safe=True)
+    db.create_tables([Accession])
 
     if div in ['full', 'nucl', 'est']:
         acc_dl_list.append(nucl_est)
