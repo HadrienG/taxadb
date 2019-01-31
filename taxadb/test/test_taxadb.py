@@ -162,18 +162,18 @@ class TestTaxadb(unittest.TestCase):
         class FooBar(BaseModel):
             id = pw.IntegerField(null=False)
             name = pw.CharField()
+
+        idx = FooBar.index(FooBar.name, name='name')
+        FooBar.add_index(idx)
         obj = self._buildTaxaDBObject(TaxaDB)
         # Test returns False
         self.assertFalse(FooBar.has_index(name='foo'))
         FooBar.create_table(fail_silently=True)
         self.assertFalse(FooBar.has_index(name='foo'))
-        self.assertFalse(FooBar.has_index(columns=['name']))
         self.assertFalse(FooBar.has_index())
         self.assertFalse(FooBar.has_index(columns=10))
         # Test returns True
-        obj.db.create_index(FooBar, ['name'], unique=True)
-        self.assertTrue(FooBar.has_index(name='foobar_name'))
-        self.assertTrue(FooBar.has_index(columns=['name']))
+        self.assertTrue(FooBar.has_index(name='name'))
         FooBar.drop_table()
 
     @attr('config')
@@ -497,7 +497,7 @@ class TestTaxadbParser(unittest.TestCase):
         # Need connection to db. We use an empty db to fill list returned by
         #  parsing method
         db = TaxaDB(dbtype='sqlite', dbname=self.testdb)
-        db.db.create_table(Taxa, safe=True)
+        db.db.create_tables([Taxa])
         dp = TaxaDumpParser(verbose=True, nodes_file=self.nodes,
                             names_file=self.names)
         l = dp.taxdump()
@@ -542,8 +542,8 @@ class TestTaxadbParser(unittest.TestCase):
         # Need connection to db. We use an empty db to fill list returned by
         #  parsing method
         db = TaxaDB(dbtype='sqlite', dbname=self.testdb)
-        db.db.create_table(Taxa, safe=True)
-        db.db.create_table(Accession, safe=True)
+        db.db.create_tables([Taxa])
+        db.db.create_tables([Accession])
         # We need to load names.dmp and nodes.dmp
         tp = TaxaDumpParser(nodes_file=self.nodes, names_file=self.names,
                             verbose=True)

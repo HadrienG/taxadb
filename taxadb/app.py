@@ -157,7 +157,9 @@ def create_db(args):
             logger.info('Creating index for %s'
                         % Accession.get_table_name())
             try:
-                db.create_index(Accession, ['accession'], unique=True)
+                # db.add_index(Accession, ['accession'], unique=True)
+                idx = db.index(db.Accession, name='accession', unique=True)
+                db.add_index(idx)
             except PeeweeException as err:
                 raise Exception("Could not create Accession index: %s"
                                 % str(err))
