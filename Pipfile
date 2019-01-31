@@ -11,6 +11,7 @@ tqdm = "*"
 [dev-packages]
 nose = "*"
 nose-testconfig = "*"
+codecov = "*"
 
 [scripts]
 tests = "nosetests --tc-file taxadb.ini --with-coverage --cover-package=taxadb"
