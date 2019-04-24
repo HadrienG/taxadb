@@ -29,9 +29,9 @@ def download_files(args):
     logger = logging.getLogger(__name__)
 
     # files to download
-    nucl_est = 'nucl_est.accession2taxid.gz'
+    # nucl_est = 'nucl_est.accession2taxid.gz'  # deprecated
     nucl_gb = 'nucl_gb.accession2taxid.gz'
-    nucl_gss = 'nucl_gss.accession2taxid.gz'
+    # nucl_gss = 'nucl_gss.accession2taxid.gz'  # deprecated
     nucl_wgs = 'nucl_wgs.accession2taxid.gz'
     prot = 'prot.accession2taxid.gz'
     taxdump = 'taxdump.tar.gz'
@@ -40,12 +40,8 @@ def download_files(args):
     acc_dl_list = [taxdump]
 
     for div in args.type:
-        if div in ['full', 'nucl', 'est']:
-            acc_dl_list.append(nucl_est)
         if div in ['full', 'nucl', 'gb']:
             acc_dl_list.append(nucl_gb)
-        if div in ['full', 'nucl', 'gss']:
-            acc_dl_list.append(nucl_gss)
         if div in ['full', 'nucl', 'wgs']:
             acc_dl_list.append(nucl_wgs)
         if div in ['full', 'prot']:
@@ -93,9 +89,7 @@ def create_db(args):
     div = args.division  # am lazy at typing
     db.initialize(database)
 
-    nucl_est = 'nucl_est.accession2taxid.gz'
     nucl_gb = 'nucl_gb.accession2taxid.gz'
-    nucl_gss = 'nucl_gss.accession2taxid.gz'
     nucl_wgs = 'nucl_wgs.accession2taxid.gz'
     prot = 'prot.accession2taxid.gz'
     acc_dl_list = []
@@ -127,12 +121,8 @@ def create_db(args):
     # At first load, table accession does not exist yet, we create it
     db.create_tables([Accession])
 
-    if div in ['full', 'nucl', 'est']:
-        acc_dl_list.append(nucl_est)
     if div in ['full', 'nucl', 'gb']:
         acc_dl_list.append(nucl_gb)
-    if div in ['full', 'nucl', 'gss']:
-        acc_dl_list.append(nucl_gss)
     if div in ['full', 'nucl', 'wgs']:
         acc_dl_list.append(nucl_wgs)
     if div in ['full', 'prot']:
@@ -213,13 +203,13 @@ def main():
     parser_download.add_argument(
         '--type',
         '-t',
-        choices=['taxa', 'full', 'nucl', 'prot', 'gb', 'wgs', 'gss', 'est'],
+        choices=['taxa', 'full', 'nucl', 'prot', 'gb', 'wgs'],
         action='append',
         nargs='*',
         metavar='<str>',
         required=True,
-        help='divisions to download. Can be one or more of "taxa", "all",\
-            "nucl", "prot", "est", "gb", "gss" or "wgs". Space-separated.'
+        help='divisions to download. Can be one or more of "taxa", "full",\
+            "nucl", "prot", "gb", or "wgs". Space-separated.'
     )
     parser_download.add_argument(
         '--force',
@@ -295,9 +285,9 @@ def main():
     parser_create.add_argument(
         '--division',
         '-d',
-        choices=['taxa', 'full', 'nucl', 'prot', 'gb', 'wgs', 'gss', 'est'],
+        choices=['taxa', 'full', 'nucl', 'prot', 'gb', 'wgs'],
         default='full',
-        metavar='[taxa|full|nucl|prot|gb|wgs|gss|est]',
+        metavar='[taxa|full|nucl|prot|gb|wgs]',
         help='division to build (default: %(default)s))'
     )
     parser_create.add_argument(
