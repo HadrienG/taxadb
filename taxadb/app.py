@@ -7,7 +7,7 @@ import logging
 import argparse
 
 from tqdm import tqdm
-from peewee import PeeweeException
+from peewee import PeeweeException, OperationalError
 
 from taxadb import util
 from taxadb import download
@@ -111,11 +111,17 @@ def create_db(args):
 
     logger.info("Inserting taxonomy data")
     total_size = len(taxa_info_list)
-    with db.atomic():
-        for i in tqdm(range(0, total_size, args.chunk),
-                      unit=' chunks', desc='INFO:taxadb.app',
-                      total=''):
-            Taxa.insert_many(taxa_info_list[i:i+args.chunk]).execute()
+    try:
+        with db.atomic():
+            for i in tqdm(range(0, total_size, args.chunk),
+                          unit=' chunks', desc='INFO:taxadb.app',
+                          total=''):
+                Taxa.insert_many(taxa_info_list[i:i+args.chunk]).execute()
+    except OperationalError as e:
+        print("\n")  # needed because the above counter has none
+        logger.error("sqlite3 error: %s" % e)
+        logger.error("Maybe retry with a lower chunk size.")
+        sys.exit(1)
     logger.info('Table Taxa completed')
 
     # At first load, table accession does not exist yet, we create it
