@@ -29,7 +29,7 @@ def ncbi(path, filename, base_url='https://ftp.ncbi.nlm.nih.gov/'):
     with open(filename, 'wb') as f:
         for chunk in tqdm(request.iter_content(chunk_size=chunk_size),
                           total=total_size/chunk_size,
-                          unit='KB', unit_scale=True):
+                          unit='Kb', unit_scale=True):
             if chunk:
                 f.write(chunk)
                 f.flush()

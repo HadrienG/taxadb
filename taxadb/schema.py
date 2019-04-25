@@ -21,7 +21,7 @@ class BaseModel(pw.Model):
         Returns:
             name (:obj:`str`): Table name in database
         """
-        return cls._meta.db_table
+        return cls._meta.table_name
 
     @classmethod
     def has_index(cls, name=None, columns=None):
@@ -157,7 +157,9 @@ class DatabaseFactory(object):
 
         """
         if self.get('dbtype') == 'sqlite':
-            return pw.SqliteDatabase(self.get('dbname'))
+            return pw.SqliteDatabase(self.get('dbname'),
+                                     pragmas={'journal_mode': 'wal',
+                                              'cache_size': -1 * 64000})
         else:
             if self.get('username') is None or self.get('password') is None:
                 raise AttributeError('[ERROR] dbtype %s requires username and'

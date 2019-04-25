@@ -30,6 +30,7 @@ venv/
 .cache
 data/
 .idea
+.coverage
 
 # distribution / packaging
 *.egg-info/
