@@ -18,3 +18,12 @@ notifications:
 
 after_success:
   - codecov
+deploy:
+  provider: pypi
+  user: hadrieng
+  password:
+    secure: ZbJQypOrraPFPuTrovJHDMDOGgpTgV+Am/FDQaWT3O8m9WUnM1V140fegsEv4xRRIlTJHsHNj/zOz5s9CRTjHgB2aA4j73FmuV8CNOBrb54uCC5Msd3m6Y8uHvQwdb85eTQYcTcjmzZNVhTITBFssluvV7C6p6MGsJRjCphjx9reai5xIXS4rR47fcxvchBTdXsu7KUwlMQBueIr+zbILjpjosfeU5/CaY6NPzTQKTe/03IZeC2x5lkI/Sp7LAHZUnHNjtm/sV3b/KduAtuJ2T/TCx+j2O13WH9NcBCBhMRIn3i0567/7hkkJbeUFdeZa4YKkh+hMX1ILrFhlpfIDm04Dod2OrCkISTJ2bZvPCfZGL+vnNJQMZXgvAlirN0hkJ1HfWGq0xIqoooP3J2wGmmWYJCe1lVOSnRzCw/K5/jtKsw+1QcSLpbhTKoMRjhXT8qPPmGwnaLOoR9tv4GXb2wkLxS8Ok/0zgjHu8MAP/0L+qlpLPhFxkfA06IYvTbGsxd0y2ldVFln5Zpkzj48qVuQiJcdKm8ClwI3PWrXLOAs23KltuFgRXthRZOeH6+16AeS/cwrLZ9tHy3thxeYoS6G3eImlaX5D1te/iCKXKNyKOIF2/S4kiQk8Od3C+pKoLsmhsoItWx6wE+Uf0trBjXS3iVs+g+uWGmwaLJiSOk=
+  on:
+    tags: true
+  skip_existing: true
+  distributions: "sdist bdist_wheel"
