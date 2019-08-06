@@ -46,7 +46,7 @@ class TaxID(TaxaDB):
 
         Args:
             taxid (:obj:`int`): a taxid
-            ranks (:obj:`bool`): Wether to return a dict with the tax ranks or
+            ranks (:obj:`bool`): Wether to return the the tax ranks or
                 not. Default False
             reverse (:obj:`bool`): Inverted lineage, from top to bottom
                 taxonomy hierarchy. Default False
@@ -56,7 +56,7 @@ class TaxID(TaxaDB):
 
         """
         try:
-            lineages = {} if ranks else []
+            lineages = []
             # lineage_list = []
             current_lineage = Taxa.get(Taxa.ncbi_taxid == taxid).tax_name
             current_lineage_id = Taxa.get(Taxa.ncbi_taxid == taxid).ncbi_taxid
@@ -64,7 +64,7 @@ class TaxID(TaxaDB):
             rank = Taxa.get(Taxa.ncbi_taxid == taxid).lineage_level
             while current_lineage != 'root':
                 if ranks:
-                    lineages[rank] = current_lineage_id
+                    lineages.append((rank, current_lineage_id))
                 else:
                     lineages.append(current_lineage_id)
 
@@ -87,7 +87,7 @@ class TaxID(TaxaDB):
 
         Arguments:
             taxid (:obj:`int`): a taxid
-            ranks (:obj:`bool`): Wether to return a dict with the tax ranks or
+            ranks (:obj:`bool`): Wether to return the tax ranks or
                 not. Default False
             reverse (:obj:`bool`): Inverted lineage, from top to bottom
                 taxonomy hierarchy. Default False
@@ -98,13 +98,13 @@ class TaxID(TaxaDB):
 
         """
         try:
-            lineages = {} if ranks else []
+            lineages = []
             current_lineage = Taxa.get(Taxa.ncbi_taxid == taxid).tax_name
             parent = Taxa.get(Taxa.ncbi_taxid == taxid).parent_taxid
             rank = Taxa.get(Taxa.ncbi_taxid == taxid).lineage_level
             while current_lineage != 'root':
                 if ranks:
-                    lineages[rank] = current_lineage
+                    lineages.append((rank, current_lineage_id))
                 else:
                     lineages.append(current_lineage)
                 new_query = Taxa.get(Taxa.ncbi_taxid == parent)

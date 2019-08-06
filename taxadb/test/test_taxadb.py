@@ -391,12 +391,21 @@ class TestTaxadb(unittest.TestCase):
     def test_taxid_lineage_id_ranks(self):
         taxid = self._buildTaxaDBObject(TaxID)
         lineage = taxid.lineage_id(9986, ranks=True)
-        self.assertDictEqual(lineage,
-                             {'species': 9986, 'genus': 9984, 'family': 9979,
-                              'order': 9975, 'no rank': 131567,
-                              'superorder': 314146, 'class': 40674,
-                              'subphylum': 89593, 'phylum': 7711,
-                              'kingdom': 33208, 'superkingdom': 2759})
+        self.assertListEqual(lineage,
+                             [('species', 9986), ('genus', 9984),
+                              ('family', 9979), ('order', 9975),
+                              ('no rank', 314147), ('superorder', 314146),
+                              ('no rank', 1437010), ('no rank', 9347),
+                              ('no rank', 32525), ('class', 40674),
+                              ('no rank', 32524), ('no rank', 32523),
+                              ('no rank', 1338369), ('no rank', 8287),
+                              ('no rank', 117571), ('no rank', 117570),
+                              ('no rank', 7776), ('no rank', 7742),
+                              ('subphylum', 89593), ('phylum', 7711),
+                              ('no rank', 33511), ('no rank', 33213),
+                              ('no rank', 6072), ('kingdom', 33208),
+                              ('no rank', 33154), ('superkingdom', 2759),
+                              ('no rank', 131567)])
 
     @attr('taxid')
     def test_taxid_lineage_id_reverse(self):
