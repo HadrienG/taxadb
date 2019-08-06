@@ -330,7 +330,7 @@ def main():
     parser_query = subparsers.add_parser(
         'query',
         prog='taxadb query',
-        description='query the database',
+        description='taxadb query is not implemented yet. Come back later!',
         help='query the database'
     )
     parser_query.set_defaults(func=query)
