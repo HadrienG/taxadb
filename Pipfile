@@ -5,7 +5,7 @@ name = "pypi"
 
 [packages]
 requests = "*"
-peewee = "==3.8.2"
+peewee = "==3.10.0"
 tqdm = "*"
 
 [dev-packages]
