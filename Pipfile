@@ -5,7 +5,7 @@ name = "pypi"
 
 [packages]
 requests = "*"
-peewee = "==3.10.0"
+peewee = "==3.13.3"
 tqdm = "*"
 pymysql = "*"
 
