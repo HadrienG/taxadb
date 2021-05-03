@@ -7,6 +7,8 @@
 [![codecov](https://codecov.io/gh/HadrienG/taxadb/branch/master/graph/badge.svg)](https://codecov.io/gh/HadrienG/taxadb)
 [![LICENSE](https://img.shields.io/badge/license-MIT-lightgrey.svg)](https://github.com/HadrienG/taxadb)
 
+:warning: **This project will not receive updates for the time being :warning:
+
 Taxadb is an application to locally query the ncbi taxonomy. Taxadb is written in python, and access its database using the [peewee](http://peewee.readthedocs.io) library.
 
 In brief Taxadb:
